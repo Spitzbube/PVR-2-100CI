@@ -1,0 +1,64 @@
+################################################################################
+################################################################################
+##
+## Makefile.host.win32 -- Win32 host bin tools definition
+##
+## (C) Copyright 2012-2013 by Guoke Microelectronics Co.,Ltd
+##
+################################################################################
+################################################################################
+
+################################################################################
+#
+# make version specific settings
+#
+################################################################################
+
+TOOL_EXT       ?=
+MAKE            = make.exe
+MAKEFLAGS      ?=
+MAKEFLAGS_USER  =
+SUBMAKE         = $(MAKE) --no-print-directory TARGET=$(TARGET) REPORT=$(REPORT) MISRA=$(MISRA) DEPEND=$(DEPEND)
+
+  VARIABLES += TOOL_EXT
+  VARIABLES += MAKE
+  VARIABLES += MAKEFLAGS
+  VARIABLES += MAKEFLAGS_USER
+  VARIABLES += SUBMAKE
+
+MKDIR            = mkdir$(TOOL_EXT)
+MKDIRFLAGS       = -p
+MKDIRFLAGS_USER ?=
+
+  VARIABLES += MKDIR
+  VARIABLES += MKDIRFLAGS
+  VARIABLES += MKDIRFLAGS_USER
+
+DELETE            = rm$(TOOL_EXT)
+DELETEFLAGS       = -rf
+DELETEFLAGS_USER ?=
+
+  VARIABLES += DELETE
+  VARIABLES += DELETEFLAGS
+  VARIABLES += DELETEFLAGS_USER
+
+COPY            = busybox cp
+COPYFLAGS       =
+COPYFLAGS_USER ?=
+
+  VARIABLES += COPY
+  VARIABLES += COPYFLAGS
+  VARIABLES += COPYFLAGS_USER
+
+MCOPY            = busybox cp
+MCOPYFLAGS       = -r
+MCOPYFLAGS_USER ?=
+
+  VARIABLES += MCOPY
+  VARIABLES += MCOPYFLAGS
+  VARIABLES += MCOPYFLAGS_USER
+
+
+ECHO       = echo
+NEWLINE    = $(ECHO) ""
+SPACE      =

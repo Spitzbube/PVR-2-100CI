@@ -1357,7 +1357,7 @@ variables_footer: force
 #
 ################################################################################
 
--include $(TOPDIR)/env/make/Makefile.deploy
+#-include $(TOPDIR)/env/make/Makefile.deploy
 
 ################################################################################
 #

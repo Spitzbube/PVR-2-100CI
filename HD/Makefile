@@ -23,7 +23,7 @@ include $(TOPDIR)/env/make/Makefile.config
 
   DIRECTORIES += env
 
-  DIRECTORIES += linux
+#  DIRECTORIES += linux
 
   DIRECTORIES += adi
 
