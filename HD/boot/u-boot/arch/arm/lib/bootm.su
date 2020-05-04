@@ -1,5 +1,0 @@
-bootm.c:272:13:4	16	static
-bootm.c:329:13:5	24	static
-bootm.c:58:6:arch_lmb_reserve	0	static
-bootm.c:368:5:do_bootm_linux	16	static
-bootm.c:400:5:bootz_setup	8	static

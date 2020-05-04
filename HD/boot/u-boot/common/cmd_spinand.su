@@ -1,4 +1,0 @@
-cmd_spinand.c:143:12:snand_arg_off	32	static
-cmd_spinand.c:159:12:snand_arg_off_size	48	static
-cmd_spinand.c:296:13:3	64	dynamic,bounded
-cmd_spinand.c:353:5:do_snand	192	static

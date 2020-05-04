@@ -1,8 +1,0 @@
-crc7.o: crc7.c \
- /mnt/gm8135_share/work/GK710X_LinuxSDK_v2.0.0/boot/u-boot/include/linux/types.h \
- /mnt/gm8135_share/work/GK710X_LinuxSDK_v2.0.0/boot/u-boot/include/linux/config.h \
- /mnt/gm8135_share/work/GK710X_LinuxSDK_v2.0.0/boot/u-boot/include/linux/posix_types.h \
- /mnt/gm8135_share/work/GK710X_LinuxSDK_v2.0.0/boot/u-boot/include/linux/stddef.h \
- /mnt/gm8135_share/work/GK710X_LinuxSDK_v2.0.0/boot/u-boot/include/asm/posix_types.h \
- /mnt/gm8135_share/work/GK710X_LinuxSDK_v2.0.0/boot/u-boot/include/asm/types.h \
- /mnt/gm8135_share/work/GK710X_LinuxSDK_v2.0.0/boot/u-boot/include/linux/crc7.h

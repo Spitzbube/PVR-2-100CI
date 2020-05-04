@@ -1,6 +1,0 @@
-tftp.c:311:1:TftpSend	40	static
-tftp.c:279:13:update_block_number	8	static
-tftp.c:432:13:icmp_handler	8	static
-tftp.c:672:1:TftpTimeout	16	static
-tftp.c:443:1:TftpHandler	24	static
-tftp.c:685:6:TftpStart	32	static

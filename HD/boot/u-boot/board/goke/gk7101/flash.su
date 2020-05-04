@@ -1,6 +1,0 @@
-flash.c:46:15:flash_init	8	static
-flash.c:92:15:flash_get_info	8	static
-flash.c:101:6:flash_print_info	0	static
-flash.c:113:7:flash_get_size	8	static
-flash.c:122:5:flash_erase	16	static
-flash.c:145:5:write_buff	24	static
