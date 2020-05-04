@@ -1,0 +1,7 @@
+extra/i2s.ko:
+extra/media.ko: extra/hw_crypto.ko extra/hal.ko
+extra/hal.ko:
+extra/sensor.ko: extra/media.ko extra/hw_crypto.ko extra/hal.ko
+extra/sc1135_ex.ko: extra/sensor.ko extra/media.ko extra/hw_crypto.ko extra/hal.ko
+extra/audio.ko:
+extra/hw_crypto.ko:

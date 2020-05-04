@@ -1,0 +1,157 @@
+################################################################################
+################################################################################
+##
+## Makefile -- makefile for ADI demo application
+##
+## (C) Copyright 2012-2014 by Goke Microelectronics Co.,Ltd
+##
+## Mandatory settings:
+##
+## o TOPDIR      = the toplevel directory (using slashes as path separator)
+## o TARGET      = the machine qualifier to generate code for
+##
+################################################################################
+################################################################################
+
+#export AUDIO_I2S = y
+ifneq ($(AUDIO_I2S), y)
+#export AEC_SUPPORT = y
+endif
+################################################################################
+# source files
+################################################################################
+
+SOURCES += src/main.c
+SOURCES += src/shell.c
+SOURCES += src/xml.c
+SOURCES += src/parser.c
+SOURCES += src/vi.c
+SOURCES += src/vout.c
+SOURCES += src/venc.c
+ifeq ($(AUDIO_I2S), y)
+SOURCES += src/i2s.c
+else
+SOURCES += src/audio.c
+endif
+SOURCES += src/isp.c
+SOURCES += src/gpio.c
+SOURCES += src/spi.c
+SOURCES += src/osd.c
+SOURCES += src/pm.c
+SOURCES += src/pda.c
+SOURCES += src/ir.c
+SOURCES += src/pwm.c
+SOURCES += src/fb.c
+SOURCES += src/vdec.c
+SOURCES += src/interrupts.c
+SOURCES += src/rtsp.c
+SOURCES += src/web.c
+SOURCES += src/ircut.c
+SOURCES += src/onvif.c
+SOURCES += src/onvif_adapter.c
+ifeq ($(AEC_SUPPORT), y)
+SOURCES += src/ap.c
+endif
+SOURCES += src/tuning.c
+
+################################################################################
+# define define user cc flags
+################################################################################
+
+CCFLAGS_USER += -O3 -DDEBUG -g
+CCFLAGS_USER += -I $(TOPDIR)/adi/include
+CCFLAGS_USER += -I $(OSSPREBUILD)/freetype-2.4.11/include/freetype2
+CCFLAGS_USER += -I $(TOPDIR)/subsystem/osd/include
+CCFLAGS_USER += -I $(TOPDIR)/image/image_lib/include
+CCFLAGS_USER += -I $(TOPDIR)/$(SUBDIR)/../minirtsp/inc
+CCFLAGS_USER += -I $(TOPDIR)/$(SUBDIR)/../miniweb/include
+CCFLAGS_USER += -I $(TOPDIR)/$(SUBDIR)/../minionvif/include
+ifeq ($(AEC_SUPPORT), y)
+CCFLAGS_USER += -DAUDIO_ECHO_CANCELLATION_SUPPORT
+CCFLAGS_USER += -I $(TOPDIR)/subsystem/audio_processing/ap/
+endif
+ifeq ($(AUDIO_I2S), y)
+CCFLAGS_USER += -DAUDIO_I2S_MODE
+endif
+################################################################################
+# define define user ld flags
+################################################################################
+
+LDFLAGS_USER += -lrt
+LDFLAGS_USER += -L $(OSSPREBUILD)/freetype-2.4.11/lib
+LDFLAGS_USER += -lfreetype
+LDFLAGS_USER += -L $(OSSPREBUILD)/zlib-1.2.7/lib
+LDFLAGS_USER += -lz
+ifeq ($(AEC_SUPPORT), y)
+LDFLAGS_USER += -L $(TOPDIR)/subsystem/audio_processing/ap/lib/$(C_LIBRARY)
+LDFLAGS_USER += -lap
+endif
+################################################################################
+# define library used
+################################################################################
+
+LIBRARIES  = adi osd image rtsp web minionvif
+
+################################################################################
+# define target name
+################################################################################
+
+PROGRAM = adidemo
+
+################################################################################
+# define local file to be installed
+################################################################################
+LOCAL_FILE += configs/hzk32                                                                                                                               
+LOCAL_FILE += configs/asc32
+LOCAL_FILE += configs/gokelogo.bmp
+LOCAL_FILE += configs/device.xml  
+LOCAL_FILE += configs/discover.xml  
+LOCAL_FILE += configs/imaging.xml  
+LOCAL_FILE += configs/mediadynamic.xml  
+LOCAL_FILE += configs/mediastatic.xml  
+LOCAL_FILE += configs/ptz.xml
+
+################################################################################
+# define local file install location
+# if this was commented out, the target will be installed into the default
+# location:
+#   $(ROOTFS_TOP)/usr/local/bin/
+################################################################################
+
+INSTALL_LOCAL_FILE_DIR = $(ROOTFS_TOP)/etc/videoconfig
+
+################################################################################
+# define target install location
+# if this was commented out, the target will be installed into the default
+# location:
+#   $(ROOTFS_TOP)/usr/local/bin/
+################################################################################
+
+# INSTALL_BIN_DIR =
+
+################################################################################
+# define user targets
+################################################################################
+
+default: install
+
+clean: clean-objects clean-all
+
+build:  build-objects build-program
+
+install-config-file:
+	cp configs/video-$(DDR_MEMORY_SIZE).xml $(ROOTFS_TOP)/usr/local/bin/video.xml
+	
+install: build install-program install-file install-bin install-config-file
+
+headers:
+
+all: clean build install
+
+release: info
+
+doc: $(DIRECTORIES:%=subdir-doc-%)
+
+info: force
+	@echo $(DIRECTORIES)
+

@@ -1,0 +1,124 @@
+################################################################################
+#
+# Register/Value setup file for devices/systems
+#
+# This file contains register/value settings to be written into
+# the boot flash header
+#
+# Lines will be parsed for leading "setup:" or "delay:" strings =  all other
+# entries will be skipped.
+# Lines beginning with '#' will be treated as comment lines and will be
+# skipped also.
+#
+# Format:
+#   "# comment line"
+#   "setup: <register> = <value>"
+#   "delay: <usec_value>"
+#
+# Where:
+#   <register> and <value> items must be given in hex
+#   <usec_value> can be given either in dec or hex
+#
+# Note:
+#   These *.rvs-files are generated automatically by the script rebuild-rvs.bat
+#   If values need to changed it should be done in the rvs include sources.
+#
+# (C) Copyright 2006-2010 by Fujitsu Microelectronics Europe GmbH
+# (C) Copyright 2010-2011 by Fujitsu Semiconductor Europe GmbH
+#
+################################################################################
+################################################################################
+#
+# Register/Value setup file for devices/systems
+#
+# This file contains register/value settings to be written into
+# the boot flash header
+#
+# Lines will be parsed for leading "setup:" or "delay:" strings =  all other
+# entries will be skipped.
+# Lines beginning with '#' will be treated as comment lines and will be
+# skipped also.
+#
+# Format:
+#   "# comment line"
+#   "setup: <register> = <value>"
+#   "delay: <usec_value>"
+#
+# Where:
+#   <register> and <value> items must be given in hex
+#   <usec_value> can be given either in dec or hex
+#
+# Note:
+#   These *.rvs-files are generated automatically by the script rebuild-rvs.bat
+#   If values need to changed it should be done in the rvs include sources.
+#
+# (C) Copyright 2006-2010 by Fujitsu Microelectronics Europe GmbH
+# (C) Copyright 2010-2011 by Fujitsu Semiconductor Europe GmbH
+#
+################################################################################
+
+//setup: 0x6000B100 = 0xFF39C119  //init efuse
+setup: 0x60021A6C = 0x00008000
+setup: 0x60021A68 = 0x00000200
+setup: 0x60021A60 = 0x0000DF3B
+setup: 0x60021A64 = 0x00000033
+setup: 0x60021A48 = 0x00001000
+setup: 0x60021A48 = 0x00000000
+setup: 0x60021B00 = 0x00000031
+setup: 0x60021A00 = 0x00000012
+setup: 0x60021A08 = 0x0000F080
+setup: 0x60021A70 = 0x00000033
+setup: 0x60021A74 = 0x00000000
+setup: 0x60021A04 = 0x00000000
+setup: 0x60021A78 = 0x00000200
+setup: 0x60021A7C = 0x00000022
+setup: 0x60021A1C = 0x000000E7
+setup: 0x60021A1C = 0x000000A7
+setup: 0x60021A1C = 0x000000E7
+setup: 0x60021A1C = 0x000000A7
+setup: 0x60021ADC = 0x00002222
+setup: 0x60021AE4 = 0x00000006
+setup: 0x60021AD4 = 0x00000027
+setup: 0x60021AD0 = 0x00000027
+setup: 0x60021AA8 = 0x00000000
+setup: 0x60021A2C = 0x00000000
+setup: 0x60021A00 = 0x00000002
+setup: 0x60021A04 = 0x0000AAAA
+setup: 0x60021A10 = 0x0000007F
+setup: 0x70170228 = 0x00000001
+setup: 0x60004004 = 0x00100344
+setup: 0x60004008 = 0x48F8368B
+setup: 0x6000400C = 0x0000236A
+setup: 0x60004010 = 0x0020903A
+setup: 0x60004020 = 0x000000A0
+setup: 0x60004000 = 0x00000004
+setup: 0x60004014 = 0x00000001
+rdcom: 0x60004014 = 0x00000000
+setup: 0x60004018 = 0x01020000
+rdcom: 0x60004018 = 0x01020000
+setup: 0x60004018 = 0x01030000
+rdcom: 0x60004018 = 0x01030000
+setup: 0x60004018 = 0x01010044
+rdcom: 0x60004018 = 0x01010044
+setup: 0x60004018 = 0x01000B63
+rdcom: 0x60004018 = 0x01000B63
+setup: 0x60004014 = 0x00000001
+rdcom: 0x60004014 = 0x00000000
+setup: 0x60004014 = 0x00000002
+rdcom: 0x60004014 = 0x00000000
+setup: 0x60004014 = 0x00000002
+rdcom: 0x60004014 = 0x00000000
+setup: 0x60004014 = 0x00000002
+rdcom: 0x60004014 = 0x00000000
+setup: 0x60004018 = 0x01000A63
+rdcom: 0x60004018 = 0x01000A63
+setup: 0x60004000 = 0x00000006
+setup: 0x60004018 = 0x01010380
+rdcom: 0x60004018 = 0x01010380
+setup: 0x60004018 = 0x01010002
+rdcom: 0x60004018 = 0x01010002
+setup: 0x6000401C = 0x0000002A
+setup: 0x60004000 = 0x00000007
+setup: 0x6000B104 = 0x00000001  //start the auto efuse hw read
+//rdcom: 0x6000B104 = 0x00000003  //HW auto read and send to engine READY starus
+//setup: 0x70170200 = 0x00000011

@@ -1,0 +1,19 @@
+string.o: string.c \
+ /mnt/gm8135_share/work/GK710X_LinuxSDK_v2.0.0/boot/u-boot/include/linux/types.h \
+ /mnt/gm8135_share/work/GK710X_LinuxSDK_v2.0.0/boot/u-boot/include/linux/config.h \
+ /mnt/gm8135_share/work/GK710X_LinuxSDK_v2.0.0/boot/u-boot/include/linux/posix_types.h \
+ /mnt/gm8135_share/work/GK710X_LinuxSDK_v2.0.0/boot/u-boot/include/linux/stddef.h \
+ /mnt/gm8135_share/work/GK710X_LinuxSDK_v2.0.0/boot/u-boot/include/asm/posix_types.h \
+ /mnt/gm8135_share/work/GK710X_LinuxSDK_v2.0.0/boot/u-boot/include/asm/types.h \
+ /mnt/gm8135_share/work/GK710X_LinuxSDK_v2.0.0/boot/u-boot/include/linux/string.h \
+ /mnt/gm8135_share/work/GK710X_LinuxSDK_v2.0.0/boot/u-boot/include/asm/string.h \
+ /mnt/gm8135_share/work/GK710X_LinuxSDK_v2.0.0/boot/u-boot/include/config.h \
+ /mnt/gm8135_share/work/GK710X_LinuxSDK_v2.0.0/boot/u-boot/include/config_cmd_defaults.h \
+ /mnt/gm8135_share/work/GK710X_LinuxSDK_v2.0.0/boot/u-boot/include/config_defaults.h \
+ /mnt/gm8135_share/work/GK710X_LinuxSDK_v2.0.0/boot/u-boot/include/configs/gk7101.h \
+ /mnt/gm8135_share/work/GK710X_LinuxSDK_v2.0.0/boot/u-boot/include/config_cmd_default.h \
+ /mnt/gm8135_share/work/GK710X_LinuxSDK_v2.0.0/boot/u-boot/include/asm/config.h \
+ /mnt/gm8135_share/work/GK710X_LinuxSDK_v2.0.0/boot/u-boot/include/config_fallbacks.h \
+ /mnt/gm8135_share/work/GK710X_LinuxSDK_v2.0.0/boot/u-boot/include/config_uncmd_spl.h \
+ /mnt/gm8135_share/work/GK710X_LinuxSDK_v2.0.0/boot/u-boot/include/linux/ctype.h \
+ /mnt/gm8135_share/work/GK710X_LinuxSDK_v2.0.0/boot/u-boot/include/malloc.h

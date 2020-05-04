@@ -1,0 +1,9 @@
+lowlevel_init.o: lowlevel_init.S \
+ /mnt/gm8135_share/work/GK710X_LinuxSDK_v2.0.0/boot/u-boot/include/config.h \
+ /mnt/gm8135_share/work/GK710X_LinuxSDK_v2.0.0/boot/u-boot/include/config_cmd_defaults.h \
+ /mnt/gm8135_share/work/GK710X_LinuxSDK_v2.0.0/boot/u-boot/include/config_defaults.h \
+ /mnt/gm8135_share/work/GK710X_LinuxSDK_v2.0.0/boot/u-boot/include/configs/gk7101s.h \
+ /mnt/gm8135_share/work/GK710X_LinuxSDK_v2.0.0/boot/u-boot/include/config_cmd_default.h \
+ /mnt/gm8135_share/work/GK710X_LinuxSDK_v2.0.0/boot/u-boot/include/asm/config.h \
+ /mnt/gm8135_share/work/GK710X_LinuxSDK_v2.0.0/boot/u-boot/include/config_fallbacks.h \
+ /mnt/gm8135_share/work/GK710X_LinuxSDK_v2.0.0/boot/u-boot/include/config_uncmd_spl.h

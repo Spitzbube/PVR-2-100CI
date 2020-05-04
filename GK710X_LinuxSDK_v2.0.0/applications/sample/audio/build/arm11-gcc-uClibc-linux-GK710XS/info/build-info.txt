@@ -1,0 +1,11 @@
+CC.............: /opt/goke/ct_uClibc/4.6.1/usr/bin/arm-goke-linux-uclibcgnueabi-gcc
+CCFLAGS........: -Wall -I../../..//install/arm11-gcc-uClibc-linux-GK710XS/include -I /opt/goke/ct_uClibc/4.6.1/usr/arm-goke-linux-uclibcgnueabi/sysroot/usr/include -DRELEASE_MAJOR= -DRELEASE_MINOR= -DRELEASE_PATCH=
+CCFLAGS_C......:
+CCFLAGS_AS.....: -x assembler-with-cpp
+CCFLAGS_USER...: -O3 -DDEBUG -g -I ../../..//adi/include
+AR.............: /opt/goke/ct_uClibc/4.6.1/usr/bin/arm-goke-linux-uclibcgnueabi-ar
+ARFLAGS........: crs
+ARFLAGS_USER...:
+LD.............: /opt/goke/ct_uClibc/4.6.1/usr/bin/arm-goke-linux-uclibcgnueabi-gcc
+LDFLAGS........: -Wall -I../../..//install/arm11-gcc-uClibc-linux-GK710XS/include -I /opt/goke/ct_uClibc/4.6.1/usr/arm-goke-linux-uclibcgnueabi/sysroot/usr/include -DRELEASE_MAJOR= -DRELEASE_MINOR= -DRELEASE_PATCH= -L../../..//install/arm11-gcc-uClibc-linux-GK710XS/lib
+LDFLAGS_USER...:

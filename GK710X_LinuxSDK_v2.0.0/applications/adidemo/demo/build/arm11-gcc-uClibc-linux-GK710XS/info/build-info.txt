@@ -1,0 +1,11 @@
+CC.............: /opt/goke/ct_uClibc/4.6.1/usr/bin/arm-goke-linux-uclibcgnueabi-gcc
+CCFLAGS........: -Wall -I../../../install/arm11-gcc-uClibc-linux-GK710XS/include -I /opt/goke/ct_uClibc/4.6.1/usr/arm-goke-linux-uclibcgnueabi/sysroot/usr/include -DRELEASE_MAJOR= -DRELEASE_MINOR= -DRELEASE_PATCH=
+CCFLAGS_C......:
+CCFLAGS_AS.....: -x assembler-with-cpp
+CCFLAGS_USER...: -O3 -DDEBUG -g -I ../../../adi/include -I ../../../linux/rootfs/oss-prebuild-uClibc/freetype-2.4.11/include/freetype2 -I ../../../subsystem/osd/include -I ../../../image/image_lib/include -I ../../../applications/adidemo/demo/../minirtsp/inc -I ../../../applications/adidemo/demo/../miniweb/include -I ../../../applications/adidemo/demo/../minionvif/include
+AR.............: /opt/goke/ct_uClibc/4.6.1/usr/bin/arm-goke-linux-uclibcgnueabi-ar
+ARFLAGS........: crs
+ARFLAGS_USER...:
+LD.............: /opt/goke/ct_uClibc/4.6.1/usr/bin/arm-goke-linux-uclibcgnueabi-gcc
+LDFLAGS........: -Wall -I../../../install/arm11-gcc-uClibc-linux-GK710XS/include -I /opt/goke/ct_uClibc/4.6.1/usr/arm-goke-linux-uclibcgnueabi/sysroot/usr/include -DRELEASE_MAJOR= -DRELEASE_MINOR= -DRELEASE_PATCH= -L../../../install/arm11-gcc-uClibc-linux-GK710XS/lib
+LDFLAGS_USER...: -lrt -L ../../../linux/rootfs/oss-prebuild-uClibc/freetype-2.4.11/lib -lfreetype -L ../../../linux/rootfs/oss-prebuild-uClibc/zlib-1.2.7/lib -lz

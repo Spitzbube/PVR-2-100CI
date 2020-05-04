@@ -1,0 +1,375 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script src="js/jquery.js" type="text/javascript"></script>
+	<title>IPCarema</title>
+	<style type="text/css">
+		body
+		{
+			font-family:Arial, Helvetica, sans-serif;
+			font-size:12px;
+			background-color:#303030;/*ededef;/*303030;/*666666;/*3c434b;*/
+			/*background:url('image/view_bg.png') repeat-x;*/
+		}
+		#View_Tips
+		{
+			vertical-align: middle;
+			text-align: center;
+			position: absolute;
+			font-family:Arial, Helvetica, sans-serif;
+			font-size:18px;
+			top: 45%;
+			left: 35%;
+			visibility: visible;
+		}
+		#Video
+		{
+			float:left;
+			border:1px solid #000;
+			margin-right:10px;
+			margin-top:5px;
+			border-radius:4px;
+			-moz-border-radius:4px;
+			-webkit-border-radius:4px;
+		}
+	</style>
+	<script type="text/javascript">
+		var serverIp =window.location.host;
+		var dvr_url = "http://" + serverIp;
+		var _obj;
+		var _cbrbpsMin;
+		var _cbrbpsMax;
+		$(document).ready(function()
+		{
+			ocx_check();
+		});
+		function ocx_check()
+		{
+			ieActivex =document.getElementById("ActiveX");
+			var isInit=true;
+			try{
+				var _version=ieActivex.GetVersion();
+			}
+			catch(e){
+				isInit=false;
+			}
+			if(!isInit)
+			{
+				document.getElementById("View_Tips").style.display="";
+				document.getElementById("View_object").style.display="none";
+				//document.getElementById("Tips").innerText=str_tip;
+				$("#Video").css("background-color","#40474f");
+				var btn=false;
+				timer=setInterval(function(){
+					if(!btn){
+						$('#Tips').css('color','#E6AF14');
+						btn=true;
+					}
+					else{
+						$('#Tips').css('color','#666');
+						btn=false;
+					}
+				},500);
+				_ocx_check=false;
+			}
+			else if(_version<'1603211618'){
+				document.getElementById("View_Tips").style.display="";
+				document.getElementById("View_object").style.display="none";
+				//document.getElementById("Tips").innerText=str_tips;
+				$("#Video").css("background-color","#40474f");
+				var btn=false;
+				timer=setInterval(function(){
+					if(!btn){
+						$('#Tips').css('color','#F00');
+						btn=true;
+					}
+					else{
+						$('#Tips').css('color','#666');
+						btn=false;
+					}
+				},500);
+				_ocx_check= false;
+			}
+			else{
+				document.getElementById("View_Tips").style.display="none";
+				document.getElementById("View_object").style.display="";
+				$("#Video").css("background-color","#FFF");
+				show_main_preview();
+				_ocx_check= true;
+			}
+		}
+		//视频预览
+		function show_main_preview()
+		{
+			//close_all_view();
+			$("#select_stream").val("0");
+			//view_stream_change("select_stream");
+			//$("#img_snashot").show();
+			view_main=document.getElementById("ActiveX");
+			if(view_main != undefined){
+				_obj=view_main;
+				//Set_ocx_language('6');
+				setTimeout("CONNECT()",100);
+			}
+			//_resolution=0
+			//_menuctr=0;
+			Rate();
+			//getresolution();
+		}
+		function CONNECT()
+		{
+			try{
+				var ret=_obj.InitPlugin();
+				var ret1=_obj.ConnectToBoard(serverIp, 1234);
+				//if(_obj.id=='ActiveX')
+				ret1=_obj.SetIpcStreamId(0);
+				view_stream_change();
+				//else
+				//	ret1=_obj.SetIpcStreamId(1);
+			}catch(e){}
+		}
+		//码率获取
+		function Rate()
+		{
+			iCount=setInterval("getrate()",1000);
+		}
+		function getrate()
+		{
+			try{
+				if(view_main!=undefined)
+						rate=view_main.GetRate();
+				else if(view_image_basic!=undefined)
+						rate=view_image_basic.GetRate();
+				else
+					return;
+			//if(isIE())
+			var str="码率："+rate+"kbps/s";
+			document.getElementById("lb_rate").innerText=str;
+			//else
+			//	document.getElementById("lb_malv").textContent=str_rate+"："+rate+"kbps/s";
+			}catch(e){}
+		}
+		//设置码率
+		function Set_Rate()
+		{
+			var id =$('#select_stream').val();
+			var h264_cbrAvgBps = $('#stream_rate').val();
+			var stream_data = '{"h264_cbrAvgBps":'+ h264_cbrAvgBps+
+			',"id":'+ id +'}';
+			$.ajax({
+					type:'PUT',
+					url:dvr_url + '/video',
+					dataType:'json',
+					data:stream_data,
+					async:false,
+					beforeSend : function(req ){
+					},
+					success:function(data){
+						if(data.statusCode == 0){
+							alert("设置成功");
+						}
+					},
+					error:function(a,b,c){
+						if(a.status == 401){}
+						else{}
+						alert("设置失败");			}
+				})
+		}
+		function check_rate(id)
+		{
+			bitrate_change_stream(id,_cbrbpsMin,_cbrbpsMax);
+		}
+		function bitrate_change_stream(id,min_,max_)
+		{
+			var inbox=document.getElementById(id);
+			var str=inbox.value;
+			if(str=="")
+				inbox.value=min_;
+			else if(Number(str)>max_){
+				inbox.value=max_;
+			}
+			else if(Number(str)<min_){
+				inbox.value=min_;
+			}
+			else{}
+		}
+		//码流选择
+		function view_stream_change()
+		{
+			var streamId=$("#select_stream").val();
+			_resolution=streamId;		
+			$.ajax({
+				type:"GET",
+				url:dvr_url + '/video',
+				data: "streamId=" + streamId,
+				dataType:"json",
+				beforeSend : function(req){
+				},
+				success:function(data){
+					$('#stream_rate').val(data.h264_cbrAvgBps);
+					_cbrbpsMax=data.h264_cbrAvgBpsProperty.max;
+					_cbrbpsMin=data.h264_cbrAvgBpsProperty.min;
+					if(_cbrbpsMin<=0)
+						_cbrbpsMin=100;
+					}
+				});
+			try
+			{
+				if(_obj.object != null||_obj.nodeName=='EMBED'){
+					_obj.SetIpcStreamId(streamId);
+					//getresolution();
+				}
+			}
+			catch(e)
+			{
+				alert("请确认网页播放插件成功安装！！！");
+			}
+			
+		}
+		//抓图
+		function Snapshot()
+		{
+			$.ajax({
+				type:'GET',
+				url:dvr_url + '/snapshotjpg',
+				//dataType:'json',			// it will check json format very strictly.=>Fail to capture.
+				data: "snapshotjpg",
+				async:false,
+				beforeSend : function(req ) 
+				{
+				},
+				success:function(data)
+				{
+					var url = "http://" + serverIp + "/Download/web.jpg";
+					window.location.href=url;
+				},
+				error:function(a,b,c)
+				{
+					if(a.status == 401){}
+					else{}
+					alert("抓图失败");
+				}
+			})
+		}
+		//录像
+		//H264
+		var h264_status=true;
+		function h264_btn_change()
+		{
+			if(h264_status)
+			{
+				document.getElementById("h264").innerText="停止H264录像";
+				h264_status=false;
+				ret = _obj.SetRecordType(0);
+				var ret = _obj.Record(true);
+			}
+			else 
+			{
+				document.getElementById("h264").innerText="开始H264录像";
+				h264_status=true;
+				var ret = _obj.Record(false);
+			}
+		}
+		//AVI
+		var avi_status=true;
+		function avi_btn_change()
+		{
+			if(avi_status)
+			{
+				document.getElementById("avi").innerText="停止AVI录像";
+				avi_status=false;
+				ret = _obj.SetRecordType(1);
+				var ret = _obj.Record(true);
+			}
+			else 
+			{
+				document.getElementById("avi").innerText="开始AVI录像";
+				avi_status=true;
+				var ret = _obj.Record(false);
+			}
+		}	
+	</script>
+</head>
+<body>
+	<div style=" width:1285px; height:615px; background-color:#ededef; border:1px solid; border-radius:15px; margin-left:auto; margin-right:auto; margin-top:3%">
+		<div style="width:100%; height:25px;">
+			<div style="width:200px; margin-left:10px; margin-top:5px;">
+				<label id="lb_rate" style="margin-left:10px; width:100px;"></label>
+			</div>
+		</div>
+		<div style="width:100%; height:576px; margin-top:-10px">
+			<div id="Video" style="width:1024px; height:100%; margin-top:auto; margin-bottom:auto; margin-left:10px; margin-right:5px; float:left;">
+				<div id="View_Tips" style="display:none;">
+					<a id="Tips" style="color:#666; text-decoration:underline;" href="Download/IPCSetup.exe">请下载并安装播放插件!</a>
+				</div>
+				<div id="View_object" style="width:100%; height:100%;">
+					<object id="ActiveX" width="100%;" height="100%" classid="clsid:02A9E28E-AE20-4692-A22B-C1113730F769"></object>
+				</div>
+			</div>
+			<div style="width:220px; height:100%; margin-left:5px; margin-right:10px; margin-top:1px; border:1px #00F solid; border-radius:4px; -moz-border-radius:4px; -webkit-border-radius:4px; float:left;">
+				<table style="margin-top:15px; margin-left:5px;">
+					<tr>
+						<td align="right">码流</td>
+						<td>
+							<select id="select_stream" style="width:100px; height:19px;" onchange="view_stream_change()">
+								<option value="0">主码流</option>
+								<option value="1">子码流</option>
+								<!-- <option value="2">辅码流</option> -->
+							</select>
+						</td>
+					</tr>
+					<!--
+					<tr>
+						<td align="right">码率</td>
+						<td>
+							<table>
+								<tr>
+									<td>
+										<input type="text" id="stream_rate" style="width:100px; height:15px;" onKeyUp="value=value.replace(/[^\d]/g,'')" onBlur="check_rate(this.id)" />
+									</td>
+									<td>
+										<button id="set_rate" onclick="Set_Rate()">设置</button>
+									</td>
+								</tr>	
+							</table>
+						</td>
+					</tr>
+					-->
+					<tr>
+						<td colspan="2" align="center">
+							<button id="btn_sna" onclick="Snapshot()">抓图</button>
+						</td>
+					</tr>
+					<!--
+					<tr>
+						<td colspan="2" align="center">
+							<button type="button" onclick="recordH264(true)">开始H264录像</button>
+							<button type="button" onclick="recordH264(false)">停止H264录像</button>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2" align="center">
+							<button type="button" onclick="recordAVI(true)">开始 A V I录像</button>
+							<button type="button" onclick="recordAVI(false)">停止 A V I录像</button>
+						</td>
+					</tr>
+					-->
+					<tr>
+						<td colspan="2" align="center">
+							<button id="h264" onclick="h264_btn_change()">开始H264录像</button>
+						</td>
+					</tr>
+					<!--
+					<tr>
+						<td colspan="2" align="center">
+							<button id="avi" onclick="avi_btn_change()">开始AVI录像</button>
+						</td>
+					</tr>
+					-->
+			</table>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

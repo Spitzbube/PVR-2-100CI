@@ -1,0 +1,3 @@
+# Aliases extracted from modules themselves.
+alias i2c:ep952 media
+alias i2c:gk_vi0 sensor

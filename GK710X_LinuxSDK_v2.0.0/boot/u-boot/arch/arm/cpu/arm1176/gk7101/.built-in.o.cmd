@@ -1,0 +1,1 @@
+cmd_arch/arm/cpu/arm1176/gk7101/built-in.o :=  /opt/crosstool_4.7.2/usr/bin/arm-goke-linux-gnueabi-ld.bfd     -r -o arch/arm/cpu/arm1176/gk7101/built-in.o arch/arm/cpu/arm1176/gk7101/lowlevel_init.o arch/arm/cpu/arm1176/gk7101/init.o arch/arm/cpu/arm1176/gk7101/reset.o arch/arm/cpu/arm1176/gk7101/timer.o 

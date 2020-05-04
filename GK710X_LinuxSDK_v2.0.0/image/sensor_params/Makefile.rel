@@ -1,0 +1,110 @@
+################################################################################
+################################################################################
+##
+## Makefile -- makefile for make sensor binary
+##
+## (C) Copyright 2012-2016 by Goke Microelectronics Co.,Ltd
+##
+## Mandatory settings:
+##
+## o TOPDIR      = the toplevel directory (using slashes as path separator)
+## o TARGET      = the machine qualifier to generate code for
+##
+################################################################################
+################################################################################
+
+
+################################################################################
+# sensor config files
+################################################################################
+
+################################################################################
+# source files
+################################################################################
+
+
+################################################################################
+# define define user cc flags
+################################################################################
+
+
+################################################################################
+# define define user ld flags
+################################################################################
+
+
+################################################################################
+# define local file to be installed
+################################################################################
+LOCAL_FILE += configs/color_reg.bin
+LOCAL_FILE += configs/color_matrix.bin
+LOCAL_FILE += configs/lens_shading.bin
+
+LOCAL_FILE += configs/sensors/imx122.bin 
+LOCAL_FILE += configs/sensors/imx291.bin 
+LOCAL_FILE += configs/sensors/ov2710.bin 
+LOCAL_FILE += configs/sensors/ov9750.bin 
+LOCAL_FILE += configs/sensors/ov9732.bin 
+LOCAL_FILE += configs/sensors/ar0237.bin 
+LOCAL_FILE += configs/sensors/jxh42.bin 
+LOCAL_FILE += configs/sensors/jxh61.bin 
+LOCAL_FILE += configs/sensors/bg0701.bin 
+LOCAL_FILE += configs/sensors/ar0130.bin 
+LOCAL_FILE += configs/sensors/sc1035.bin 
+LOCAL_FILE += configs/sensors/sc1135.bin 
+LOCAL_FILE += configs/sensors/sc1045.bin 
+LOCAL_FILE += configs/sensors/gc1024.bin 
+LOCAL_FILE += configs/sensors/mis1002.bin 
+LOCAL_FILE += configs/sensors/sc2035.bin
+LOCAL_FILE += configs/sensors/sc1145.bin 
+LOCAL_FILE += configs/sensors/imx323.bin 
+LOCAL_FILE += configs/sensors/sc2045.bin 
+LOCAL_FILE += configs/sensors/sc2135.bin 
+
+################################################################################
+# define library used
+################################################################################
+
+
+################################################################################
+# define target name
+################################################################################
+
+
+################################################################################
+# define user targets
+################################################################################
+
+default: install
+
+clean: force
+
+build:  force
+
+install: build install-config-files
+
+install-config-files:
+	@mkdir $(ROOTFS_TOP)/etc/sensors -p
+	@cp $(LOCAL_FILE) $(ROOTFS_TOP)/etc/sensors/
+
+headers:
+
+all: clean build install
+
+################################################################################
+# include internal definitions and rules
+################################################################################
+
+  RELEASE_SUBDIR = $(SUBDIR)
+  RELEASE_FILES += Makefile
+  RELEASE_FILES += Makefile.rel
+  RELEASE_FILES += $(LOCAL_FILE)
+
+release: release-files $(DIRECTORIES:%=subdir-release-%) info
+
+doc: $(DIRECTORIES:%=subdir-doc-%)
+
+info: force
+	@echo $(DIRECTORIES)
+
+

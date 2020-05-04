@@ -1,0 +1,2 @@
+memcpy.o: memcpy.S \
+ /mnt/gm8135_share/work/GK710X_LinuxSDK_v2.0.0/boot/u-boot/include/asm/assembler.h

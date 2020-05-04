@@ -1,0 +1,7 @@
+serial.c:117:13:0	0	static
+serial.c:59:5:serial_init	16	static
+serial.c:81:6:serial_putc	8	static
+serial.c:89:6:serial_puts	8	static
+serial.c:96:5:serial_getc	16	static
+serial.c:101:5:serial_tstc	8	static
+serial.c:106:6:serial_setbrg	16	static

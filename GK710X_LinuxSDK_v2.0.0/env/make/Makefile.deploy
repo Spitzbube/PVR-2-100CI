@@ -1,0 +1,89 @@
+################################################################################
+################################################################################
+##
+## Makefile.rules.deploy -- special rules for linux host environment
+##
+## (C) Copyright 2012-2015 by Goke Microelectronics Co.,Ltd
+##
+## Version: $Id$
+##
+## This include makefile defines internal make rules to clean, build, install
+## etc.
+##
+################################################################################
+################################################################################
+
+
+###############################################################################
+#
+# environment deploy rules
+#
+###############################################################################
+deploy: deploy-env deploy-toolchain deploy-rootfs
+
+	@$(ECHO) ----------------------------------------------------------------
+	@$(ECHO) DO please source env/build_env.sh to make deployment effective !
+	@$(ECHO) ----------------------------------------------------------------
+	@$(ECHO) ""
+
+deploy-env: deploy-check
+	@$(ECHO) setting environment...
+ifeq ($(shell grep -e bash_aliases ~/.bashrc), )
+	@$(ECHO) .bash_aliases not included by .bashrc, add now ...
+	@$(ECHO) "if [ -f ~/.bash_aliases ]; then" >> $(HOME)/.bashrc
+	@$(ECHO) "	. ~/.bash_aliases"         >> $(HOME)/.bashrc
+	@$(ECHO) "fi"                              >> $(HOME)/.bashrc
+endif
+	@$(ECHO) ""
+	@$(RM) $(HOME)/.bash_aliases
+	@$(ECHO) "#!/bin/bash"                                               >> $(HOME)/.bash_aliases
+	@$(ECHO) source $(SDK_TOP)/env/build_env.sh                          >> $(HOME)/.bash_aliases
+ifeq ($(shell [ -f $(PWD)/env/temp/headers/config.h ] && echo y), y)
+	@$(RM)   $(PWD)/env/temp/headers/config.h -rf
+endif
+	@$(ECHO) Environment for [$(DECODER) Family] finished setting
+	@$(ECHO) ""
+ifeq ($(BOARD), GK7101_EVM)
+	@ln -sf $(PWD)/env/temp/headers/config-$(DDR_MEMORY_SIZE).h $(PWD)/env/temp/headers/config.h
+endif
+
+deploy-toolchain: deploy-check deploy-toolchain-glibc deploy-toolchain-uClibc
+ifeq ($(BOARD), GK7101_EVM)
+	@$(ECHO) ""
+	@$(ECHO) install toolchain...arm-elf
+	@tar xf $(CT_ARM_ELF) -C $(CT_DIR) --checkpoint-action=dot
+	@$(ECHO) ""
+endif
+deploy-toolchain-glibc: deploy-check
+	@$(DELETE) $(DELETEFLAGS)  $(TOOLCHAIN_PARENT_DIRECTORY)/ct_glibc
+	@mkdir -p $(TOOLCHAIN_PARENT_DIRECTORY)/ct_glibc
+	@$(ECHO) ""
+	@$(ECHO) install toolchain...arm-linux-glibc
+	@tar xf $(CT_TARBALL_GLIBC) -C $(TOOLCHAIN_PARENT_DIRECTORY)/ct_glibc --checkpoint-action=dot
+	@$(ECHO) ""
+deploy-toolchain-uClibc: deploy-check
+	@$(DELETE) $(DELETEFLAGS)  $(TOOLCHAIN_PARENT_DIRECTORY)/ct_uClibc
+	@mkdir -p $(TOOLCHAIN_PARENT_DIRECTORY)/ct_uClibc
+	@$(ECHO) ""
+	@$(ECHO) install toolchain...arm-linux-uClibc
+	@tar xf $(CT_TARBALL_UCLIBC) -C $(TOOLCHAIN_PARENT_DIRECTORY)/ct_uClibc --checkpoint-action=dot
+	@$(ECHO) ""
+
+deploy-rootfs: deploy-check build_fs
+
+deploy-check: force
+	@$(ECHO) ""
+	@$(ECHO) "starting deploying build environment for <linux> host"
+	@$(ECHO) ""
+	@sudo mkdir -p $(ROOTFS_PARENT_DIRECTORY)
+	@sudo chown $(USER):$(USER) $(ROOTFS_PARENT_DIRECTORY) -R
+	@sudo mkdir -p $(TOOLCHAIN_PARENT_DIRECTORY)
+	@sudo chown $(USER):$(USER) $(TOOLCHAIN_PARENT_DIRECTORY) -R
+
+################################################################################
+#
+# rootfs and rootfs image rules
+#
+################################################################################
+
+include $(TOPDIR)/env/make/Makefile.target.rootfs

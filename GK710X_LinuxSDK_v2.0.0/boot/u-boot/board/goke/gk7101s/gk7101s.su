@@ -1,0 +1,10 @@
+gk7101s.c:44:28:gk_hal_init	24	static
+gk7101s.c:63:6:gk_hal_print	8	static
+gk7101s.c:69:5:board_early_init_f	8	static
+gk7101s.c:77:5:gpio_init	8	static
+gk7101s.c:86:5:phy_gpio_init	8	static
+gk7101s.c:97:5:board_init	8	static
+gk7101s.c:112:6:dram_init_banksize	0	static
+gk7101s.c:118:5:dram_init	8	static
+gk7101s.c:132:5:board_eth_init	0	static
+gk7101s.c:139:5:checkboard	8	static

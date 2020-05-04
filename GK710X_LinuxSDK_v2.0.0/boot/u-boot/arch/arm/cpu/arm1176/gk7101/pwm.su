@@ -1,0 +1,8 @@
+pwm.c:120:6:pwm_set_mode	16	static
+pwm.c:129:6:pwm_set_enable	16	static
+pwm.c:114:5:pwm_close	8	static
+pwm.c:100:5:pwm_on_off	8	static
+pwm.c:138:6:pwm_set_divider	16	static
+pwm.c:147:6:pwm_set_control	8	static
+pwm.c:152:6:pwm_set_control1	8	static
+pwm.c:57:5:pwm_set	32	static

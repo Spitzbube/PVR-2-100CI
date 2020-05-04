@@ -1,0 +1,142 @@
+/*
+****************************************************************************
+** \file      /solution/software/applications/adidemo/README
+**
+** \brief     this is abstraction file of operation adidemo.
+**
+** \attention THIS SAMPLE CODE IS PROVIDED AS IS. GOFORTUNE SEMICONDUCTOR
+**            ACCEPTS NO RESPONSIBILITY OR LIABILITY FOR ANY ERRORS OR
+**            OMMISSIONS.
+**
+** (C) Copyright 2012-2013 by GOKE MICROELECTRONICS CO.,LTD
+**
+****************************************************************************
+*/
+
+
+######################################################################
+
+
+Attention: if running occured error, please reboot operating system.
+
+
+#########################  Running All ###############################
+
+
+## Runing all of adidemo.
+    
+    1.Upload driver.
+
+    ==>init.sh --[sensor type]
+
+    example:
+        #init.sh --imx222
+
+    2.Need input command.
+    ==>adidemo -a
+
+
+#######################  Option Running  #############################
+
+
+## Use VLC to preview video.
+
+    1.Upload driver.
+
+    ==>init.sh --[sensor type]
+
+    example:
+        #init.sh --imx222
+
+    2.Fristly, need running rtsp_server and start video.
+    
+    input command:
+
+    ==>rtsp_server &
+    ==>adidemo -m
+    ==>video -IOS0
+    
+    3.Second, use VLC access. 
+
+    In VLC, down CTL + N. Input "rtsp://<IP of board>/stream1" in URL.
+
+    example: rtsp://192.168.10.162/stream1
+
+
+## Run ISP
+    
+    1.Input command when video is start.
+
+    ==>isp -IOS
+
+## Run osd
+    
+    1.Input command when video is start.
+
+    ==>osd -IO
+
+    2.More operation, please input command.
+
+    ==>osd -h
+
+## Run PDA
+
+    1.Need initalize OSD.
+
+    ==>osd -IO
+
+    2.Running PDA.
+
+    ==>pda -I 0
+    ==>pda -OS
+
+    3.More operation, please input command.
+
+    ==>pda -h
+
+## Run IR
+
+    1.Running IR.
+
+    ==>ir open <node path>
+    example:
+        ir open /dev/input/event0
+
+    2.More operation, please input command.
+
+    ==>ir help
+
+## Runing audio
+
+    1. Initalize audio.
+
+    ==>audio -I
+
+    2. Running audio.
+
+    ==>audio -L
+
+    3.More operation, please input command.
+
+    ==>audio -h
+
+## Running PWM
+
+    1. Initalize PWM
+
+    ==>pwm -I -O 0 -m 0 -s 1000 -d 500
+
+    2. Start PWM.
+
+    ==>pwm -S
+    
+    3.More operation, please input command.
+
+    ==>pwm -h
+
+## Running PM
+
+    1.More operation, please input command.
+
+    ==>pm -h
+

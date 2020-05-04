@@ -1,0 +1,2 @@
+ctype.o: ctype.c \
+ /mnt/gm8135_share/work/GK710X_LinuxSDK_v2.0.0/boot/u-boot/include/linux/ctype.h
