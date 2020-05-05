@@ -23,7 +23,8 @@ include $(TOPDIR)/env/make/Makefile.config
 # project specific settings
 ################################################################################
 
-  DIRECTORIES += u-boot
+#  DIRECTORIES += u-boot
+  DIRECTORIES += startup
 
 ################################################################################
 # include library specific targets ( if available )
@@ -36,15 +37,13 @@ include $(TOPDIR)/env/make/Makefile.config
 
 default: all
 
-clean:
-	@make -C u-boot distclean
+clean: $(DIRECTORIES:%=subdir-clean-%)
 
-build:
-	@make -C u-boot gk7101
+build: $(DIRECTORIES:%=subdir-build-%)
 
-headers:
+headers: $(DIRECTORIES:%=subdir-headers-%)
 
-install:
+install: $(DIRECTORIES:%=subdir-install-%)
 
 depend:
 

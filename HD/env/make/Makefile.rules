@@ -83,7 +83,7 @@ ifdef PROFILE
 else
   ifndef NODEBUG
     build-objects: $(BUILD_OBJECTS)
-    build-library: $(BUILD_LIBRARY) $(BUILD_SHARED_LIBRARY)
+    build-library: $(BUILD_LIBRARY) $(BUILD_DEBUG_LIBRARY)
 
 #   ifndef NOELFDUMP
 #     build-program: $(BUILD_PROGRAM) $(BUILD_DEBUG_PROGRAM) $(BUILD_ELFDUMP_PROGRAM) $(BUILD_DEBUG_ELFDUMP_PROGRAM) build-debugger-script
@@ -94,7 +94,7 @@ else
 #   endif
   else
     build-objects: $(BUILD_OBJECTS)
-    build-library: $(BUILD_LIBRARY) $(BUILD_SHARED_LIBRARY)
+    build-library: $(BUILD_LIBRARY)
     ifndef NOELFDUMP
       build-program: $(BUILD_PROGRAM) $(BUILD_ELFDUMP_PROGRAM)
     else
@@ -465,12 +465,12 @@ ifdef PROFILE
 else
     ifndef NODEBUG
       install-objects: $(INSTALL_OBJECTS)
-      install-library: $(INSTALL_LIBRARY) $(INSTALL_SHARED_LIBRARY)
+      install-library: $(INSTALL_LIBRARY) $(INSTALL_DEBUG_LIBRARY)
       install-program: $(INSTALL_PROGRAM)
       install-bin: $(INSTALL_BIN)
     else
       install-objects: $(INSTALL_OBJECTS)
-      install-library: $(INSTALL_LIBRARY) $(INSTALL_SHARED_LIBRARY)
+      install-library: $(INSTALL_LIBRARY)
       install-program: $(INSTALL_PROGRAM)
       install-bin: $(INSTALL_BIN)
     endif

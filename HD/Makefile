@@ -25,17 +25,17 @@ include $(TOPDIR)/env/make/Makefile.config
 
 #  DIRECTORIES += linux
 
-  DIRECTORIES += adi
+#  DIRECTORIES += adi
 
-  DIRECTORIES += image
+#  DIRECTORIES += image
 
-  DIRECTORIES += subsystem
-
-  DIRECTORIES += applications
+#  DIRECTORIES += subsystem
 
   DIRECTORIES += boot
 
-  DIRECTORIES += tools
+  DIRECTORIES += applications
+
+#  DIRECTORIES += tools
 
 ################################################################################
 # define user targets

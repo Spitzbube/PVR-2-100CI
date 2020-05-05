@@ -8,16 +8,16 @@
 ################################################################################
 ################################################################################
 
-release-software-subsystem-acodec          = y
+release-software-subsystem-acodec          = n
 release-software-subsystem-onvif           = n
 release-software-subsystem-rtsp            = n
-release-software-subsystem-osd             = y
+release-software-subsystem-osd             = n
 release-software-subsystem-web             = n
-release-software-subsystem-audio_process   = y
-release-software-subsystem-lcd_drv         = y
+release-software-subsystem-audio_process   = n
+release-software-subsystem-lcd_drv         = n
 
 release-software-applications-ctlserver    = n
 release-software-applications-sample       = y
-release-software-applications-adidemo      = y
+release-software-applications-adidemo      = n
 release-software-applications-onvifserver  = n
 

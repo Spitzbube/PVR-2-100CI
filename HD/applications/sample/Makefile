@@ -25,11 +25,13 @@ include $(TOPDIR)/env/make/Makefile.config
 # project specific settings
 ################################################################################
 
-DIRECTORIES += venc
+#DIRECTORIES += venc
 
-DIRECTORIES += vout
+#DIRECTORIES += vout
 
-DIRECTORIES += audio
+#DIRECTORIES += audio
+
+DIRECTORIES += hello_world
 
 ################################################################################
 # include library specific targets ( if available )

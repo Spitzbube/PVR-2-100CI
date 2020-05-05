@@ -1,0 +1,114 @@
+################################################################################
+################################################################################
+##
+## Makefile -- RealView specific ARM11 settings
+##
+## (C) Copyright 2012-2013 by Goke Microelectronics Co.,Ltd
+##
+## This include makefile defines internal make variables to support
+## the cross tool chain for ARM11 RealView running under win32.
+##
+################################################################################
+################################################################################
+
+
+SDKHOME-arm11-realview  ?= SDKHOME-arm11-realview-UNDEFINED
+SDKHOME                  = $(SDKHOME-arm11-realview)
+SDKHOME3-arm11-rvheader ?= SDKHOME-arm11-rvheader-UNDEFINED
+SDKHOME3                 = $(SDKHOME-arm11-rvheader)
+TARGET_SUBDIR         = M-$(TARGET)
+
+  VARIABLES += SDKHOME
+  VARIABLES += TARGET_SUBDIR
+
+OBJECT_EXT  = .o
+LIBRARY_EXT = .a
+PROGRAM_EXT = .axf
+DLL_EXT     = .dll
+
+  VARIABLES += OBJECT_EXT
+  VARIABLES += LIBRARY_EXT
+  VARIABLES += PROGRAM_EXT
+  VARIABLES += DLL_EXT
+
+PROGRAM_LOAD_ADDRESS ?= $(ARM_PROGRAM_LOAD_ADDRESS)
+PROGRAM_STARTUP      ?= $(INSTALL_LIBRARY_DIR)/libstartup$(LIBRARY_DEBUG_EXT)
+
+  CPU_MODEL = --cpu ARM1176JZF-S
+  FPU_MODEL = --fpu VFPv2
+
+CC         = $(SDKHOME)/armcc.exe
+CCFLAGS    = --arm
+CCFLAGS   += $(CPU_MODEL)
+CCFLAGS   += $(FPU_MODEL)
+CCFLAGS   += --no_unaligned_access
+CCFLAGS   += --c90
+CCFLAGS   += -O2
+CCFLAGS   += -Otime
+CCFLAGS   += -I$(SDKHOME3)
+CC_out     = -o$(SPACE)
+
+  VARIABLES += CC
+  VARIABLES += CCFLAGS
+  VARIABLES += CCDEBUG
+  VARIABLES += CCFLAGS_C
+  VARIABLES += CCFLAGS_AS
+  VARIABLES += CC_out
+  VARIABLES += CCFLAGS_USER
+  
+AR       = $(SDKHOME)/armar.exe
+ARFLAGS  = --create -r -c -s -v
+AR_out   = $(SPACE)
+
+  VARIABLES += AR
+  VARIABLES += ARFLAGS
+  VARIABLES += AR_out
+  VARIABLES += ARFLAGS_USER
+
+LD         = $(SDKHOME)/armlink.exe
+LDFLAGS   += $(CPU_MODEL)
+LDFLAGS   += $(FPU_MODEL)
+LDFLAGS   += --datacompressor off
+LDFLAGS   += --callgraph
+LDFLAGS   += --info totals,sizes,unused,libraries,inline,debug,common,stack,summarystack
+LDFLAGS   += --list $(BUILD_PROGRAM:%$(PROGRAM_EXT)=%.txt)
+LDFLAGS   += --strict
+LDFLAGS   += --libpath $(SDKHOME-arm11-rvheader)/../../lib
+LDFLAGS   += --userlibpath $(BUILD_LIBRARY_SUBDIR)
+LDFLAGS   += --userlibpath $(INSTALL_LIBRARY_DIR)
+ifeq ($(CODE_SEGMENT_READONLY),1)
+  LDFLAGS += --startup ARM1176_Start
+  LDFLAGS += --entry ARM1176_Start
+  LDFLAGS += --scatter $(TOPDIR)/env/make/rvds-rocode.scat
+  LDFLAGS += --predefine="-DPROGRAM_LOAD_ADDRESS=$(PROGRAM_LOAD_ADDRESS)"
+else
+  LDFLAGS += --ro-base $(PROGRAM_LOAD_ADDRESS)
+  LDFLAGS += --first ARM1176_Start
+  LDFLAGS += --startup ARM1176_Start
+  LDFLAGS += --entry ARM1176_Start
+endif
+LDDEBUG    = --debug
+LDDEBUG   += --bestdebug
+LD_out     = --output $(SPACE)
+LD_crt     = $(PROGRAM_STARTUP)
+LD_group   =
+LD_grend   =
+
+  VARIABLES += LD
+  VARIABLES += LDFLAGS
+  VARIABLES += LDDEBUG
+  VARIABLES += LD_out
+  VARIABLES += LD_crt
+  VARIABLES += LD_group
+  VARIABLES += LD_grend
+  VARIABLES += LDFLAGS_USER
+
+ELFDUMP      = $(SDKHOME)/fromelf.exe
+ELFDUMPFLAGS = --text -v -c -d -e -g -r -s -t -y -z
+ELFDUMP_out  = --output $(SPACE)
+
+  VARIABLES += ELFDUMP
+  VARIABLES += ELFDUMPFLAGS
+  VARIABLES += ELFDUMP_out
+  VARIABLES += ELFDUMPFLAGS_USER
+
