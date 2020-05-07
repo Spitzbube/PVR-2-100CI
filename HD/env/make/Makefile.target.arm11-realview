@@ -45,7 +45,9 @@ CCFLAGS   += --no_unaligned_access
 CCFLAGS   += --c90
 CCFLAGS   += -O2
 CCFLAGS   += -Otime
+CCFLAGS   += $(INSTALL_INCLUDE_DIRECTORIES:%=-I%)
 CCFLAGS   += -I$(SDKHOME3)
+CCDEBUG    = --debug -D__DEBUG__=1 -O0
 CC_out     = -o$(SPACE)
 
   VARIABLES += CC

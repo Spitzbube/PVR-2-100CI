@@ -1,9 +1,9 @@
 ################################################################################
 ################################################################################
 ##
-## Makefile -- makefile for top level modules.
+## Makefile -- Makefile for ADI library
 ##
-## (C) Copyright 2012-2013 by Goke Microelectronics Co.,Ltd
+## (C) Copyright 2012-2015 by Goke Microelectronics Co.,Ltd
 ##
 ## Version: $Id$
 ##
@@ -11,41 +11,29 @@
 ##
 ## o TOPDIR      = the toplevel directory (using slashes as path separator)
 ## o TARGET      = the machine qualifier to generate code for
-## o DIRECTORIES = the list of sub directories to build
 ##
 ################################################################################
 ################################################################################
 
-  TOPDIR = .
-  SUBIDR = .
+
+TOPDIR = ..
+SUBDIR = rtos
 
 include $(TOPDIR)/env/make/Makefile.config
 
-  DIRECTORIES += env
+################################################################################
+# project specific settings
+################################################################################
 
-#  DIRECTORIES += linux
-
-  DIRECTORIES += fapi
-
-#  DIRECTORIES += image
-
-#  DIRECTORIES += subsystem
-
-  DIRECTORIES += boot
-
-  DIRECTORIES += rtos
-
-  DIRECTORIES += applications
-
-#  DIRECTORIES += tools
+  DIRECTORIES += stub
 
 ################################################################################
 # define user targets
 ################################################################################
 
-default: headers build install
+default: all
 
-clean: $(DIRECTORIES:%=subdir-clean-%) clean-install-dir
+clean: $(DIRECTORIES:%=subdir-clean-%)
 
 build: $(DIRECTORIES:%=subdir-build-%)
 
@@ -53,35 +41,10 @@ headers: $(DIRECTORIES:%=subdir-headers-%)
 
 install: $(DIRECTORIES:%=subdir-install-%)
 
-depend: $(DIRECTORIES:%=subdir-depend-%)
+depend:
 
-all: clean headers install
+all: clean headers build install
 
-################################################################################
-# include internal definitions and rules
-################################################################################
-
-
-  RELEASE_SUBDIR = $(SUBDIR)
-  RELEASE_FILES += Config.mak
-  RELEASE_FILES += Makefile
-  RELEASE_FILES += ReleaseInfo.txt
-
-release: release-all
-
-release-subdirs: $(DIRECTORIES:%=subdir-release-%)
-
-info: force	@echo $(DIRECTORIES)
-
-
-release-all:
-#	@$(SVN) update
-	@$(SUBMAKE) release-clean
-	@$(SUBMAKE) release-info
-	@$(SUBMAKE) release-files
-	@$(SUBMAKE) release-subdirs
-	@$(SUBMAKE) release-bz2
-	@$(SUBMAKE) release-remove-dir
 
 include $(TOPDIR)/env/make/Makefile.rules
 
@@ -123,3 +86,4 @@ subdir-doc-%:
 	@$(NEWLINE)
 	@$(ECHO) $(ECHOPREFIX) Submaking doc [$(SUBDIR)/$(@:subdir-doc-%=%)] for target [$(TARGET)]
 	@$(SUBMAKE) -C $(@:subdir-doc-%=%) doc TARGET=$(TARGET)
+

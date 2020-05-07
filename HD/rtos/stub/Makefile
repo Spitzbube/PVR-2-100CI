@@ -16,19 +16,41 @@
 ################################################################################
 
 
-TOPDIR = ..
-SUBDIR = adi
+TOPDIR = ../..
+SUBDIR = rtos/stub
 
 include $(TOPDIR)/env/make/Makefile.config
 
-DEVMODE = $(shell [ -f Makefile.dev ] && echo y)
+################################################################################
+# project specific settings
+################################################################################
 
-ifeq ($(DEVMODE), y)
-  include Makefile.dev
-else
-  include Makefile.rel
-endif
+  NODEBUG = 1
+
+  SOURCES += rtos_kernel.c
+  SOURCES += stub_init.c
+  
+  HEADERS += rtos_kernel.h
+
+  LIBRARY = librtosstub
+  HEADER_SUBDIR = rtos
+
+################################################################################
+# define user targets
+################################################################################
+
+default: all
+
+clean: clean-library
+
+build: build-library
+
+headers: install-headers
+
+install: build install-library
+
+all: clean build install
+
 
 include $(TOPDIR)/env/make/Makefile.rules
 
--include $(TOPDIR)/env/make/Makfile.dep

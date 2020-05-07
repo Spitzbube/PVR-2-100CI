@@ -40,7 +40,7 @@ SOURCES += hello_world.c
 # define library used
 ################################################################################
 
-#LIBRARIES  = adi image
+LIBRARIES  = fapi rtosstub
 
 ################################################################################
 # define target name
@@ -56,7 +56,7 @@ default: install
 
 clean: clean-objects clean-all
 
-build:  build-objects build-program
+build:  build-objects build-program build-elfdump-program
 
 install: build install-program
 

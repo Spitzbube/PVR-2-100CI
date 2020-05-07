@@ -1,9 +1,11 @@
 ################################################################################
 ################################################################################
 ##
-## Makefile -- makefile for modules.
+## Makefile -- Makefile for ADI library
 ##
 ## (C) Copyright 2012-2015 by Goke Microelectronics Co.,Ltd
+##
+## Version: $Id$
 ##
 ## Mandatory settings:
 ##
@@ -13,36 +15,40 @@
 ################################################################################
 ################################################################################
 
-  TOPDIR = ../..
-  SUBDIR = boot/startup
+
+TOPDIR = ..
+SUBDIR = fapi
 
 include $(TOPDIR)/env/make/Makefile.config
 
 ################################################################################
-# source files
+# project specific settings
 ################################################################################
 
-  SOURCES += src/arm1176_start.s
-  SOURCES += src/arm1176_tcm.s
-  SOURCES += src/arm1176_vfp_fast.s
-  SOURCES += src/arm1176_mmu.s
-  SOURCES += src/arm1176_retarget.c
-  SOURCES += src/arm1176_stack_heap.c  
-  SOURCES += src/cpu_polling.c
-  
-  CCFLAGS_USER += -DPROGRAM_HEAP_BYTES=0x00200000 
-  CCFLAGS_USER += -DPROGRAM_STACK_BYTES=0x00010000
+  NODEBUG = 1
 
-  HEADERS += src/cpu_polling.h
-  HEADER_SUBDIR = boot
+  SOURCES += drv/gpio/drv_gpio.c
+  SOURCES += drv/timer/drv_timer.c
+  SOURCES += drv/uart/drv_uart.c
+
+  SOURCES += reg/$(DECODER)/reg_gpio.c
+  SOURCES += reg/$(DECODER)/reg_irq_ctrl.c
+  SOURCES += reg/$(DECODER)/reg_uart.c
+
+  SOURCES += sys/sys_services.c
+
+  CCFLAGS_USER += -DINLINE=__inline
   
-  LIBRARY = libstartup
+  HEADERS = $(SOURCES:%.c=%.h)
+
+  LIBRARY = libfapi
+  HEADER_SUBDIR = fapi
 
 ################################################################################
 # define user targets
 ################################################################################
 
-default: install
+default: all
 
 clean: clean-objects clean-library
 
@@ -54,8 +60,6 @@ install: build install-library
 
 all: clean build install
 
-################################################################################
-# include internal definitions and rules
-################################################################################
 
 include $(TOPDIR)/env/make/Makefile.rules
+
