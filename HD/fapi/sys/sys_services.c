@@ -32,10 +32,14 @@ void FAPI_SYS_InvalidateDataCache(int a, int b)
    r2 = a & ~3;
    r3 &= ~3;
    
+#if defined(__GNUC__)
+   asm("mcrr 15, 0, %0, %1, cr6":: "r" (r3), "r" (r2));
+#else
    __asm
    {
       mcrr p15, 0, r3, r2, c6
    }
+#endif
    
    EI(cpu_sr);
 }
@@ -52,11 +56,15 @@ void FAPI_SYS_FlushDataCache(void* a, int b)
    r3 = (int)((char*)a + (b - 1));
    r2 = (int)a & ~3;
    r3 &= ~3; 
-   
+
+#if defined(__GNUC__)
+   asm("mcrr 15, 0, %0, %1, cr12":: "r" (r3), "r" (r2));
+#else
    __asm
    {
       mcrr p15, 0, r3, r2, c12
    }
+#endif
    
    EI(cpu_sr);
 }
@@ -72,10 +80,14 @@ void FAPI_SYS_InvalidateInstructionCache(void* a, int b)
    
    r1 = 0;
    
+#if defined(__GNUC__)
+   asm("mcr 15, 0, %0, cr7, cr5, 0":: "r" (r1));
+#else
    __asm
    {
       mcr p15, 0, r1, c7, c5, 0
    }
+#endif
    
    EI(cpu_sr);
 }
@@ -110,10 +122,15 @@ int FAPI_SYS_IsIrqEnabled(void)
 {
    unsigned my_cpsr;
    
+#if defined(__GNUC__)
+   asm("mrs %0, CPSR": "=r" (my_cpsr));
+#else
    __asm
    {
       mrs my_cpsr, CPSR
    }
+#endif
+
    my_cpsr &= 3 << 6;
    return 1 & ~(my_cpsr >> 7);
 }
@@ -124,10 +141,15 @@ int FAPI_SYS_IsIsrActive(void)
 {
    unsigned my_cpsr;
    
+#if defined(__GNUC__)
+   asm("mrs %0, CPSR": "=r" (my_cpsr));
+#else
    __asm 
    {
       mrs my_cpsr, CPSR
-   }   
+   }
+#endif
+
    my_cpsr &= 0x1F;      
    return ((my_cpsr == 0x10) || (my_cpsr == 0x1F))? 0: 1;
 }

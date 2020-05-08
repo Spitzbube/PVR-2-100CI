@@ -35,6 +35,7 @@
 
   HOST    ?= linux
 
+  TARGET  ?= arm11-gnuarm
   TARGET  ?= arm11-realview
 
   DECODER ?= MB86H60
@@ -117,6 +118,7 @@ TOOLCHAIN_PARENT_DIRECTORY ?= /opt/goke
 
   SDKHOME-arm11-realview   ?= "$(ROOT)/c/PROGRA~1/ARM/RVCT/Programs/3.1/569/win_32-pentium"
   SDKHOME-arm11-rvheader   ?= "$(ROOT)/c/PROGRA~1/ARM/RVCT/Data/3.1/569/include/windows"
+  SDKHOME-arm11-gnuarm     ?= "$(ROOT)/c/PROGRA~1/GNUARM"
 
 ################################################################################
 #

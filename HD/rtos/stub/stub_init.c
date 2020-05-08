@@ -197,12 +197,15 @@ static unsigned RTOS_STUB_DisableIrq(void)
 {
    unsigned my_cpsr, new_cpsr;
    
+#if defined(__GNUC__)
+#else
    __asm
    {
       MRS      my_cpsr, CPSR
       ORR      new_cpsr,my_cpsr,#0xc0
       MSR      CPSR_c,new_cpsr
    }
+#endif
    
    return my_cpsr;
 }
@@ -211,10 +214,13 @@ static unsigned RTOS_STUB_DisableIrq(void)
 /* 21b08720 - complete */
 static void RTOS_STUB_EnableIrq(unsigned my_cpsr)
 {
+#if defined(__GNUC__)
+#else
    __asm
    {
       MSR      CPSR_c,my_cpsr
    }
+#endif
 }
 
 

@@ -22,12 +22,19 @@ include $(TOPDIR)/env/make/Makefile.config
 # source files
 ################################################################################
 
+ifeq ($(TARGET),arm11-realview)
   SOURCES += src/arm1176_start.s
   SOURCES += src/arm1176_tcm.s
   SOURCES += src/arm1176_vfp_fast.s
   SOURCES += src/arm1176_mmu.s
   SOURCES += src/arm1176_retarget.c
-  SOURCES += src/arm1176_stack_heap.c  
+  SOURCES += src/arm1176_stack_heap.c
+endif
+
+ifeq ($(TARGET),arm11-gnuarm)
+  SOURCES += src/arm1176_start-gcc.s
+endif
+
   SOURCES += src/cpu_polling.c
   
   CCFLAGS_USER += -DPROGRAM_HEAP_BYTES=0x00200000 

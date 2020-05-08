@@ -14,8 +14,8 @@
 #
 ################################################################################
 
-TOOL_EXT       ?=
-MAKE            = make.exe
+TOOL_EXT       ?= .exe
+MAKE            = make$(TOOL_EXT)
 MAKEFLAGS      ?=
 MAKEFLAGS_USER  =
 SUBMAKE         = $(MAKE) --no-print-directory TARGET=$(TARGET) REPORT=$(REPORT) MISRA=$(MISRA) DEPEND=$(DEPEND)
