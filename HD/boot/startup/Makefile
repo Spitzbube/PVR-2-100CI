@@ -32,7 +32,10 @@ ifeq ($(TARGET),arm11-realview)
 endif
 
 ifeq ($(TARGET),arm11-gnuarm)
-  SOURCES += src/arm1176_start-gcc.s
+  SOURCES += src/arm1176_start_gcc.s
+  SOURCES += src/arm1176_tcm_gcc.s
+  SOURCES += src/arm1176_mmu_gcc.s
+  SOURCES += src/arm1176_retarget_gcc.c
 endif
 
   SOURCES += src/cpu_polling.c
@@ -57,7 +60,7 @@ build: headers build-objects build-library
 
 headers: install-headers
 
-install: build install-library
+install: build install-library install-gnu-startup
 
 all: clean build install
 
@@ -66,3 +69,12 @@ all: clean build install
 ################################################################################
 
 include $(TOPDIR)/env/make/Makefile.rules
+
+install-gnu-startup:
+
+ifeq ($(TARGET),arm11-gnuarm)
+install-gnu-startup:
+	$(ATSIGN)$(COPY) $(COPYFLAGS) $(BUILD_OBJECT_SUBDIR)/src/arm1176_start_gcc$(OBJECT_EXT) $(INSTALL_LIBRARY_DIR)
+	$(ATSIGN)$(COPY) $(COPYFLAGS) $(BUILD_OBJECT_SUBDIR)/src/arm1176_start_gcc$(OBJECT_DEBUG_EXT) $(INSTALL_LIBRARY_DIR)
+endif
+

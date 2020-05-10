@@ -1,8 +1,9 @@
 
+#include <stdio.h>
+#include <stdlib.h>
 #include "fapi/sys_services.h"
 #include "fapi/drv_gpio.h"
 #include "fapi/drv_uart.h"
-#include "stdio.h"
 
 
 int main()
