@@ -11,19 +11,16 @@
 ################################################################################
 ################################################################################
 
-SDKHOME-arm11-gnuarm ?= SDKHOME-arm11-gnuarm-UNDEFINED
-#SDKHOME               = $(SDKHOME-arm11-gnuarm)
-#SDKHOME               = /opt/goke/ct/$(GCC_VER)/usr
-SDKHOME               = $(CT_DIR)/$(GCC_VER)/usr
-#SDKHOME                = /opt/arm-2011.09
-#TARGET_SUBDIR         = M-$(TARGET)
+SDKHOME-arm11-gcc	 ?= SDKHOME-arm11-gcc-UNDEFINED
+SDKHOME               = $(SDKHOME-arm11-gcc)
+TARGET_SUBDIR         = M-$(TARGET)
 
   VARIABLES += SDKHOME
-#  VARIABLES += TARGET_SUBDIR
+  VARIABLES += TARGET_SUBDIR
 
 OBJECT_EXT  = .o
 LIBRARY_EXT = .a
-PROGRAM_EXT =
+PROGRAM_EXT = .elf
 DLL_EXT     = .so
 SHARED_EXT  = .so
 
@@ -41,23 +38,16 @@ CODE_SEGMENT_READONLY ?= 0
 
 #PROGRAM_MEMORY_START ?= $(ARM_PROGRAM_MEMORY_START)
 #PROGRAM_MEMORY_BYTES ?= $(ARM_PROGRAM_MEMORY_BYTES)
-#PROGRAM_STACK_BYTES  ?= $(ARM_PROGRAM_STACK_BYTES)
-#PROGRAM_HEAP_BYTES   ?= $(ARM_PROGRAM_HEAP_BYTES)
-#PROGRAM_LOAD_ADDRESS ?= $(ARM_PROGRAM_LOAD_ADDRESS)
-#ifdef PROFILE
-#PROGRAM_STARTUP      ?= $(INSTALL_LIBRARY_DIR)/libstartup$(LIBRARY_PROFILE_EXT)
-#else
-#PROGRAM_STARTUP      ?= $(INSTALL_LIBRARY_DIR)/libstartup$(LIBRARY_DEBUG_EXT)
-#endif
-
-#CCTARGET   = arm-elf
-#CCTARGET   = arm-none-eabi
-ifeq ($(C_LIBRARY), glibc)
-CCTARGET   = arm-goke-linux-gnueabi
+PROGRAM_STACK_BYTES  ?= $(ARM_PROGRAM_STACK_BYTES)
+PROGRAM_HEAP_BYTES   ?= $(ARM_PROGRAM_HEAP_BYTES)
+PROGRAM_LOAD_ADDRESS ?= $(ARM_PROGRAM_LOAD_ADDRESS)
+ifdef PROFILE
+PROGRAM_STARTUP      ?= $(INSTALL_LIBRARY_DIR)/libstartup$(LIBRARY_PROFILE_EXT)
 else
-CCTARGET   = arm-goke-linux-uclibcgnueabi
+PROGRAM_STARTUP      ?= $(INSTALL_LIBRARY_DIR)/libstartup$(LIBRARY_DEBUG_EXT)
 endif
-#CCTARGET   = arm-none-linux-gnueabi
+
+CCTARGET   = arm-elf
 CC         = $(SDKHOME)/bin/$(CCTARGET)-gcc$(TOOL_EXT)
 CXX        = $(SDKHOME)/bin/$(CCTARGET)-g++$(TOOL_EXT)
 #CCVERSION := $(shell "$(CC)" -dumpversion)
@@ -68,7 +58,20 @@ CXX        = $(SDKHOME)/bin/$(CCTARGET)-g++$(TOOL_EXT)
 #CCFLAGS   += -DBOARDNAME="\"$(BOARDNAME)\""
 #CCFLAGS   += -DBOARD_INCLUDE_FILE="\"boards/$(BOARDNAME).h\""
 #CCFLAGS   += -D$(DECODER)
+CCFLAGS    = -mcpu=arm1176jzf-s
+CCFLAGS   += -O2
+CCFLAGS   += -fno-delete-null-pointer-checks
+CCFLAGS   += -fno-tree-vrp
+CCFLAGS   += -marm
+CCFLAGS   += -mabi=apcs-gnu
+CCFLAGS   += -mfpu=fpa
+CCFLAGS   += -mthumb-interwork
+CCFLAGS   += -mlittle-endian
+CCFLAGS   += -funsigned-char
 CCFLAGS   += -Wall
+CCFLAGS   += -DPROGRAM_STACK_BYTES=$(PROGRAM_STACK_BYTES)
+CCFLAGS   += -DPROGRAM_HEAP_BYTES=$(PROGRAM_HEAP_BYTES)
+CCFLAGS   += $(INSTALL_INCLUDE_DIRECTORIES:%=-I%)
 
 ifeq ($(CODE_SEGMENT_READONLY),1)
 CCFLAGS     += -DCODE_SEGMENT_READONLY=$(CODE_SEGMENT_READONLY)
@@ -109,13 +112,19 @@ LD       = $(CC)
 LDFLAGS  = $(CCFLAGS)
 #LDFLAGS += -L$(BUILD_LIBRARY_SUBDIR)
 LDFLAGS += -L$(INSTALL_LIBRARY_DIR)
-#LDFLAGS += -static
+LDFLAGS += -Wl,--defsym,PROGRAM_STACK_BYTES=$(PROGRAM_STACK_BYTES)
+LDFLAGS += -Wl,--defsym,PROGRAM_HEAP_BYTES=$(PROGRAM_HEAP_BYTES)
+LDFLAGS += -Wl,--defsym,PROGRAM_LOAD_ADDRESS=$(PROGRAM_LOAD_ADDRESS)
+LDFLAGS += -Wl,-T,$(TOPDIR)/env/make/gcc-static.ld
+LDFLAGS += -nodefaultlibs
+LDFLAGS += -nostartfiles
+LDFLAGS += -static
 LDDEBUG  = -g
 LDGPROF  = -p
 LD_out   = $(CC_out)
-#LD_crt   = $(INSTALL_LIBRARY_DIR)/arm1176_start_gcc.o
+LD_crt   = $(INSTALL_LIBRARY_DIR)/arm1176_start_gcc.o
 LD_group = -Wl,--start-group
-LD_grend = $(PROGRAM_STARTUP) -lc  -lgcc -lm  -lpthread $(LDFLAGS_USER) -Wl,--end-group
+LD_grend = $(PROGRAM_STARTUP) -lc  -lgcc -lm $(LDFLAGS_USER) -Wl,--end-group
 
   VARIABLES += LD
   VARIABLES += LDFLAGS
@@ -201,5 +210,5 @@ SDKINC   =  $(SDKHOME)/arm-goke-linux-gnueabi/sysroot/usr/include
 else
 SDKINC   =  $(SDKHOME)/arm-goke-linux-uclibcgnueabi/sysroot/usr/include
 endif
-CCFLAGS  += -I$(INSTALL_DIR)/$(TARGET)-$(C_LIBRARY)-$(HOST)-$(DECODER)/include
-CCFLAGS  += -I $(SDKINC)
+#CCFLAGS  += -I$(INSTALL_DIR)/$(TARGET)-$(C_LIBRARY)-$(HOST)-$(DECODER)/include
+#CCFLAGS  += -I $(SDKINC)

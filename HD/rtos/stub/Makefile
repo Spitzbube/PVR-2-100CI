@@ -41,9 +41,9 @@ include $(TOPDIR)/env/make/Makefile.config
 
 default: all
 
-clean: clean-library
+clean: clean-objects clean-library
 
-build: build-library
+build: headers build-objects build-library
 
 headers: install-headers
 

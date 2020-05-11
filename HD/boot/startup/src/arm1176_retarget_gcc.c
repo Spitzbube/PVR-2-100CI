@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include "cpu_polling.h"
 #include "fapi/drv_uart.h"
 
 
@@ -65,6 +66,18 @@ long _write_r(void *reent, int fd, const void *buf, size_t cnt)
     }
 
     return i;
+}
+
+#if 0
+void _exit(int a)
+{
+    CPU_Polling();
+}
+#endif
+
+void exit(int a)
+{
+    CPU_Polling();
 }
 
 

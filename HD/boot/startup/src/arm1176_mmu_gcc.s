@@ -7,19 +7,19 @@
 .globl ARM1176_MmuInitialise
 ARM1176_MmuInitialise:
     MOV      r11,lr
-    MRC      p15,#0x0,r0,c1,c0,#0
+    MRC      p15,0,r0,c1,c0,0
     BIC      r0,r0,#0x1000
     BIC      r0,r0,#4
     BIC      r0,r0,#1
-    MCR      p15,#0x0,r0,c1,c0,#0
-    MRC      p15,#0x0,r0,c1,c0,#0
+    MCR      p15,0,r0,c1,c0,0
+    MRC      p15,0,r0,c1,c0,0
     MOV      r1,#0x800000
     ORR      r0,r0,r1
-    MCR      p15,#0x0,r0,c1,c0,#0
+    MCR      p15,0,r0,c1,c0,0
     MOV      r0,#0
-    MCR      p15,#0x0,r0,c2,c0,#2
+    MCR      p15,0,r0,c2,c0,2
     LDR      r0,Data_21b106e0
-    MCR      p15,#0x0,r0,c2,c0,#0
+    MCR      p15,0,r0,c2,c0,0
     LDR      r0,Data_21b106e0
     MOV      r1,#0
     MOV      r2,#0
@@ -80,24 +80,29 @@ ARM1176_MmuInitialise:
     MOV      r3,#0x80000000
     MOV      r4,#0x80000000
     BL       func_21b106b4
-    MRC      p15,#0x0,r0,c3,c0,#0
+    MRC      p15,0,r0,c3,c0,0
     LDR      r0,Data_21b106ec
-    MCR      p15,#0x0,r0,c3,c0,#0
-    MRC      p15,#0x0,r0,c1,c0,#0
+    MCR      p15,0,r0,c3,c0,0
+    MRC      p15,0,r0,c1,c0,0
     ORR      r0,r0,#0x1000
     ORR      r0,r0,#4
     ORR      r0,r0,#1
     ORR      r0,r0,#0x400000
     ORR      r0,r0,#0x100
     BIC      r0,r0,#0x200
-    MCR      p15,#0x0,r0,c1,c0,#0
+    MCR      p15,0,r0,c1,c0,0
     MOV      lr,r11
     BX       lr
 
 func_21b106b4:
+/*
     LSR      r2,r2,#20
     LSR      r3,r3,#20
     LSR      r4,r4,#20
+*/
+    MOV      r2,r2,LSR #20
+    MOV      r3,r3,LSR #20
+    MOV      r4,r4,LSR #20
     ADD      r4,r4,r3
 l_21b106c4:
     ORR      r5,r1,r2,LSL #20
