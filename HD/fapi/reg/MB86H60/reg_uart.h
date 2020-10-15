@@ -1,6 +1,8 @@
 #ifndef REG_UART_H_
 #define REG_UART_H_
 
+#include <stdint.h>
+
 extern void FREG_UART_Init(void);
 extern void FREG_UART_SetDr(int a, int b);
 extern void FREG_UART_SetDr_Data(int a, int b);

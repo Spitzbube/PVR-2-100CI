@@ -18,6 +18,6 @@ extern int FAPI_GPIO_WriteBit(void*, int);
 extern int FAPI_GPIO_ReadBit(void*);
 extern void FAPI_GPIO_SetIrqTrigger(unsigned);
 extern void FAPI_GPIO_SetIrqEnable(unsigned);
-extern void FAPI_GPIO_SetPinFunction(unsigned, unsigned);
+extern void FAPI_GPIO_SetPinFunction(uint32_t pin, uint32_t function);
 
 #endif /*DRV_GPIO_H_*/

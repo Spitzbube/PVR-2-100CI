@@ -34,6 +34,7 @@ long _read_r(void *reent, int fd, void *buf, size_t cnt)
 }
 
 
+/* V49: 21cb4c04 - complete */
 long _write_r(void *reent, int fd, const void *buf, size_t cnt)
 {
     int res;

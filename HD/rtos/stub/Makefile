@@ -30,6 +30,16 @@ include $(TOPDIR)/env/make/Makefile.config
   SOURCES += rtos_kernel.c
   SOURCES += stub_init.c
   
+ifeq ($(TARGET),arm11-realview)
+  SOURCES += arm1176_intr_handler.s
+endif
+
+ifeq ($(TARGET),arm11-gcc)
+  SOURCES += arm1176_intr_handler.gcc.s
+endif
+
+  SOURCES += arm1176_intr_table.c
+  
   HEADERS += rtos_kernel.h
 
   LIBRARY = librtosstub

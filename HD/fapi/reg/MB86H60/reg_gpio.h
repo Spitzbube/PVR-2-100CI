@@ -1,6 +1,8 @@
 #ifndef REG_GPIO_H_
 #define REG_GPIO_H_
 
+#include <stdint.h>
+
 extern void FREG_GPIO_Init(void);
 extern void func_21c70680(int, int);
 extern void FREG_GPIO_SetDataOut_DataEnableInv(int, int);

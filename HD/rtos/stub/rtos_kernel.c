@@ -2,9 +2,13 @@
 #include "rtos_kernel.h"
 
 
-/* 21b02550 - complete */
+extern void ARM1176_INTR_Initialise(void);
+
+
+/* flasher: 21b02550 - complete */
 void RTOS_InitServices(void)
 {
-   RTOS_STUB_InitServices();
+    ARM1176_INTR_Initialise();
+    RTOS_STUB_InitServices();
 }
 

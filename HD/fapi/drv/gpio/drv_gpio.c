@@ -1,4 +1,5 @@
 
+#include <stdint.h>
 #include <string.h>
 #include "fapi/sys_services.h"
 #include "fapi/reg_gpio.h"
@@ -21,8 +22,8 @@ static struct fapi_gpio_handle* fapi_gpio_get_handle(void);
 
 static struct
 {
-   int Data_0;
-   unsigned Data_4;
+   int inUse;
+   unsigned function;
    //8
 }
 gpioXrefArray[96] = //21b12b94
@@ -254,19 +255,21 @@ void FAPI_GPIO_Exit(void)
 }
 
 
-/* 21b03f74 - complete */
-void FAPI_GPIO_SetPinFunction(unsigned a, unsigned b)
+/* flasher: 21b03f74 / V49: 21c1e644 - complete */
+void FAPI_GPIO_SetPinFunction(uint32_t pin, uint32_t function)
 {
-   if (a <= 95)
-   {
-      if (((b >= 0x80) && (b <= 0xd9)) ||
-            ((b >= 0x101) && (b <= 0x142)) ||
-            ((b >= 0x940110) && (b <= 0xc20142)))
-      {
-         gpioXrefArray[a].Data_0 = 1;
-         gpioXrefArray[a].Data_4 = b;
-      }
-   }
+    if (pin > 95)
+    {
+        return;
+    }
+
+    if (((function >= 0x80) && (function <= 0xd9)) ||
+        ((function >= 0x101) && (function <= 0x142)) ||
+        ((function >= 0x940110) && (function <= 0xc20142)))
+    {
+        gpioXrefArray[pin].inUse = 1;
+        gpioXrefArray[pin].function = function;
+    }
 }
 
 
@@ -381,7 +384,7 @@ static int func_21c1ec74(unsigned r0)
    unsigned i;
    for (i = 0; i < 96; i++)
    {
-      if (r0 == gpioXrefArray[i].Data_4)
+      if (r0 == gpioXrefArray[i].function)
       {
          return i;
       }
@@ -474,8 +477,8 @@ void* FAPI_GPIO_Open(struct fapi_gpio_params* params, int* pres)
    }
    else
    {
-      gpioXrefArray[h->Data_8.index].Data_0 = 1;
-      gpioXrefArray[h->Data_8.index].Data_4 = h->Data_8.Data_8;
+      gpioXrefArray[h->Data_8.index].inUse = 1;
+      gpioXrefArray[h->Data_8.index].function = h->Data_8.Data_8;
    }
 
    if ((h->Data_8.Data_8 >= 0x101) && (h->Data_8.Data_8 <= 0x142))
