@@ -118,3 +118,17 @@ int _fstat_r(struct _reent *r, int fd, struct stat *pstat)
 }
 
 
+/* V49: 21cb50a0 - complete */
+int isatty(int fd)
+{
+   if ((fd >= 0) &&
+      (fd <= 2))
+   {
+      return 1;
+   }
+   else
+   {
+      return 0;
+   }
+}
+

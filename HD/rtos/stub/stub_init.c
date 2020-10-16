@@ -198,6 +198,9 @@ static unsigned RTOS_STUB_DisableIrq(void)
    unsigned my_cpsr, new_cpsr;
    
 #if defined(__GNUC__)
+   asm volatile( "mrs %0,cpsr"     : "=r"(my_cpsr) : "r"(new_cpsr) );
+   asm volatile( "orr %0,%1,#0xC0" : "=r"(new_cpsr) : "r"(my_cpsr) );
+   asm volatile( "msr cpsr_c,%0"   : : "r"(new_cpsr) );
 #else
    __asm
    {
@@ -215,6 +218,7 @@ static unsigned RTOS_STUB_DisableIrq(void)
 static void RTOS_STUB_EnableIrq(unsigned my_cpsr)
 {
 #if defined(__GNUC__)
+    asm volatile( "msr cpsr_c,%0" : : "r"(my_cpsr) );
 #else
    __asm
    {

@@ -35,7 +35,7 @@ struct Struct_21efc5bc
    char* txBuffer; //56
    char* txEnd; //60
    volatile unsigned Data_64; //64
-   int Data_68; //68
+   int useInterrupt; //68
    int Data_72; //72
    //76
 };
@@ -254,7 +254,7 @@ int FAPI_UART_Init(void)
       FREG_UART_SetLcrH_Fen(uartHandleStdlibc.index, 1);
       FREG_UART_SetCr_Uarten(uartHandleStdlibc.index, 1);
       
-      if (uartBlockArray[uartHandleStdlibc.index].Data_68 == 1)
+      if (uartBlockArray[uartHandleStdlibc.index].useInterrupt == 1)
       {
          FREG_UART_SetImsc(uartHandleStdlibc.index, 0);
       }
@@ -346,7 +346,7 @@ void FAPI_UART_SetInterruptMode(unsigned a, unsigned b)
 {
    if ((a <= 1) && (b <= 1))
    {
-      uartBlockArray[a].Data_68 = b;
+      uartBlockArray[a].useInterrupt = b;
    }
 }
 
@@ -489,7 +489,7 @@ void* FAPI_UART_Open(struct fapi_uart_open_params* param, int* pres)
          
          FREG_UART_SetCr_Uarten(h->index, 1);
          
-         if (uartBlockArray[h->index].Data_68 == 1)
+         if (uartBlockArray[h->index].useInterrupt == 1)
          {
             FREG_UART_SetLcrH_Fen(h->index, 1);
             FREG_UART_SetImsc_Rxim(h->index, 1);
@@ -609,7 +609,7 @@ int FAPI_UART_WriteByte(void* a, char r5)
 
    EI(cpu_sr);
 
-   if (uartBlockArray[r4->index].Data_68 == 1)
+   if (uartBlockArray[r4->index].useInterrupt == 1)
    {
       if (0 != FREG_UART_GetFr_Txff(r8)) 
       {
@@ -696,12 +696,19 @@ int FAPI_UART_ReadByte(void* a)
    
    if (fp != 0) LOCK(uartBlockArray[r5].semaphore);
 
-   if (uartBlockArray[r6->index].Data_68 == 1)
+   if (uartBlockArray[r6->index].useInterrupt == 1)
    {
       unsigned cpu_sr;
 
+#if 0
       while (r4->rxWritePtr == r4->rxReadPtr) { /* wait */ }
-            
+#else
+      {
+          volatile struct Struct_21efc5bc* r4_;
+          for (r4_ = r4; r4_->rxWritePtr == r4_->rxReadPtr; ) {}
+      }
+#endif
+
       DI(cpu_sr);
       
       res = *(r4->rxReadPtr);
@@ -745,7 +752,7 @@ int FAPI_UART_CheckRxFifo(void* a)
       return 0;
    }
       
-   if (uartBlockArray[r4->index].Data_68 == 1)
+   if (uartBlockArray[r4->index].useInterrupt == 1)
    {
       if (uartBlockArray[r4->index].rxWritePtr != 
          uartBlockArray[r4->index].rxReadPtr)
@@ -844,7 +851,7 @@ void FAPI_UART_UnlockMutex(void)
          c = FREG_UART_GetDr_Data(a) & 0xFF;
          
          *(r4->rxWritePtr) = c;
-         
+
          r4->rxWritePtr++;
          r4->Data_44++;
          
@@ -859,7 +866,7 @@ void FAPI_UART_UnlockMutex(void)
    {
       FREG_UART_SetIcr_Txic(a, 1);
       FREG_UART_SetImsc_Txim(a, 0);
-      
+
       while (r4->txReadPtr != r4->txWritePtr)
       {
          if (0 != FREG_UART_GetFr_Txff(a))

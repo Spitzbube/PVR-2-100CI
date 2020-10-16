@@ -28,12 +28,14 @@ include $(TOPDIR)/env/make/Makefile.config
   NODEBUG = 1
 
   SOURCES += drv/gpio/drv_gpio.c
+  SOURCES += drv/intr/drv_intr.c
   SOURCES += drv/timer/drv_timer.c
   SOURCES += drv/uart/drv_uart.c
 
   SOURCES += reg/$(DECODER)/reg_gpio.c
   SOURCES += reg/$(DECODER)/reg_irq_ctrl.c
   SOURCES += reg/$(DECODER)/reg_uart.c
+  SOURCES += reg/$(DECODER)/reg_vic.c
 
   SOURCES += sys/sys_services.c
 

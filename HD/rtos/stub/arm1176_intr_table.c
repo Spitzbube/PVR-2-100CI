@@ -8,6 +8,10 @@
 
 #endif
 
+extern void* (*FAPI_INTR_IsrFunctionTable[32])(void); //flasher: 21b15114
+extern int (*FAPI_INTR_BsrFunctionTable[32])(void*); //flasher: 21b15194
+
+
 /* flasher: 21b0cc10 - complete */
 static void ARM1176_INTR_UndefFunction(int a)
 {   
@@ -110,7 +114,6 @@ static void ARM1176_INTR_AbortFunction(int a)
 /* flasher: 21b0d03c - complete */
 static void ARM1176_INTR_IrqFunction(int a)
 {
-#if 0
    unsigned i = 0;
    unsigned j = 0;
    
@@ -139,7 +142,6 @@ static void ARM1176_INTR_IrqFunction(int a)
          }
       }
    }
-#endif
 }
 
 
