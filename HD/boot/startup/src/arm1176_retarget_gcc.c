@@ -118,6 +118,8 @@ int _fstat_r(struct _reent *r, int fd, struct stat *pstat)
 }
 
 
+#if 0
+
 /* V49: 21cb50a0 - complete */
 int isatty(int fd)
 {
@@ -132,3 +134,4 @@ int isatty(int fd)
    }
 }
 
+#endif

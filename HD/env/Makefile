@@ -43,6 +43,7 @@ all:
   RELEASE_FILES += Makefile
   RELEASE_FILES += $(wildcard make/*)
   RELEASE_FILES += $(wildcard configs/*)
+  RELEASE_FILES += $(wildcard cc/include/*.h)
   RELEASE_FILES += build_env.sh
 
 release: release-files $(DIRECTORIES:%=subdir-release-%) 

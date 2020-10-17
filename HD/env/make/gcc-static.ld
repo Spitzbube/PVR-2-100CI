@@ -13,15 +13,6 @@ SECTIONS
     ************************************************************
     */
     . = ALIGN(4);
-    .nocache_buffer :
-    {
-        PROVIDE(__nocache_buffer_start__ = .);
-        *(.nocache_buffer*)
-        KEEP(*(.nocache_buffer))
-		. = ALIGN(1M);
-        PROVIDE(__nocache_buffer_end__ = .);
-    }
-	
 
     __text_start = .;
     .text :
@@ -181,6 +172,28 @@ SECTIONS
         . = ALIGN(1M);
         PROVIDE(__heap_end__ = .);
     }
+
+    /*
+    ************************************************************
+    ** The ".heap2" section is used for specific heap data
+    ** management, done by the rtos heap library, we use the
+    ** entire memory area between end of the applictaion
+    ** (given by the "__heap_end__" symbol) and the physical
+    ** DDR RAM space defined by the make symbols
+    ** PROGRAM_MEMORY_START and PROGRAM_MEMORY_BYTES.
+    ** The variables "__heap2_start__" and "__heap2_end__"
+    ** mark the heap memory to be used by rtos heap "malloc()"
+    ** functions.
+    ************************************************************
+    */
+    . = ALIGN(1M);
+    .heap2 :
+    {
+        PROVIDE(__heap2_start__ = .);
+        . = ABSOLUTE(PROGRAM_MEMORY_START + PROGRAM_MEMORY_BYTES - 4);
+        PROVIDE(__heap2_end__ = .);
+    }
+    . = ALIGN(1M);
 
     /*
     ************************************************************

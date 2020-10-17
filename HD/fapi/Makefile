@@ -29,6 +29,9 @@ include $(TOPDIR)/env/make/Makefile.config
 
   SOURCES += drv/gpio/drv_gpio.c
   SOURCES += drv/intr/drv_intr.c
+  SOURCES += drv/mmu/bget.c
+  SOURCES += drv/mmu/drv_mmu.c
+  SOURCES += drv/mmu/drv_mmu_heap.c
   SOURCES += drv/timer/drv_timer.c
   SOURCES += drv/uart/drv_uart.c
 
@@ -42,6 +45,8 @@ include $(TOPDIR)/env/make/Makefile.config
   CCFLAGS_USER += -DINLINE=__inline
   
   HEADERS = $(SOURCES:%.c=%.h)
+  HEADERS += sys/sys_driver.h
+  HEADERS += sys/sys_error.h
 
   LIBRARY = libfapi
   HEADER_SUBDIR = fapi

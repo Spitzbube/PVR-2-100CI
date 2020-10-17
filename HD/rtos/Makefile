@@ -26,6 +26,7 @@ include $(TOPDIR)/env/make/Makefile.config
 ################################################################################
 
   DIRECTORIES += stub
+  DIRECTORIES += famos
 
 ################################################################################
 # define user targets

@@ -95,4 +95,35 @@ extern int FAPI_SYS_Init(void);
    }
 
 
+
+#define FAPI_SYS_CREATE_SEMAPHORE(val)                      \
+        ( ( FAPI_SYS_Services.createSemaphore != NULL ) \
+        ? FAPI_SYS_Services.createSemaphore(val)        \
+        : 0)
+
+#define FAPI_SYS_DESTROY_SEMAPHORE(sem )                         \
+        {                                                        \
+            if( FAPI_SYS_Services.deleteSemaphore != NULL ) \
+            {                                                    \
+                FAPI_SYS_Services.deleteSemaphore(sem);     \
+            }                                                    \
+        }
+
+#define FAPI_SYS_GET_SEMAPHORE(sem,timeout)               \
+        ( ( FAPI_SYS_Services.requestSemaphore != NULL )  \
+        ? FAPI_SYS_Services.requestSemaphore(sem,timeout) \
+        : -1 )                                            \
+
+#define FAPI_SYS_SET_SEMAPHORE(sem,timeout)                      \
+        {                                                        \
+            if( FAPI_SYS_Services.releaseSemaphore != NULL )     \
+            {                                                    \
+                FAPI_SYS_Services.releaseSemaphore(sem,timeout); \
+            }                                                    \
+        }
+
+
+#define FAPI_SYS_PRINT_MSG printf
+
+
 #endif /*SYS_SERVICES_H_*/

@@ -31,7 +31,9 @@ include $(TOPDIR)/env/make/Makefile.config
 
 #DIRECTORIES += audio
 
-DIRECTORIES += hello_world
+#DIRECTORIES += hello_world
+
+DIRECTORIES += famos
 
 ################################################################################
 # include library specific targets ( if available )
