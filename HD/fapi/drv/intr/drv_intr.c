@@ -3,16 +3,18 @@
 #include "fapi/reg_irq_ctrl.h"
 #include "fapi/sys_services.h"
 #include "fapi/drv_intr.h"
+#include "fapi/drv_gpreg.h"
 
 #if 0
 
-#include "drv_gpreg.h"
 #include "drv_timer.h"
 
+#endif
 
 void* FAPI_INTR_Isr31(void);
 int FAPI_INTR_Init(void);
 
+#if 0
 struct fapi_driver FAPI_INTR_Driver = //21b131f8
 {
       "INTR",
@@ -37,19 +39,17 @@ int (*FAPI_INTR_SwiFunctionTable[6])(int); //flasher: 21b15214
 static int intrInitialized; //21b12ed4
 static void* intrSemaphore; //21b12ed8
 
-#if 0
-
 void* intrPipeArmStatusHandle; //21b12edc
 void* intrPipeArmValueHandle; //21b12ee0
 void* intrPipeArcStatusHandle; //21b12ee4
 void* intrPipeArcValueHandle; //21b12ee8
 void (*intrPipeCallbackFunction)(int); //21b12eec
 
+#if 0
 struct fapi_gpreg_param intrGpregOpenParams = //21b12ef0 
 {
    0x20000, 0,
 };
-
 #endif
 
 static struct Struct_21efb580
@@ -144,10 +144,10 @@ int FAPI_INTR_Init(void)
    FREG_VIC_SetIntenable(-1);
    FREG_VIC_SetIntselect(0);
 
-#if 1
+#if defined(__GNUC__)
    asm("mrc 15, 0, %0, cr1, cr0, 0": "=r" (reg));
    asm("mcr 15, 0, %0, cr1, cr0, 0":: "r" (reg | 0x1000000));
-   
+
    // Enable IRQ and FIQ
    asm("mrs %0, CPSR": "=r" (my_cpsr));
    asm("msr CPSR_c, %0":: "r" (my_cpsr & ~0xC0));
@@ -184,7 +184,6 @@ int FAPI_INTR_Init(void)
    return 0;
 }
 
-#if 0
 
 /* 21b04d4c - complete */
 void FAPI_INTR_Exit(void)
@@ -194,13 +193,13 @@ void FAPI_INTR_Exit(void)
    
    if (intrInitialized != 0)
    {
-#if 1
+#if defined(__GNUC__)
+      asm("mrc 15, 0, %0, cr1, cr0, 0": "=r" (reg));
+      asm("mcr 15, 0, %0, cr1, cr0, 0":: "r" (reg & ~0x1000000));
+#else
       __asm {mrc p15, 0, reg, c1, c0, 0}      
       reg &= ~0x1000000;
       __asm {mcr p15, 0, reg, c1, c0, 0}
-#else 
-      asm("mrc 15, 0, %0, cr1, cr0, 0": "=r" (reg));
-      asm("mcr 15, 0, %0, cr1, cr0, 0":: "r" (reg & ~0x1000000));
 #endif
       
       for (i = 0; i < 32; i++)
@@ -278,9 +277,6 @@ void* FAPI_INTR_Isr31(void)
       return 0;
    }   
 }
-
-
-#endif
 
 
 /* 21b04f10 - complete */

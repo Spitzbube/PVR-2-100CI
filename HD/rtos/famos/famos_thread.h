@@ -53,7 +53,7 @@ struct famos_thread
    int* spPeakTop; //92
    int* spPeakBottom; //96
    long long Data_100_104; //100
-   long long Data_108_112; //108
+   long long timeStart; //108
    int CtxSwCtr; //116
    unsigned Data_120; //120
    //124

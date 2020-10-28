@@ -1,6 +1,8 @@
 #ifndef SYS_SERVICES_H_
 #define SYS_SERVICES_H_
 
+#include <fapi/sys_driver.h>
+
 struct fapi_driver;
 
 struct FAPI_SYS_Services
@@ -11,6 +13,8 @@ struct FAPI_SYS_Services
    void (*deleteSemaphore)(void*); //24
    int (*requestSemaphore)(void*, int); //28
    void (*releaseSemaphore)(void*, int); //32
+   void* (*mallocFunc)(size_t size); //60??
+   void (*freeFunc)(void* ptr); //76
    int (*printf)(const char*, ...); //80
    int (*initDrivers)(struct fapi_driver* a[]); //84
    //88
@@ -29,6 +33,18 @@ extern void FAPI_SYS_SetMasterCpu(void);
 extern int FAPI_SYS_IsMasterCpu(void);
 extern int FAPI_SYS_Init(void);
 
+#define FAPI_SYS_DISABLE_IRQ                           \
+        ( ( FAPI_SYS_Services.disableIrq != NULL ) \
+        ? FAPI_SYS_Services.disableIrq()           \
+        : 0 )
+
+#define FAPI_SYS_ENABLE_IRQ(irqFlags)                      \
+        {                                                  \
+            if( FAPI_SYS_Services.enableIrq != NULL )  \
+            {                                              \
+                FAPI_SYS_Services.enableIrq(irqFlags); \
+            }                                              \
+        }
 
 #define PRINTF(str) \
    if (FAPI_SYS_Services.printf != 0)\
@@ -122,8 +138,17 @@ extern int FAPI_SYS_Init(void);
             }                                                    \
         }
 
+#define FAPI_SYS_INIT_DRIVERS(pDriverArr)                              \
+        ((FAPI_SYS_Services.initDrivers != NULL)                   \
+         ? FAPI_SYS_Services.initDrivers(pDriverArr)               \
+         : 0)
+
 
 #define FAPI_SYS_PRINT_MSG printf
+
+
+
+typedef uint32_t FAPI_SYS_SemaphoreT;
 
 
 #endif /*SYS_SERVICES_H_*/

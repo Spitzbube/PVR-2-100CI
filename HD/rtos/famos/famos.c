@@ -1,43 +1,39 @@
 
-#if 0
 
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <fapi/sys_services.h>
+#if 0
 #include "cpu_polling.h"
 #include "reg_irq_ctrl.h"
 #include "drv_uart.h"
 #endif
 #include "fapi_adapter.h"
 #include "fapi/drv_mmu.h"
-#if 0
-#include "drv_intr.h"
-#include "drv_gpreg.h"
-#include "drv_timer.h"
-#include "drv_mmu_heap.h"
-#endif
+#include "fapi/drv_intr.h"
+#include "fapi/drv_gpreg.h"
+#include "fapi/drv_timer.h"
+#include "fapi/drv_mmu_heap.h"
 #include "famos_thread.h"
 #include "famos_semaphore.h"
-#if 0
 #include "famos_mailbox.h"
 #include "famos_mailqueue.h"
 #include "famos_timer.h"
 #include "famos_interrupt.h"
-#endif
 #include "famos.h"
 
 #if 0
 
-extern void func_21b00870(void);
-extern void func_21b00874(void);
+extern void famosSwitchContextFromInterrupt(void);
+extern void famosSwitchContextFromEvent(void);
 
-
+#endif
 
 int Data_21efe4a4; //21efe4a4
 int Data_21efe4a8; //21efe4a8
-void (*Data_21efe4ac[])(int) = //21efe4ac
+void (*famosIntrFunctionTable[])(int) = //21efe4ac
 {
       0,
       ARM1176_INTR_UndefFunction, 
@@ -53,11 +49,9 @@ void (*Data_21efe4ac[])(int) = //21efe4ac
 //int famos_numThreads; //21f71c58 -> famos_thread.c 
 //int famos_numMailboxes; //21f71c5c -> famos_mailbox.c
 //int famos_numSemaphores; //21f71c60 -> famos_semaphore.c 
-#endif
 struct famos* famos; //21f71c64
 struct famos_irq* famos_irq; //21f71c68
-struct Struct_21f71c6c* famos_resources; //21f71c6c
-#if 0
+famosListDataT* famos_resources; //21f71c6c
 struct Struct_21f71c70
 {
    int fill_0[128]; //0
@@ -74,10 +68,8 @@ struct Struct_21f71c74
    unsigned Data_52; //52
    //56
 }* Data_21f71c74; //21f71c74
-#endif
-struct famos_thread* famos_Current; //21f71c78
-#if 0
-struct famos_thread* famos_HighRdy; //21f71c7c
+struct famos_thread* famosThreadPtrAct; //21f71c78
+struct famos_thread* famosThreadPtrNew; //21f71c7c
 //int famos_numMailqueues; //21f71c84 -> famos_mailqueue.c
 
 void* Data_2206c064; //2206c064
@@ -85,10 +77,8 @@ FAPI_TIMER_OpenParamsT Data_2206c068; //2206c068
 void (*famos_driver_bsr[32])(void); //2206c094
 struct fapi_driver** famos_drivers; //2206c114
 void* Data_2206c118; //2206c118
-#endif
 struct Struct_21f19580 famos_services; //2206c11c
 struct famos_thread Data_2206c174; //2206c174
-#if 0
 int famos_bsr_flags[32]; //2206c1f0
 void* (*famos_driver_isr[32])(void); //2206c270
 struct famos_bsr_threads
@@ -108,11 +98,9 @@ struct famos_bsr_threads
    //28
 } famos_bsr_threads[32]; //2206c2f0
 
-#endif
 
 void* famos_malloc_segment(int a, int b);
 void* famos_malloc_cached(int a);
-#if 0
 void famos_bsr_thread(int a);
 void famos_print_report(void);
 
@@ -122,9 +110,14 @@ void famos_print_report(void);
 /* 21c79e00 - complete */
 void famos_idle_thread(int a)
 {   
+    int thousend = -1;
    while (1)
    {
-      //printf("famos->idleCount: %d\n", famos->idleCount);
+       if ((famos->idleCount/1000000) != thousend)
+       {
+           printf("famos->idleCount: %d\n", famos->idleCount);
+           thousend = famos->idleCount/1000000;
+       }
       
       famos->idleCount++;
    }
@@ -194,26 +187,26 @@ void famos_SchedNew(void)
    {
       func_21c79e1c();
       
-      famos_HighRdy = famos_Current;
+      famosThreadPtrNew = famosThreadPtrAct;
       
       if (famos_irq->schedLock == 0)
       {
          struct famos_thread* thread;
          unsigned prio = 0;
-         for (thread = famos_Current->next; thread != 0; thread = thread->next)
+         for (thread = famosThreadPtrAct->next; thread != 0; thread = thread->next)
          {
             if ((thread->Data_4 != 0) &&
                   (thread->state == FAMOS_THREAD_STATE_READY) &&
                   ((thread->priority & 0xFFFF) > prio))
             {
-               famos_HighRdy = thread;
+               famosThreadPtrNew = thread;
                prio = thread->priority & 0xFFFF;
             }
          }
 
          for (thread = famos_resources->threads; thread != 0; thread = thread->next)
          {
-            if (thread == famos_Current)
+            if (thread == famosThreadPtrAct)
             {
                break;
             }
@@ -222,58 +215,59 @@ void famos_SchedNew(void)
                   (thread->state == FAMOS_THREAD_STATE_READY) &&
                   ((thread->priority & 0xFFFF) > prio))
             {
-               famos_HighRdy = thread;
+               famosThreadPtrNew = thread;
                prio = thread->priority & 0xFFFF;
             }
          }
 
-         if ((famos_HighRdy == famos_Current) &&
-               (famos_Current->state != FAMOS_THREAD_STATE_READY))
+         if ((famosThreadPtrNew == famosThreadPtrAct) &&
+               (famosThreadPtrAct->state != FAMOS_THREAD_STATE_READY))
          {
-            famos_HighRdy = famos->idleThread;
+            famosThreadPtrNew = famos->idleThread;
          }
       }
 
-      if (famos_Current != 0)
+      if (famosThreadPtrAct != 0)
       {
-         if (famos_Current->sp < famos_Current->spPeakTop)
+         if (famosThreadPtrAct->sp < famosThreadPtrAct->spPeakTop)
          {
-            famos_Current->spPeakTop = famos_Current->sp;
+            famosThreadPtrAct->spPeakTop = famosThreadPtrAct->sp;
          }
          
-         if (famos_Current->sp > famos_Current->spPeakBottom)
+         if (famosThreadPtrAct->sp > famosThreadPtrAct->spPeakBottom)
          {
-            famos_Current->spPeakBottom = famos_Current->sp;
+            famosThreadPtrAct->spPeakBottom = famosThreadPtrAct->sp;
          }
       }
 
-      if (famos_HighRdy != 0)
+      if (famosThreadPtrNew != 0)
       {
-         if (famos_HighRdy->sp < famos_HighRdy->spPeakTop)
+         if (famosThreadPtrNew->sp < famosThreadPtrNew->spPeakTop)
          {
-            famos_HighRdy->spPeakTop = famos_HighRdy->sp;
+            famosThreadPtrNew->spPeakTop = famosThreadPtrNew->sp;
          }
          
-         if (famos_HighRdy->sp > famos_HighRdy->spPeakBottom)
+         if (famosThreadPtrNew->sp > famosThreadPtrNew->spPeakBottom)
          {
-            famos_HighRdy->spPeakBottom = famos_HighRdy->sp;
+            famosThreadPtrNew->spPeakBottom = famosThreadPtrNew->sp;
          }
       }
       
-      if (famos_HighRdy != 0)
+      if (famosThreadPtrNew != 0)
       {
-         int r2 = famos_HighRdy->priority & 0xFF00;
-         int r3 = famos_HighRdy->priority & 0xFF0000;
-         int r0 = famos_HighRdy->priority & 0xFF;
+         int r2 = famosThreadPtrNew->priority & 0xFF00;
+         int r3 = famosThreadPtrNew->priority & 0xFF0000;
+         int r0 = famosThreadPtrNew->priority & 0xFF;
          if (r0 == 0) 
          {
-            r0 = famos_HighRdy->Data_60;
+            r0 = famosThreadPtrNew->Data_60;
          }
-         famos_HighRdy->priority = r3 | r2 | r0;
+         famosThreadPtrNew->priority = r3 | r2 | r0;
       }
    }
 }
 
+#if 0
 
 /* 21c7a0a4 - complete */
 void func_21c7a0a4(void)
@@ -289,6 +283,8 @@ void func_21c7a0a4(void)
    }
 }
 
+#endif
+
 
 /* 21c7a0f4 - complete */
 int func_21c7a0f4(struct famos_thread* a, int b)
@@ -296,6 +292,7 @@ int func_21c7a0f4(struct famos_thread* a, int b)
    return 1;
 }
 
+#if 0
 
 /* 21c7a0fc - complete */
 int mailqueue_write(void* a, void* b, int c)
@@ -336,6 +333,8 @@ int mailqueue_read(void* a, void* b, int c)
    return q->itemSize & ~0x80000000; 
 }
 
+#endif
+
 
 /* 21c7a178 - complete */
 static int semaphore_request(void* a, int b)
@@ -365,7 +364,6 @@ void* famos_malloc_uncached(int a)
    return FAPI_MMU_Malloc(FAPI_MMU_HeapHandleSys0, a);
 }
 
-#endif
 
 /* 21c7a1c4 - complete */
 void* famos_malloc_cached(int a)
@@ -380,7 +378,6 @@ void* famos_malloc_segment(int a, int b)
    return FAPI_MMU_Malloc(a, b);
 }
 
-#if 0
 
 /* 21c7a1a8 - complete */
 void famos_free(void* a)
@@ -446,6 +443,8 @@ void famos_print_thread(int a)
    
    while (1)
    {
+       printf("famos_print_thread\n");
+
       FAMOS_GetMailqueue(famos->mailQueue, buffer, -1);
    
       buffer[255] = 0;
@@ -471,17 +470,17 @@ void famos_timer_func(void)
    struct famos_timer* timer;
    struct famos_thread* thread;
    int refresh = 0;
-   unsigned prio = famos_Current->priority & 0xFF;
+   unsigned prio = famosThreadPtrAct->priority & 0xFF;
    
-   if ((famos_Current != 0) &&
+   if ((famosThreadPtrAct != 0) &&
          (prio != 0))
    {
       prio--;
    }
       
-   famos_Current->priority = prio |
-      (famos_Current->priority & 0xFF00) |
-      (famos_Current->priority & 0xFF0000); 
+   famosThreadPtrAct->priority = prio |
+      (famosThreadPtrAct->priority & 0xFF00) |
+      (famosThreadPtrAct->priority & 0xFF0000);
    
    t = famos_get_timestamp();
    
@@ -557,7 +556,7 @@ void famos_timer_func(void)
 
          if (refresh != 0)
          {
-            thread->Data_108_112 = 0;
+            thread->timeStart = 0;
             thread->Data_100_104 = 0;
          }
       } //for (; thread != 0; thread = thread->next)
@@ -593,8 +592,8 @@ void famos_irq_entry(int irq)
    
    unsigned long long t = famos_get_timestamp();
    
-   famos_Current->Data_100_104 -= famos_Current->Data_108_112;
-   famos_Current->Data_100_104 += t;
+   famosThreadPtrAct->Data_100_104 -= famosThreadPtrAct->timeStart;
+   famosThreadPtrAct->Data_100_104 += t;
    
    famos_irq->entryTime = t;
 }
@@ -619,27 +618,23 @@ int famos_enable_driver_irq(void)
    return !err;
 }
 
-#endif
-
 
 /* 21c7a6b4 - complete */
-int func_21c7a6b4(void)
+int famosAllocateListData(void)
 {   
    famos_resources = famos_malloc_segment(FAPI_MMU_HeapHandleDTcm, 
-         sizeof(struct Struct_21f71c6c));
+         sizeof(famosListDataT));
    
    if (famos_resources == 0)
    {
       return 0;
    }
    
-   memset(famos_resources, 0, 
-      sizeof(struct Struct_21f71c6c));
+   memset(famos_resources, 0, sizeof(famosListDataT));
    
    return 1;
 }
 
-#if 0
 
 /* 21c7a71c - todo */
 int famos_init_drivers(struct fapi_driver* a[])
@@ -721,9 +716,11 @@ int famos_init_drivers(struct fapi_driver* a[])
       }
    }
 
+#if 0
    famos_driver_isr[31] = FAPI_INTR_Isr31;
    famos_driver_bsr[31] = 0;
    famos_bsr_flags[31] = 0;
+#endif
       
    return err;
 }
@@ -746,38 +743,43 @@ int famos_init_drivers(struct fapi_driver* a[])
 *********************************************************************************************************
 */
 /* 21c7a950 - complete */
-void famos_Sched(int r8)
+void famos_Sched(int from_interrupt)
 {
+#if 1
+//    printf("famos_Sched(%d)\n", from_interrupt);
+    FREG_UART_SetDr(0, '$');
+#endif
+
    if ((famos != 0) &&
          (famos->running != 0))
    {
       int irqFlags = famos_save_flags_and_cli();
       
-      if (r8 == 0)
+      if (from_interrupt == 0)
       {        
-         famos_Current->Data_100_104 = famos_get_timestamp() + 
-            famos_Current->Data_100_104 - 
-            famos_Current->Data_108_112;
+         famosThreadPtrAct->Data_100_104 = famos_get_timestamp() +
+            famosThreadPtrAct->Data_100_104 -
+            famosThreadPtrAct->timeStart;
       }
 
       famos_SchedNew();
       
-      famos_HighRdy->Data_108_112 = famos_get_timestamp();
+      famosThreadPtrNew->timeStart = famos_get_timestamp();
       
       //Inc. # of context switches to this task
-      famos_HighRdy->CtxSwCtr++;
+      famosThreadPtrNew->CtxSwCtr++;
       
       //No Ctx Sw if current task is highest rdy
-      if (famos_Current != famos_HighRdy)
+      if (famosThreadPtrAct != famosThreadPtrNew)
       {
          //Perform a context switch
-         if (r8 != 0)
+         if (from_interrupt != 0)
          {
-            func_21b00870(); //OS_TASK_SW
+             famosSwitchContextFromInterrupt();
          }
          else
          {
-            func_21b00874(); //OS_TASK_SW
+             famosSwitchContextFromEvent();
          }
       }
       
@@ -811,13 +813,15 @@ void famos_irq_leave(int a)
       famos_irq->maxTime = t;
    }
    
+//   printf("famos_irq_leave\n");
+
    if (a != 0)
    {
       famos_Sched(1);
    }
    else
    {
-      famos_Current->Data_108_112 = famos_get_timestamp();
+      famosThreadPtrAct->timeStart = famos_get_timestamp();
    }
 }
 
@@ -940,6 +944,8 @@ void famos_bsr_thread(int a)
 /* 21c7ad24 - complete */
 void famos_report_thread(int a)
 {
+    printf("famos_report_thread\n");
+
    while (1)
    {
       FAMOS_GetSemaphore(famos->Data_200, -1);
@@ -963,9 +969,6 @@ char* famos_get_version(void)
    
    return famos->version;
 }
-
-
-#endif
 
 
 /* 21c7ad7c - complete */
@@ -1028,6 +1031,7 @@ void famos_unlock_scheduler(void)
    famos_restore_flags(sr);
 }
 
+#endif
 
 /* 21c7ae00 - nearly complete */
 int famos_check_stack(void)
@@ -1166,7 +1170,7 @@ void famos_print_report(void)
       {
          //->21c7ba0c
          thread->Data_100_104 = famos_get_timestamp() - 
-            thread->Data_108_112;
+            thread->timeStart;
          //->21c7b34c
       }
       //21c7b34c
@@ -1256,7 +1260,7 @@ void famos_print_report(void)
             
             //"Priority Thread            CPU State       Event         Ticks Stack  Activated\n"
             FAPI_SYS_PRINT_MSG("%c %3d.%02d %-16s %3d%% %-11s %-9s %9d %4d%% %10d\n",
-                  (thread == famos_Current)? '*': ' ',
+                  (thread == famosThreadPtrAct)? '*': ' ',
                   (thread->priority & 0xff00) >> 8, //Prio MSB
                   thread->priority & 0xFF, //Prio LSB
                   thread->name, 
@@ -1421,16 +1425,16 @@ void famos_start(void)
    Data_2206c064 = FAPI_TIMER_Open(&Data_2206c068, 0);
    
    if (Data_2206c064 == 0) return;
-   
+
    if (0 == famos_enable_driver_irq()) return;
    
    famos_SchedNew();
 
-   famos_Current = famos_HighRdy;
+   famosThreadPtrAct = famosThreadPtrNew;
 
    famos->running = 1;
       
-   func_21b007f0();
+   famosStartContextFirst();
 }
 
 
@@ -1459,7 +1463,7 @@ int famos_init(void)
       return 0;
    }
 
-   ARM1176_INTR_Initialise();
+   FAMOS_InitInterrupts();
    
    famos_irq = famos_malloc_segment(FAPI_MMU_HeapHandleDTcm, 
          sizeof(struct famos_irq));
@@ -1475,7 +1479,7 @@ int famos_init(void)
    famos_irq->maxTime = 0;
    
    if ((famos_resources == 0) &&
-         (0 == func_21c7a6b4()))
+         (0 == famosAllocateListData()))
    {
       return 0;
    }
@@ -1587,7 +1591,7 @@ int famos_init(void)
    {
       return 0;
    }
-               
+
    Data_2206c068.version = FAPI_TIMER_VERSION;
    Data_2206c068.type_ = 1;
    Data_2206c068.mode = 2;
@@ -1610,21 +1614,20 @@ int famos_init(void)
    return 1;
 }
 
-#endif
 
 /* V49: 21c7bfd0 - complete */
 void famos_init_services(void)
 {
-#if 0
    famos_drivers = 0;
-   famos_Current = 0;
-   famos_HighRdy = 0;
+   famosThreadPtrAct = 0;
+   famosThreadPtrNew = 0;
 
    memset(&Data_2206c174, 0, sizeof(Data_2206c174));
    memset(&famos_driver_isr, 0, sizeof(famos_driver_isr));
    memset(&famos_driver_bsr, 0, sizeof(famos_driver_bsr));
    memset(&famos_bsr_flags, 0, sizeof(famos_bsr_flags));
 
+#if 0
    famos_services.lock = famos_lock_scheduler;
    famos_services.unlock = famos_unlock_scheduler;
    famos_services.sleep = func_21c789b0;
@@ -1633,23 +1636,26 @@ void famos_init_services(void)
    famos_services.enableIrq = famos_restore_flags;
    famos_services.createSemaphore = famos_semaphore_create;
    famos_services.deleteSemaphore = famos_semaphore_delete;
-#if 0
    famos_services.requestSemaphore = semaphore_request;
    famos_services.releaseSemaphore = semaphore_release;
+#if 0
    famos_services.createMailqueue = famos_mailqueue_create;
    famos_services.destroyMailqueue = famos_mailqueue_destroy;
    famos_services.getMailqueue = mailqueue_read;
    famos_services.setMailqueue = mailqueue_write;
    famos_services.getPhysAddr = FAPI_MMU_GetPhysAddr;
    famos_services.getVirtAddr = FAPI_MMU_GetVirtAddr;
+#endif
+   famos_services.mallocFunc = famos_malloc_uncached;
+#if 0
    famos_services.mallocUncached = famos_malloc_uncached;
    famos_services.Data_64 = famos_malloc_uncached;
    famos_services.mallocCached = famos_malloc_cached;
    famos_services.mallocSegment = famos_malloc_segment;
-   famos_services.free = famos_free;
+#endif
+   famos_services.freeFunc = famos_free;
    famos_services.printf = famos_printf;
    famos_services.initDrivers = famos_init_drivers;
-#endif
    
    FAPI_SYS_SetServices(&famos_services);
 }

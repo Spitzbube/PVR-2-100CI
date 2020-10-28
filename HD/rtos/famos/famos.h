@@ -53,7 +53,7 @@ struct famos_irq
    //48
 };
 
-struct Struct_21f71c6c
+typedef struct
 {
    struct famos_semaphore* semaphores; //0
    struct famos_semaphore* lastSemaphore; //4
@@ -66,7 +66,7 @@ struct Struct_21f71c6c
    struct famos_thread* threads; //32
    struct famos_thread* lastThread; //36
    //40
-};
+} famosListDataT;
 
 struct fapi_driver
 {
@@ -88,8 +88,8 @@ extern int fapi_mmu_heap_sram_segment;
 
 extern struct famos* famos; //21f71c64
 extern struct famos_irq* famos_irq; //21f71c68
-extern struct Struct_21f71c6c* famos_resources; //21f71c6c
-extern struct famos_thread* famos_Current; //21f71c78
+extern famosListDataT* famos_resources; //21f71c6c
+extern struct famos_thread* famosThreadPtrAct; //21f71c78
 
 extern struct famos_thread Data_2206c174; //2206c174
 
@@ -123,7 +123,7 @@ extern unsigned long long famos_get_timestamp(void);
 extern void famos_irq_leave(int);
 extern int func_21c7a0f4(struct famos_thread* a, int b);
 extern void famos_Sched(int a);
-extern int func_21c7a6b4(void);
+extern int famosAllocateListData(void);
 extern int func_21c7a71c(struct fapi_driver* a[]);
 extern void* famos_semaphore_create(unsigned);
 extern int famos_semaphore_delete(struct famos_semaphore*);

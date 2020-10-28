@@ -23,12 +23,15 @@ struct Struct_21f19580
    void (*setMailqueue)(void); //48
    int (*getPhysAddr)(int); //52
    void* (*getVirtAddr)(void*); //56
+#endif
+   void* (*mallocFunc)(size_t size); //60??
+#if 0
    void* (*mallocUncached)(int); //60
    void (*Data_64)(void); //64
    void* (*mallocCached)(int); //68
    void (*mallocSegment)(void); //72
-   int (*free)(void*); //76
 #endif
+   void (*freeFunc)(void* ptr); //76
    int (*printf)(const char*, ...); //80
    int (*initDrivers)(struct fapi_driver* a[]); //84
    //88

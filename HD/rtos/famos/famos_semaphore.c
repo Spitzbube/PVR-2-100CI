@@ -28,7 +28,7 @@ void* famos_semaphore_create(unsigned r8)
    unsigned sl = famos_save_flags_and_cli();   
    
    if ((famos_resources != 0) ||
-         (0 != func_21c7a6b4()))
+         (0 != famosAllocateListData()))
    {
       semaphore = famos_malloc_segment(FAPI_MMU_HeapHandleDTcm, 36);   
       
@@ -88,7 +88,6 @@ void* famos_semaphore_create(unsigned r8)
 /* 21c79b50 - complete */
 int famos_semaphore_delete(struct famos_semaphore* semaphore)
 {
-#if 0
    int cpu_sr;
    struct famos_thread* thread = famos_get_current_thread();
    
@@ -160,10 +159,8 @@ int famos_semaphore_delete(struct famos_semaphore* semaphore)
       famos_restore_flags(cpu_sr);         
       return 1;
    }
-#endif
 }
 
-#if 0
 
 /* 21c79980 - complete */
 int FAMOS_GetSemaphore(struct famos_semaphore* semaphore, unsigned r6)
@@ -198,7 +195,7 @@ int FAMOS_GetSemaphore(struct famos_semaphore* semaphore, unsigned r6)
          {
             if ((FAPI_TIMER_GetTimeStamp(1000) - t) > 5)
             {
-               func_21b01c88();
+               famosBreakPoint();
                res = 0;
                break;
             }
@@ -356,4 +353,3 @@ int famos_release_semaphore(struct famos_semaphore* semaphore, int r5)
    return r5;
 }
 
-#endif

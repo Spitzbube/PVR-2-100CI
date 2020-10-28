@@ -40,9 +40,7 @@ SOURCES += famos.c
 # define library used
 ################################################################################
 
-LIBRARIES  = fapi famos rtosstub
-#famos
-#rtosstub
+LIBRARIES  = fapi famos
 
 ################################################################################
 # define target name

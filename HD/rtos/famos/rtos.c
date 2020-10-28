@@ -14,14 +14,14 @@ void RTOS_InitServices(void)
    famos_init_services();
 }
 
-#if 0
-
-/* 21c786c8 - complete */
+/* V49: 21c786c8 - complete */
 int RTOS_InitKernel(void)
 {
    return famos_init();
 }
 
+
+#if 0
 
 /* 21c78638 - complete */
 int32_t rtos_get_current_thread_error(void)
@@ -173,6 +173,8 @@ int rtos_save_flags_and_cli(void)
    return famos_save_flags_and_cli();
 }
 
+#endif
+
 
 /* 21c786bc - complete */
 void rtos_start(void)
@@ -180,6 +182,7 @@ void rtos_start(void)
    famos_start();
 }
 
+#if 0
 
 /* 21c786c0 - complete */
 char* rtos_get_version(void)

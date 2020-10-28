@@ -31,6 +31,13 @@ include $(TOPDIR)/env/make/Makefile.config
   SOURCES += famos.c
   SOURCES += famos_thread.c
   SOURCES += famos_semaphore.c
+  SOURCES += famos_timer.c
+  SOURCES += famos_mailqueue.c
+  SOURCES += famos_interrupt.c
+  
+ifeq ($(TARGET),arm11-gcc)
+  SOURCES += famos_isr_arm1176.gcc.s
+endif
   
   HEADERS += famos.h
   

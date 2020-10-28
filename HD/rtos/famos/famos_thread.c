@@ -18,7 +18,6 @@ void famos_create_stack_frame(struct famos_thread* a);
 
 int famos_numThreads; //21f71c58 
 
-#if 0
 
 /* 21c78cfc - todo */
 void* famos_thread_create(int* stack, //r7
@@ -95,7 +94,7 @@ void* famos_thread_create(int* stack, //r7
    sp = famos_save_flags_and_cli();
    
    if ((famos_resources != 0) ||
-         (0 != func_21c7a6b4()))
+         (0 != famosAllocateListData()))
    {
       //21c78dd4               
       if (func == famos_idle_thread)
@@ -239,7 +238,7 @@ void* famos_thread_create(int* stack, //r7
          r5->Data_80 = 0;
          r5->Data_88 = 0;
          r5->Data_100_104 = 0;
-         r5->Data_108_112 = 0;
+         r5->timeStart = 0;
          r5->CtxSwCtr = 0;
          r5->Data_120 = 0;
          
@@ -280,7 +279,6 @@ void* famos_thread_create(int* stack, //r7
    //->21c78fb8
    return 0;
 }
-
 
 /* 21c78b48 - todo */
 void famos_thread_delete(struct famos_thread* a)
@@ -385,6 +383,8 @@ int func_21c789b0(unsigned r7)
 }
 
 
+#if 0
+
 /* 21c78948 - complete */
 int func_21c78948(struct famos_thread* a)
 {
@@ -409,6 +409,8 @@ int func_21c78948(struct famos_thread* a)
    
    return (state == (FAMOS_THREAD_STATE_SUSPEND | 8))? 2: 1;
 }
+
+#endif
 
 
 /* 21c788ec - complete */
@@ -469,6 +471,7 @@ int famos_get_current_thread_error(void)
    return famos_get_current_thread()->lastError;
 }
 
+#if 0
 
 /* 21c78838 - complete */
 char func_21c78838(struct famos_thread* a)
@@ -519,15 +522,13 @@ struct famos_thread* famos_get_current_thread(void)
 
    irqFlags = famos_save_flags_and_cli();
    
-   thread = famos_Current;
+   thread = famosThreadPtrAct;
    
    famos_restore_flags(irqFlags);
    
    return thread;
 }
 
-
-#if 0
 
 /* 21c7aa20 - complete */
 void func_21c7aa20(void)
@@ -580,10 +581,4 @@ void famos_create_stack_frame(struct famos_thread* a)
    
    a->sp = sp;
 }
-
-#endif
-
-
-
-
 
