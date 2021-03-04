@@ -25,7 +25,7 @@ void* famos_semaphore_create(unsigned r8)
    
    thread->lastError = 0;
    
-   unsigned sl = famos_save_flags_and_cli();   
+   unsigned sl = FAMOS_EnterCriticalSection();
    
    if ((famos_resources != 0) ||
          (0 != famosAllocateListData()))
@@ -101,7 +101,7 @@ int famos_semaphore_delete(struct famos_semaphore* semaphore)
    }
    else
    {
-      cpu_sr = famos_save_flags_and_cli();
+      cpu_sr = FAMOS_EnterCriticalSection();
 
       if (semaphore->Data_16 != 0)
       {
@@ -114,9 +114,9 @@ int famos_semaphore_delete(struct famos_semaphore* semaphore)
             
             famos_restore_flags(cpu_sr);
             
-            famos_Sched(0);
+            famosRunScheduler(0);
             
-            cpu_sr = famos_save_flags_and_cli();
+            cpu_sr = FAMOS_EnterCriticalSection();
          }
       }
 
@@ -203,7 +203,7 @@ int FAMOS_GetSemaphore(struct famos_semaphore* semaphore, unsigned r6)
       }
       else
       {
-         int cpu_sr = famos_save_flags_and_cli();
+         int cpu_sr = FAMOS_EnterCriticalSection();
          
          if (r6 != 0)
          {
@@ -227,9 +227,9 @@ int FAMOS_GetSemaphore(struct famos_semaphore* semaphore, unsigned r6)
 
                famos_restore_flags(cpu_sr);
                
-               famos_Sched(0);
+               famosRunScheduler(0);
                
-               cpu_sr = famos_save_flags_and_cli();
+               cpu_sr = FAMOS_EnterCriticalSection();
                
                if (semaphore->type != FAMOS_EVENT_TYPE_SEMAPHORE) //65)
                {
@@ -296,9 +296,9 @@ int famos_release_semaphore(struct famos_semaphore* semaphore, int r5)
          r5 = 0;
       }
       
-      func_21c7a0f4(thread, 1);
+      famosThreadAdjustPriority(thread, 1);
       
-      irqFlags = famos_save_flags_and_cli();
+      irqFlags = FAMOS_EnterCriticalSection();
       
       t = famos_get_timestamp();
       
@@ -319,11 +319,11 @@ int famos_release_semaphore(struct famos_semaphore* semaphore, int r5)
 
          famos_restore_flags(irqFlags);
          
-         func_21c7a0f4(thread, 0);
+         famosThreadAdjustPriority(thread, 0);
          
-         func_21c789b0(famos->Data_164);
+         FAMOS_Sleep(famos->Data_164);
 
-         func_21c7a0f4(thread, 1);
+         famosThreadAdjustPriority(thread, 1);
          
          if (r5 != -1)
          {
@@ -336,17 +336,17 @@ int famos_release_semaphore(struct famos_semaphore* semaphore, int r5)
             }
          }
 
-         irqFlags = famos_save_flags_and_cli();
+         irqFlags = FAMOS_EnterCriticalSection();
       } //while (1)
 
       famos_restore_flags(irqFlags);
       
-      func_21c7a0f4(thread, 0);
+      famosThreadAdjustPriority(thread, 0);
       
       if ((famos_irq->context == 0) &&
             (semaphore->Data_16 > 1))
       {
-         famos_Sched(0);
+         famosRunScheduler(0);
       }
    }
 

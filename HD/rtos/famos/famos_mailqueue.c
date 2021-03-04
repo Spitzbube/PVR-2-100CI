@@ -4,12 +4,12 @@
 #include <stdio.h>
 #include <fapi/sys_services.h>
 #include <fapi/drv_mmu.h>
-#include "fapi_adapter.h"
 #include "fapi/drv_timer.h"
 #include "famos_memory.h"
 #include "famos_thread.h"
 #include "famos_mailqueue.h"
 #include "famos.h"
+#include "fapi_adapter.h___"
 
 
 int famos_numMailqueues; //21f71c84
@@ -40,7 +40,7 @@ void* famos_mailqueue_create(unsigned queueLength, int itemSize)
       bufferSize = queueLength * itemSize;
    }
    
-   int sp = famos_save_flags_and_cli();
+   int sp = FAMOS_EnterCriticalSection();
    
    if ((famos_resources != 0) ||
          (0 != famosAllocateListData()))
@@ -129,7 +129,7 @@ int famos_mailqueue_destroy(struct famos_mailqueue* a)
       return 0;
    }
    
-   unsigned sr = famos_save_flags_and_cli();
+   unsigned sr = FAMOS_EnterCriticalSection();
    
    if (a->Data_16 != 0)
    {
@@ -143,9 +143,9 @@ int famos_mailqueue_destroy(struct famos_mailqueue* a)
       
       famos_restore_flags(sr);
       
-      famos_Sched(0);
+      famosRunScheduler(0);
       
-      sr = famos_save_flags_and_cli();
+      sr = FAMOS_EnterCriticalSection();
    }
 
    if (FAPI_SYS_Services.freeFunc != 0)
@@ -257,7 +257,7 @@ int FAMOS_GetMailqueue(struct famos_mailqueue* mailqueue, void* b, unsigned c)
    }
    else
    {
-      unsigned sr = famos_save_flags_and_cli();
+      unsigned sr = FAMOS_EnterCriticalSection();
       
       if (c != 0)
       {
@@ -281,9 +281,9 @@ int FAMOS_GetMailqueue(struct famos_mailqueue* mailqueue, void* b, unsigned c)
 
             famos_restore_flags(sr);
             
-            famos_Sched(0);
+            famosRunScheduler(0);
             
-            sr = famos_save_flags_and_cli();
+            sr = FAMOS_EnterCriticalSection();
 
             if (mailqueue->type != FAMOS_EVENT_TYPE_MAILQUEUE)
             {
@@ -365,9 +365,9 @@ int famos_mailqueue_write(struct famos_mailqueue* a, void* b, int c, int d)
       d = 0;
    }
    
-   func_21c7a0f4(thread, 1);
+   famosThreadAdjustPriority(thread, 1);
    
-   sr = famos_save_flags_and_cli();
+   sr = FAMOS_EnterCriticalSection();
    
    t = famos_get_timestamp();
 
@@ -421,11 +421,11 @@ int famos_mailqueue_write(struct famos_mailqueue* a, void* b, int c, int d)
       
       famos_restore_flags(sr);
       
-      func_21c7a0f4(thread, 0);
+      famosThreadAdjustPriority(thread, 0);
       
-      func_21c789b0(famos->Data_164);
+      FAMOS_Sleep(famos->Data_164);
       
-      func_21c7a0f4(thread, 1);
+      famosThreadAdjustPriority(thread, 1);
       
       if (d != -1)
       {
@@ -437,17 +437,17 @@ int famos_mailqueue_write(struct famos_mailqueue* a, void* b, int c, int d)
          }
       }
 
-      sr = famos_save_flags_and_cli();
+      sr = FAMOS_EnterCriticalSection();
    }
 
    famos_restore_flags(sr);
    
-   func_21c7a0f4(thread, 0);
+   famosThreadAdjustPriority(thread, 0);
    
    if ((famos_irq->context == 0) &&
          (a->Data_16 > 1))
    {
-      famos_Sched(0);
+      famosRunScheduler(0);
    }
    
    return res;

@@ -11,7 +11,6 @@
 
 #endif
 
-void* FAPI_INTR_Isr31(void);
 int FAPI_INTR_Init(void);
 
 #if 0
@@ -45,12 +44,11 @@ void* intrPipeArcStatusHandle; //21b12ee4
 void* intrPipeArcValueHandle; //21b12ee8
 void (*intrPipeCallbackFunction)(int); //21b12eec
 
-#if 0
-struct fapi_gpreg_param intrGpregOpenParams = //21b12ef0 
+FAPI_GPREG_OpenParamsT intrGpregOpenParams = //21b12ef0
 {
    0x20000, 0,
 };
-#endif
+
 
 static struct Struct_21efb580
 {
@@ -161,23 +159,21 @@ int FAPI_INTR_Init(void)
    __asm {msr CPSR_c, my_cpsr}
 #endif
    
-#if 0
-   intrGpregOpenParams.Data_0 = 0x20000;
-   intrGpregOpenParams.Data_4 = 2;      
+   intrGpregOpenParams.version = 0x20000;
+   intrGpregOpenParams.index = 2;
    intrPipeArmStatusHandle = FAPI_GPREG_Open(&intrGpregOpenParams, 0);
    
-   intrGpregOpenParams.Data_4 = 3;      
+   intrGpregOpenParams.index = 3;
    intrPipeArmValueHandle = FAPI_GPREG_Open(&intrGpregOpenParams, 0);
    
-   intrGpregOpenParams.Data_4 = 4;      
+   intrGpregOpenParams.index = 4;
    intrPipeArcStatusHandle = FAPI_GPREG_Open(&intrGpregOpenParams, 0);
    
-   intrGpregOpenParams.Data_4 = 5;      
+   intrGpregOpenParams.index = 5;
    intrPipeArcValueHandle = FAPI_GPREG_Open(&intrGpregOpenParams, 0);
    
    FAPI_INTR_RegisterIrq(31, FAPI_INTR_Isr31, 0);
    FAPI_INTR_EnableIrqCtrl(31);
-#endif
    
    intrInitialized = 1;
    
@@ -242,7 +238,7 @@ void FAPI_INTR_Exit(void)
 
 
 /* 21b04e38 - complete */
-void* FAPI_INTR_Isr31(void)
+uint32_t FAPI_INTR_Isr31(void)
 {
    int value = 0;
    
@@ -268,7 +264,7 @@ void* FAPI_INTR_Isr31(void)
    }
    else
    {
-      PRINTF("polling request interrupt (#31) detected\n");
+       FAPI_SYS_PRINT_MSG("polling request interrupt (#31) detected\n");
       
       FAPI_INTR_Exit();
       

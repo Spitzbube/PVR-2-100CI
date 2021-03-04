@@ -22,7 +22,7 @@ void* famos_timer_create(int cyclic, struct famos_semaphore* semaphore, int c_)
    
    thread->lastError = 0;
    
-   unsigned sl = famos_save_flags_and_cli();   
+   unsigned sl = FAMOS_EnterCriticalSection();
 
    if ((famos_resources != 0) ||
          (0 != famosAllocateListData()))
@@ -102,7 +102,7 @@ int famos_timer_destroy(struct famos_timer* a)
       return 0;
    }
    
-   unsigned sr = famos_save_flags_and_cli();
+   unsigned sr = FAMOS_EnterCriticalSection();
 
    if (famos_resources != 0)
    {           
@@ -157,7 +157,7 @@ int famos_timer_start(struct famos_timer* a, unsigned b)
       return 0;
    }
    
-   unsigned sr = famos_save_flags_and_cli();
+   unsigned sr = FAMOS_EnterCriticalSection();
    
    if (b < famos->Data_164)
    {
@@ -188,7 +188,7 @@ int famos_timer_stop(struct famos_timer* a)
        return 0;
     }
 
-    unsigned sr = famos_save_flags_and_cli();
+    unsigned sr = FAMOS_EnterCriticalSection();
 
     a->active = 0;
 

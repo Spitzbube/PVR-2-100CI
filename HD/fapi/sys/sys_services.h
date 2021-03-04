@@ -7,6 +7,9 @@ struct fapi_driver;
 
 struct FAPI_SYS_Services
 {
+    void (*lockSchedulerFunc)(void); //0
+    void (*unlockSchedulerFunc)(void); //4
+    void (*sleepFunc)(uint32_t mSecs); //8
    unsigned (*disableIrq)(void); //12
    void (*enableIrq)(unsigned); //16
    void* (*createSemaphore)(int); //20
@@ -15,7 +18,7 @@ struct FAPI_SYS_Services
    void (*releaseSemaphore)(void*, int); //32
    void* (*mallocFunc)(size_t size); //60??
    void (*freeFunc)(void* ptr); //76
-   int (*printf)(const char*, ...); //80
+   int (*printfFunc)(const char*, ...); //80
    int (*initDrivers)(struct fapi_driver* a[]); //84
    //88
 };
@@ -46,47 +49,6 @@ extern int FAPI_SYS_Init(void);
             }                                              \
         }
 
-#define PRINTF(str) \
-   if (FAPI_SYS_Services.printf != 0)\
-   {\
-      (FAPI_SYS_Services.printf)(str);\
-   }
-
-#define PRINTF1(str, p1) \
-   if (FAPI_SYS_Services.printf != 0)\
-   {\
-      (FAPI_SYS_Services.printf)(str, p1);\
-   }
-
-#define PRINTF2(str, p1, p2) \
-   if (FAPI_SYS_Services.printf != 0)\
-   {\
-      (FAPI_SYS_Services.printf)(str, p1, p2);\
-   }
-
-#define PRINTF3(str, p1, p2, p3) \
-   if (FAPI_SYS_Services.printf != 0)\
-   {\
-      (FAPI_SYS_Services.printf)(str, p1, p2, p3);\
-   }
-
-#define PRINTF4(str, p1, p2, p3, p4) \
-   if (FAPI_SYS_Services.printf != 0)\
-   {\
-      (FAPI_SYS_Services.printf)(str, p1, p2, p3, p4);\
-   }
-
-#define PRINTF6(str, p1, p2, p3, p4, p5, p6) \
-   if (FAPI_SYS_Services.printf != 0)\
-   {\
-      (FAPI_SYS_Services.printf)(str, p1, p2, p3, p4, p5, p6);\
-   }
- 
-#define PRINTF7(str, p1, p2, p3, p4, p5, p6, p7) \
-   if (FAPI_SYS_Services.printf != 0)\
-   {\
-      (FAPI_SYS_Services.printf)(str, p1, p2, p3, p4, p5, p6, p7);\
-   }
  
 #define DI(cpu_sr) \
    cpu_sr = (FAPI_SYS_Services.disableIrq != 0)?\
@@ -144,8 +106,16 @@ extern int FAPI_SYS_Init(void);
          : 0)
 
 
-#define FAPI_SYS_PRINT_MSG printf
-
+//#define FAPI_SYS_PRINT_MSG printf
+#define FAPI_SYS_PRINT_MSG(...)                                  \
+        {                                                        \
+            if( FAPI_SYS_Services.printfFunc )                   \
+            {                                                    \
+                /*lint -save -e522 */                            \
+                (void)FAPI_SYS_Services.printfFunc(__VA_ARGS__); \
+                /*lint -restore */                                \
+            }                                                     \
+        }
 
 
 typedef uint32_t FAPI_SYS_SemaphoreT;

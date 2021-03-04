@@ -36,7 +36,7 @@ void CPU_Polling(void)
 
     FAPI_UART_LockMutex();
 
-    PRINTF1("jumping to POLLING function in ROM at 0x%08x\n",
+    FAPI_SYS_PRINT_MSG("jumping to POLLING function in ROM at 0x%08x\n",
        (int) poll);
 
     FAPI_UART_UnlockMutex();
@@ -67,7 +67,7 @@ void CPU_Halt(void)
 
     FAPI_UART_LockMutex();
 
-    PRINTF1("jumping to POLLING function in ROM at 0x%08x\n",
+    FAPI_SYS_PRINT_MSG("jumping to POLLING function in ROM at 0x%08x\n",
        (int) poll);
 
     FAPI_UART_UnlockMutex();

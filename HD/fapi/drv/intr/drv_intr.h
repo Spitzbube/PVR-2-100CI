@@ -14,5 +14,6 @@ extern int FAPI_INTR_DisableIrqCtrl(unsigned);
 extern int FAPI_INTR_EnableIrqCtrl(unsigned);
 extern void FAPI_INTR_SetReceiver(unsigned, unsigned);
 extern void FAPI_INTR_SetPriority(unsigned, unsigned);
+uint32_t FAPI_INTR_Isr31( void );
 
 #endif /*DRV_INTR_H_*/

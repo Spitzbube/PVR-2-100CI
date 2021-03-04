@@ -300,7 +300,7 @@ void RTOS_STUB_InitServices(void)
    RTOS_STUB_Services.deleteSemaphore = RTOS_STUB_DestroySemaphore;
    RTOS_STUB_Services.requestSemaphore = RTOS_STUB_GetSemaphore;
    RTOS_STUB_Services.releaseSemaphore = RTOS_STUB_SetSemaphore;
-   RTOS_STUB_Services.printf = RTOS_STUB_Printf;
+   RTOS_STUB_Services.printfFunc = RTOS_STUB_Printf;
    
    FAPI_SYS_SetServices(&RTOS_STUB_Services);
    

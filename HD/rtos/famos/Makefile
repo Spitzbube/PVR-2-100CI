@@ -32,6 +32,7 @@ include $(TOPDIR)/env/make/Makefile.config
   SOURCES += famos_thread.c
   SOURCES += famos_semaphore.c
   SOURCES += famos_timer.c
+  SOURCES += famos_mailbox.c
   SOURCES += famos_mailqueue.c
   SOURCES += famos_interrupt.c
   

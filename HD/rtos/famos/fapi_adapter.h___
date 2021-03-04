@@ -32,7 +32,7 @@ struct Struct_21f19580
    void (*mallocSegment)(void); //72
 #endif
    void (*freeFunc)(void* ptr); //76
-   int (*printf)(const char*, ...); //80
+   int (*printfFunc)(const char*, ...); //80
    int (*initDrivers)(struct fapi_driver* a[]); //84
    //88
 };
@@ -52,39 +52,39 @@ extern void FAPI_SYS_SetMasterCpu(void);
 
 
 #define PRINTF(str) \
-   if (FAPI_SYS_Services.printf != 0)\
+   if (FAPI_SYS_Services.printfFunc != 0)\
    {\
-      (FAPI_SYS_Services.printf)(str);\
+      (FAPI_SYS_Services.printfFunc)(str);\
    }
 
 #define PRINTF1(str, p1) \
-   if (FAPI_SYS_Services.printf != 0)\
+   if (FAPI_SYS_Services.printfFunc != 0)\
    {\
-      (FAPI_SYS_Services.printf)(str, p1);\
+      (FAPI_SYS_Services.printfFunc)(str, p1);\
    }
 
 #define PRINTF2(str, p1, p2) \
-   if (FAPI_SYS_Services.printf != 0)\
+   if (FAPI_SYS_Services.printfFunc != 0)\
    {\
-      (FAPI_SYS_Services.printf)(str, p1, p2);\
+      (FAPI_SYS_Services.printfFunc)(str, p1, p2);\
    }
 
 #define PRINTF3(str, p1, p2, p3) \
-   if (FAPI_SYS_Services.printf != 0)\
+   if (FAPI_SYS_Services.printfFunc != 0)\
    {\
-      (FAPI_SYS_Services.printf)(str, p1, p2, p3);\
+      (FAPI_SYS_Services.printfFunc)(str, p1, p2, p3);\
    }
 
 #define PRINTF4(str, p1, p2, p3, p4) \
-   if (FAPI_SYS_Services.printf != 0)\
+   if (FAPI_SYS_Services.printfFunc != 0)\
    {\
-      (FAPI_SYS_Services.printf)(str, p1, p2, p3, p4);\
+      (FAPI_SYS_Services.printfFunc)(str, p1, p2, p3, p4);\
    }
 
 #define PRINTF6(str, p1, p2, p3, p4, p5, p6) \
-   if (FAPI_SYS_Services.printf != 0)\
+   if (FAPI_SYS_Services.printfFunc != 0)\
    {\
-      (FAPI_SYS_Services.printf)(str, p1, p2, p3, p4, p5, p6);\
+      (FAPI_SYS_Services.printfFunc)(str, p1, p2, p3, p4, p5, p6);\
    }
 
 

@@ -3,10 +3,10 @@
 #include <string.h>
 #include <stdio.h>
 #include <fapi/drv_mmu.h>
+#include <fapi/drv_timer.h>
 #include "famos_memory.h"
 #include "famos_thread.h"
 #include "famos_mailbox.h"
-#include "drv_timer.h"
 #include "famos.h"
 
 
@@ -32,7 +32,7 @@ void* famos_mailbox_create(unsigned r8)
    int irqFlags = famos_save_flags_and_cli();
    
    if ((famos_resources != 0) ||
-         (0 != func_21c7a6b4()))
+         (0 != famosAllocateListData()))
    {
       mailbox = famos_malloc_segment(FAPI_MMU_HeapHandleDTcm, 
             sizeof(struct famos_mailbox));         
@@ -191,7 +191,7 @@ int famos_mailbox_receive(struct famos_mailbox* mailbox, int* data, unsigned r7)
                   //21c79410
                   famos_restore_flags(cpu_sr);
                   
-                  famos_Sched(0);
+                  famosRunScheduler(0);
                   
                   cpu_sr = famos_save_flags_and_cli();
                   //21c79424
@@ -285,7 +285,7 @@ int famos_mailbox_send(struct famos_mailbox* mailbox, int* data, int r4)
          r4 = 0;
       }
       
-      func_21c7a0f4(thread, 1);
+      famosThreadAdjustPriority(thread, 1);
       
       irqFlags = famos_save_flags_and_cli();
       //21c791c8
@@ -322,11 +322,11 @@ int famos_mailbox_send(struct famos_mailbox* mailbox, int* data, int r4)
          //21c791ec
          famos_restore_flags(irqFlags);
          
-         func_21c7a0f4(thread, 0);
+         famosThreadAdjustPriority(thread, 0);
          
-         func_21c789b0(famos->Data_164);
+         FAMOS_Sleep(famos->Data_164);
 
-         func_21c7a0f4(thread, 1);
+         famosThreadAdjustPriority(thread, 1);
          
          if (r4 != -1)
          {
@@ -348,13 +348,13 @@ int famos_mailbox_send(struct famos_mailbox* mailbox, int* data, int r4)
       //21c79278
       famos_restore_flags(irqFlags);
       
-      func_21c7a0f4(thread, 0);
+      famosThreadAdjustPriority(thread, 0);
       
       if ((famos_irq->context == 0) &&
             (mailbox->event.Data_16 > 1))
       {
          //21c792ac
-         famos_Sched(0);
+         famosRunScheduler(0);
       }
       //21c79198
    }

@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <fapi/sys_services.h>
 #include <fapi/drv_mmu.h>
-#include "fapi_adapter.h"
 #include "famos_thread.h"
 //#include "famos_memory.h"
 #include "famos.h"
@@ -91,7 +90,7 @@ void* famos_thread_create(int* stack, //r7
       stackAlloc = 1;
    } //if (stack == 0)
    //21c78dbc
-   sp = famos_save_flags_and_cli();
+   sp = FAMOS_EnterCriticalSection();
    
    if ((famos_resources != 0) ||
          (0 != famosAllocateListData()))
@@ -237,7 +236,7 @@ void* famos_thread_create(int* stack, //r7
          r5->lastError = 0;
          r5->Data_80 = 0;
          r5->Data_88 = 0;
-         r5->Data_100_104 = 0;
+         r5->timeUsed = 0;
          r5->timeStart = 0;
          r5->CtxSwCtr = 0;
          r5->Data_120 = 0;
@@ -255,7 +254,7 @@ void* famos_thread_create(int* stack, //r7
          //21c78fa4
          famos_restore_flags(sp);
          
-         famos_Sched(0);
+         famosRunScheduler(0);
          
          //21c78fb8
          return r5;         
@@ -303,7 +302,7 @@ int famos_thread_suspend(struct famos_thread* a)
       return 0;
    }
    
-   cpu_sr = famos_save_flags_and_cli();
+   cpu_sr = FAMOS_EnterCriticalSection();
    
    a->event = 0;
    a->Data_72 = 0;
@@ -311,7 +310,7 @@ int famos_thread_suspend(struct famos_thread* a)
    
    famos_restore_flags(cpu_sr);
    
-   famos_Sched(0);
+   famosRunScheduler(0);
    
    return 1;
 }
@@ -333,7 +332,7 @@ int famos_thread_relinquish(struct famos_thread* a)
       return 0;
    }
    
-   cpu_sr = famos_save_flags_and_cli();
+   cpu_sr = FAMOS_EnterCriticalSection();
    
    a->Data_72 = 0;
    a->event = 0;
@@ -343,7 +342,7 @@ int famos_thread_relinquish(struct famos_thread* a)
    
    if (famos_irq->context == 0)
    {
-      famos_Sched(0);
+      famosRunScheduler(0);
    }
    
    return 1;
@@ -351,7 +350,7 @@ int famos_thread_relinquish(struct famos_thread* a)
 
 
 /* 21c789b0 - complete */
-int func_21c789b0(unsigned r7)
+int FAMOS_Sleep(unsigned r7)
 {
    void* p = famos_get_current_thread();
    struct famos_thread* thread = p;
@@ -366,7 +365,7 @@ int func_21c789b0(unsigned r7)
       return 0;
    }
    
-   int irqFlags = famos_save_flags_and_cli();
+   int irqFlags = FAMOS_EnterCriticalSection();
    
    unsigned r0 = famos->Data_164;   
    if (r7 > r0) r0 = r7;
@@ -377,7 +376,7 @@ int func_21c789b0(unsigned r7)
    
    famos_restore_flags(irqFlags);
    
-   famos_Sched(0);
+   famosRunScheduler(0);
    
    return 1;
 }
@@ -401,7 +400,7 @@ int func_21c78948(struct famos_thread* a)
       return 0;
    }
    
-   int cpu_sr = famos_save_flags_and_cli();
+   int cpu_sr = FAMOS_EnterCriticalSection();
    
    state = a->state;
    
@@ -429,7 +428,7 @@ int famos_thread_get_private(struct famos_thread* a)
       return 0;
    }
    
-   int cpu_sr = famos_save_flags_and_cli();
+   int cpu_sr = FAMOS_EnterCriticalSection();
    
    r4 = a->private;
    
@@ -455,7 +454,7 @@ char* famos_thread_get_name(struct famos_thread* a)
       return 0;
    }
    
-   int cpu_sr = famos_save_flags_and_cli();
+   int cpu_sr = FAMOS_EnterCriticalSection();
       
    name = a->name;
    
@@ -489,7 +488,7 @@ char func_21c78838(struct famos_thread* a)
       return 0;
    }
    
-   int cpu_sr = famos_save_flags_and_cli();
+   int cpu_sr = FAMOS_EnterCriticalSection();
       
    r4 = (a->priority >> 8) & 0xFF;
    
@@ -520,7 +519,7 @@ struct famos_thread* famos_get_current_thread(void)
       return &Data_2206c174;
    }
 
-   irqFlags = famos_save_flags_and_cli();
+   irqFlags = FAMOS_EnterCriticalSection();
    
    thread = famosThreadPtrAct;
    
@@ -531,11 +530,11 @@ struct famos_thread* famos_get_current_thread(void)
 
 
 /* 21c7aa20 - complete */
-void func_21c7aa20(void)
+void famosFinishThread(void)
 {
    struct famos_thread* r4 = famos_get_current_thread();
    
-   unsigned cpu_sr = famos_save_flags_and_cli();
+   unsigned cpu_sr = FAMOS_EnterCriticalSection();
    
    r4->state = FAMOS_THREAD_STATE_SUSPEND | 0x08;
    r4->Data_72 = 0;
@@ -543,17 +542,23 @@ void func_21c7aa20(void)
    
    famos_restore_flags(cpu_sr);
    
-   famos_Sched(0);
+   famosRunScheduler(0);
 }
 
 
 /* 21c7c160 - complete */
 void famos_create_stack_frame(struct famos_thread* a)
 {  
-   void (*func)(int) = a->func;
-   int param = a->param;   
+   int* sp;
+   int thread_function;
+   int destroy_function;
+   int thread_argument;
+
+   thread_function = (int) a->func;
+   destroy_function = (int) famosFinishThread;
+   thread_argument = a->param;
    
-   int* sp = &a->stackBuffer[a->stacksize];
+   sp = &a->stackBuffer[a->stacksize];
    
    sp--;
             
@@ -562,22 +567,22 @@ void famos_create_stack_frame(struct famos_thread* a)
       sp--;
    }
    
-   *--sp = (int) func;
-   *--sp = (int) func_21c7aa20;
-   *--sp = 0xdead0012;
-   *--sp = 0xdead0011;
-   *--sp = 0xdead0010;
-   *--sp = 0xdead0009;
-   *--sp = 0xdead0008;
-   *--sp = 0xdead0007;
-   *--sp = 0xdead0006;
-   *--sp = 0xdead0005;
-   *--sp = 0xdead0004;
-   *--sp = 0xdead0003;
-   *--sp = 0xdead0002;
-   *--sp = 0xdead0001;
-   *--sp = param;
-   *--sp = 31;
+   *--sp = thread_function; //PC
+   *--sp = destroy_function; //LR
+   *--sp = 0xdead0012; //R12
+   *--sp = 0xdead0011; //R11
+   *--sp = 0xdead0010; //R10
+   *--sp = 0xdead0009; //R9
+   *--sp = 0xdead0008; //R8
+   *--sp = 0xdead0007; //R7
+   *--sp = 0xdead0006; //R6
+   *--sp = 0xdead0005; //R5
+   *--sp = 0xdead0004; //R4
+   *--sp = 0xdead0003; //R3
+   *--sp = 0xdead0002; //R2
+   *--sp = 0xdead0001; //R1
+   *--sp = thread_argument; //R0
+   *--sp = 0x1F; // SPSR (cpu mode SYS with IRQ/FIQ enabled)
    
    a->sp = sp;
 }

@@ -31,7 +31,7 @@ struct famos
    int fill_180; //180
    void* printThread; //184
    void* mailQueue; //188
-   void* Data_192; //192
+   void* printFunctionSemaphore; //192
    void* reportThread; //196
    void* Data_200; //200
    void* timer; //204
@@ -72,7 +72,7 @@ struct fapi_driver
 {
    char* name; //0
    int irq; //4
-   int Data_8; //8
+   int bsrExecution; //8
    int (*init)(void); //12
    void (*deinit)(void); //16
    void* (*isr)(void); //20
@@ -96,7 +96,7 @@ extern struct famos_thread Data_2206c174; //2206c174
 
 extern int famos_printf(const char* format, ...);
 extern struct famos_thread* famos_get_current_thread(void);
-extern int func_21c789b0(unsigned);
+extern int FAMOS_Sleep(unsigned);
 extern void* famos_thread_create(int* a, 
                   unsigned stacksize, 
                   unsigned prio, 
@@ -112,7 +112,7 @@ extern int famos_thread_get_private(struct famos_thread*);
 extern int famos_get_current_thread_error(void);
 extern char func_21c78838(struct famos_thread*);
 
-extern int famos_save_flags_and_cli(void);
+extern int FAMOS_EnterCriticalSection(void);
 extern void famos_restore_flags(int cpsr);
 extern char* famos_get_version(void);
 extern void famos_start(void);
@@ -121,8 +121,8 @@ extern int famos_init(void);
 extern void famos_init_services(void);
 extern unsigned long long famos_get_timestamp(void);
 extern void famos_irq_leave(int);
-extern int func_21c7a0f4(struct famos_thread* a, int b);
-extern void famos_Sched(int a);
+extern int famosThreadAdjustPriority(struct famos_thread* a, int b);
+extern void famosRunScheduler(int from_interrupt);
 extern int famosAllocateListData(void);
 extern int func_21c7a71c(struct fapi_driver* a[]);
 extern void* famos_semaphore_create(unsigned);
