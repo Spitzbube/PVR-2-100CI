@@ -19,6 +19,18 @@ static void gpioReleaseHandle(struct fapi_gpio_handle* a);
 static int fapi_gpio_check_handle(struct fapi_gpio_handle* a);
 static struct fapi_gpio_handle* fapi_gpio_get_handle(void);
 
+FAPI_SYS_DriverT FAPI_GPIO_Driver = //21efae40
+{
+      "GPIO",
+      19,
+      1,
+      FAPI_GPIO_Init,
+      FAPI_GPIO_Exit,
+      FAPI_GPIO_Isr,
+      FAPI_GPIO_Bsr,
+      0x400,
+      4,
+};
 
 static struct
 {

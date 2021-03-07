@@ -41,6 +41,10 @@ ifeq ($(release-software-applications-ctlserver), y)
    DIRECTORIES += ctlserver
 endif
 
+ifeq ($(release-software-applications-smartgo-hd), y)
+   DIRECTORIES += smartgo-hd
+endif
+
 ################################################################################
 # include library specific targets ( if available )
 ################################################################################

@@ -43,7 +43,7 @@ endif
   CCFLAGS_USER += -DPROGRAM_HEAP_BYTES=0x00200000 
   CCFLAGS_USER += -DPROGRAM_STACK_BYTES=0x00010000
 
-  HEADERS += src/cpu_polling.h
+  HEADERS += src/cpu_mode.h
   HEADER_SUBDIR = boot
   
   LIBRARY = libstartup

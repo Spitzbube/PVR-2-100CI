@@ -11,7 +11,7 @@ struct fapi_uart_handle
    int magic; //0
    int Data_4; //4
    int index; //8
-   struct fapi_uart_open_params Data_12; //12
+   FAPI_UART_OpenParamsT Data_12; //12
    //20
 };
 
@@ -66,6 +66,33 @@ static void* uartSemaphore = 0; //21b13608
 static unsigned uartClockFrequency = 81000000; //21b1360c
 static int uartStdioBlockIndex = 0; //21b13610
 void* uartRetargetHandle = 0; //21b13614
+
+FAPI_SYS_DriverT FAPI_UART_Driver0 = //21efc574
+{
+      "UART0",
+      8,
+      0,
+      FAPI_UART_Init,
+      FAPI_UART_Exit,
+      FAPI_UART_Isr0,
+      0,
+      0,
+      0,
+};
+
+FAPI_SYS_DriverT FAPI_UART_Driver1 = //21efc598
+{
+      "UART1",
+      9,
+      0,
+      FAPI_UART_Init,
+      FAPI_UART_Exit,
+      FAPI_UART_Isr1,
+      0,
+      0,
+      0,
+};
+
 static struct Struct_21efc5bc uartBlockArray[2] = //21b13618
 {
    {
@@ -201,7 +228,7 @@ int FAPI_UART_Init(void)
    uartHandleStdlibc.magic = 0x75617274; //uart
    uartHandleStdlibc.Data_4 = 1;
    uartHandleStdlibc.index = uartStdioBlockIndex;
-   uartHandleStdlibc.Data_12.Data_0 = 0x20000;
+   uartHandleStdlibc.Data_12.version = 0x20000;
    uartHandleStdlibc.Data_12.index = uartStdioBlockIndex;
    
    if (0 != FAPI_SYS_IsMasterCpu())
@@ -431,7 +458,7 @@ static struct fapi_uart_handle* fapi_uart_get_handle(void)
 
 
 /* 21b07074 - complete */
-void* FAPI_UART_Open(struct fapi_uart_open_params* param, int* pres)
+void* FAPI_UART_Open(FAPI_UART_OpenParamsT* param, int* pres)
 {
    struct fapi_uart_handle* h;
    int res = 0;
@@ -456,7 +483,7 @@ void* FAPI_UART_Open(struct fapi_uart_open_params* param, int* pres)
       return 0;
    }
    
-   if (param->Data_0 > 0x20000)
+   if (param->version > 0x20000)
    {
       res = 0xffffd8e6;
       if (pres != 0)
@@ -472,7 +499,7 @@ void* FAPI_UART_Open(struct fapi_uart_open_params* param, int* pres)
 
    if (0 != uartCheckHandle(h))
    {
-      memcpy(&h->Data_12, param, sizeof(struct fapi_uart_open_params));
+      memcpy(&h->Data_12, param, sizeof(FAPI_UART_OpenParamsT));
       
       if (uartBlockArray[param->index].Data_0 != 0)
       {

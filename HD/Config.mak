@@ -120,6 +120,8 @@ TOOLCHAIN_PARENT_DIRECTORY ?= /opt/goke
   SDKHOME-arm11-rvheader   ?= "$(ROOT)/c/PROGRA~1/ARM/RVCT/Data/3.1/569/include/windows"
   SDKHOME-arm11-gnuarm     ?= "$(ROOT)/c/PROGRA~1/GNUARM"
 
+  BOARD   ?= BOARD_CUSTOMER 
+  
 ################################################################################
 #
 # rootfs parent directroy settings (optional)

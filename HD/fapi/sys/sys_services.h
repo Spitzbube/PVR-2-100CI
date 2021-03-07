@@ -3,8 +3,6 @@
 
 #include <fapi/sys_driver.h>
 
-struct fapi_driver;
-
 struct FAPI_SYS_Services
 {
     void (*lockSchedulerFunc)(void); //0
@@ -17,9 +15,16 @@ struct FAPI_SYS_Services
    int (*requestSemaphore)(void*, int); //28
    void (*releaseSemaphore)(void*, int); //32
    void* (*mallocFunc)(size_t size); //60??
+#if 0
+   void* (*mallocUncachedFunc)(size_t size); //64
+#endif
+   void* (*mallocCachedFunc)(size_t size); //68
+#if 0
+   void* (*mallocSegmentFunc)(FAPI_SYS_HandleT segment, size_t size); //72
+#endif
    void (*freeFunc)(void* ptr); //76
    int (*printfFunc)(const char*, ...); //80
-   int (*initDrivers)(struct fapi_driver* a[]); //84
+   int (*initDrivers)(FAPI_SYS_DriverT* a[]); //84
    //88
 };
 
@@ -34,7 +39,6 @@ extern int FAPI_SYS_IsIrqEnabled(void);
 extern int FAPI_SYS_IsIsrActive(void);
 extern void FAPI_SYS_SetMasterCpu(void);
 extern int FAPI_SYS_IsMasterCpu(void);
-extern int FAPI_SYS_Init(void);
 
 #define FAPI_SYS_DISABLE_IRQ                           \
         ( ( FAPI_SYS_Services.disableIrq != NULL ) \
@@ -99,6 +103,16 @@ extern int FAPI_SYS_Init(void);
                 FAPI_SYS_Services.releaseSemaphore(sem,timeout); \
             }                                                    \
         }
+
+
+#define FAPI_SYS_FREE(ptr)                           \
+        {                                            \
+            if( FAPI_SYS_Services.freeFunc != NULL ) \
+            {                                        \
+                FAPI_SYS_Services.freeFunc(ptr);     \
+            }                                        \
+        }
+
 
 #define FAPI_SYS_INIT_DRIVERS(pDriverArr)                              \
         ((FAPI_SYS_Services.initDrivers != NULL)                   \

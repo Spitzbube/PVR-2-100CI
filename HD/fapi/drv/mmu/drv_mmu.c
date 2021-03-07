@@ -14,7 +14,6 @@ static struct fapi_mmu_handle* fapi_mmu_get_handle(void);
 static int fapi_mmu_check_handle(struct fapi_mmu_handle*);
 static void fapi_mmu_clear_handle(struct fapi_mmu_handle*);
 
-#if 0
 FAPI_SYS_DriverT FAPI_MMU_Driver = //21efbec4 
 {
       "MMU",
@@ -27,7 +26,6 @@ FAPI_SYS_DriverT FAPI_MMU_Driver = //21efbec4
       0,
       0,
 };
-#endif
 
 static int mmuInitialized = 0; //21f23c5c
 int Data_21f23c60; //21f23c60

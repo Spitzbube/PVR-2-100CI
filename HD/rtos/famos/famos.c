@@ -110,14 +110,19 @@ void famos_print_report(void);
 /* 21c79e00 - complete */
 void famos_idle_thread(int a)
 {   
+#if 0
     int thousend = -1;
+#endif
+
    while (1)
    {
+#if 0
        if ((famos->idleCount/1000000) != thousend)
        {
            FAPI_SYS_PRINT_MSG("famos->idleCount: %d\n", famos->idleCount);
            thousend = famos->idleCount/1000000;
        }
+#endif
       
       famos->idleCount++;
    }
@@ -440,7 +445,9 @@ void famos_print_thread(int a)
    
    while (1)
    {
+#if 0
        printf("famos_print_thread\n");
+#endif
 
       FAMOS_GetMailqueue(famos->mailQueue, buffer, -1);
    
@@ -748,7 +755,7 @@ int famos_init_drivers(struct fapi_driver* a[])
 /* 21c7a950 - complete */
 void famosRunScheduler(int from_interrupt)
 {
-#if 1
+#if 0
     if (from_interrupt)
     {
 #if 1
@@ -1659,7 +1666,9 @@ void famos_init_services(void)
 #if 0
    famos_services.mallocUncached = famos_malloc_uncached;
    famos_services.Data_64 = famos_malloc_uncached;
-   famos_services.mallocCached = famos_malloc_cached;
+#endif
+   famos_services.mallocCachedFunc = famos_malloc_cached;
+#if 0
    famos_services.mallocSegment = famos_malloc_segment;
 #endif
    famos_services.freeFunc = famos_free;

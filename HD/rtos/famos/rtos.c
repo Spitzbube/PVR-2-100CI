@@ -1,8 +1,9 @@
 
 
+#include <fapi/sys_services.h>
+
 #if 0
 
-#include <fapi/sys_services.h>
 #include "famos.h"
 #include <rtos/rtos.h>
 
@@ -21,8 +22,6 @@ int RTOS_InitKernel(void)
 }
 
 
-#if 0
-
 /* 21c78638 - complete */
 int32_t rtos_get_current_thread_error(void)
 {
@@ -33,15 +32,19 @@ int32_t rtos_get_current_thread_error(void)
 /* 21c7863c - todo */
 void rtos_wait(int a)
 {
-   
+    FAMOS_Sleep(a);
 }
 
+
+#if 0
 
 /* 21c78644 - complete */
 void rtos_thread_suspend(void* thread)
 {
    famos_thread_suspend(thread);
 }
+
+#endif
 
 
 /* 21c78658 - complete */
@@ -79,12 +82,15 @@ void* rtos_mailbox_create(unsigned a)
 }
 
 
+#if 0
+
 /* 21c78678 - complete */
 void RTOS_DestroyMailbox(void* a)
 {
    famos_mailbox_destroy(a);
 }
 
+#endif
 
 /* 21c78674 - complete */
 int rtos_mailbox_receive(void* a, int* b, int c)
@@ -99,6 +105,8 @@ int rtos_mailbox_send(void* a, int* b, int c)
    return famos_mailbox_send(a, b, c);
 }
 
+
+#if 0
 
 /* 21c7868c - complete */
 void* rtos_create_semaphore(unsigned a)
@@ -160,6 +168,9 @@ uint32_t RTOS_SetMailqueue(RTOS_MailqueueT mailqueueHandle,
 }
 
 
+#endif
+
+
 /* 21c786b4 - complete */
 void rtos_restore_flags(int a)
 {
@@ -170,10 +181,8 @@ void rtos_restore_flags(int a)
 /* 21c786b8 - complete */
 int rtos_save_flags_and_cli(void)
 {
-   return famos_save_flags_and_cli();
+   return FAMOS_EnterCriticalSection();
 }
-
-#endif
 
 
 /* 21c786bc - complete */
@@ -190,6 +199,7 @@ char* rtos_get_version(void)
    return famos_get_version();
 }
 
+#endif
 
 /* 21c786c4 - complete */
 void rtos_halt(int a)
@@ -197,4 +207,3 @@ void rtos_halt(int a)
    famos_exit(a);
 }
 
-#endif

@@ -2,7 +2,8 @@
 #include <stdio.h>
 #include <errno.h>
 #include <sys/stat.h>
-#include "cpu_polling.h"
+#include "cpu_mode.h"
+#include "fapi/sys_services.h"
 #include "fapi/drv_uart.h"
 
 

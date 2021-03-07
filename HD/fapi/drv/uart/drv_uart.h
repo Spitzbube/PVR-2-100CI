@@ -2,23 +2,31 @@
 #define DRV_UART_H_
 
 
-struct fapi_driver;
+#define FAPI_UART_BAUDRATE_115200  115200
+#define FAPI_UART_DATABITS_8       8
+#define FAPI_UART_STOPBITS_1       1
+#define FAPI_UART_PARITY_NONE      0
+#define FAPI_UART_FLOWCTRL_NONE    0
 
-struct fapi_uart_open_params
+typedef enum {
+    FAPI_UART_VERSION = (int32_t)0x00020000
+} FAPI_UART_VersionEnumT;
+
+typedef struct
 {
-   int Data_0; //0
-   int index; //4
-};
+    FAPI_UART_VersionEnumT version;
+    uint32_t               index;
+} FAPI_UART_OpenParamsT;
 
 
 extern void* uartRetargetHandle;
 
-extern struct fapi_driver FAPI_UART_Driver0; 
-extern struct fapi_driver FAPI_UART_Driver1; 
+extern FAPI_SYS_DriverT FAPI_UART_Driver0;
+extern FAPI_SYS_DriverT FAPI_UART_Driver1;
 
 
 extern int FAPI_UART_Init(void);
-extern void* FAPI_UART_Open(struct fapi_uart_open_params*, int*);
+extern void* FAPI_UART_Open(FAPI_UART_OpenParamsT*, int*);
 extern int FAPI_UART_Close(void*);
 extern int FAPI_UART_WriteByte(void*, char);
 extern int FAPI_UART_ReadByte(void*);

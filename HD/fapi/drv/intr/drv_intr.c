@@ -13,8 +13,7 @@
 
 int FAPI_INTR_Init(void);
 
-#if 0
-struct fapi_driver FAPI_INTR_Driver = //21b131f8
+FAPI_SYS_DriverT FAPI_INTR_Driver = //21b131f8
 {
       "INTR",
       -1,
@@ -29,7 +28,6 @@ struct fapi_driver FAPI_INTR_Driver = //21b131f8
 #endif
 };
 
-#endif
 
 void* (*FAPI_INTR_IsrFunctionTable[32])(void); //flasher: 21b15114
 int (*FAPI_INTR_BsrFunctionTable[32])(void*); //flasher: 21b15194
@@ -400,8 +398,6 @@ int FAPI_INTR_DisableIrqCtrl(unsigned a)
 }
 
 
-#if 0
-
 /* 21b05138 - complete */
 void FAPI_INTR_SetPriority(unsigned a, unsigned b)
 {
@@ -415,8 +411,6 @@ void FAPI_INTR_SetPriority(unsigned a, unsigned b)
       intrInfoArray[a].prio = b;
    }
 }
-
-#endif
 
 
 /* 21b0515c - complete */

@@ -29,7 +29,7 @@ void* famos_mailbox_create(unsigned r8)
       return 0;
    }
 
-   int irqFlags = famos_save_flags_and_cli();
+   int irqFlags = FAMOS_EnterCriticalSection();
    
    if ((famos_resources != 0) ||
          (0 != famosAllocateListData()))
@@ -154,7 +154,9 @@ int famos_mailbox_receive(struct famos_mailbox* mailbox, int* data, unsigned r7)
                if ((FAPI_TIMER_GetTimeStamp(1000) - t) > 5)
                {
                   //21c794d0
-                  func_21b01c88();
+                   extern void famosBreakPoint();
+
+                   famosBreakPoint();
                   res = 0;
                   //->21c7933c
                   break;
@@ -164,7 +166,7 @@ int famos_mailbox_receive(struct famos_mailbox* mailbox, int* data, unsigned r7)
          else
          {
             //21c79380
-            int cpu_sr = famos_save_flags_and_cli();
+            int cpu_sr = FAMOS_EnterCriticalSection();
             
             if (r7 != 0)
             {
@@ -193,7 +195,7 @@ int famos_mailbox_receive(struct famos_mailbox* mailbox, int* data, unsigned r7)
                   
                   famosRunScheduler(0);
                   
-                  cpu_sr = famos_save_flags_and_cli();
+                  cpu_sr = FAMOS_EnterCriticalSection();
                   //21c79424
                   if (mailbox->event.type != FAMOS_EVENT_TYPE_MAILBOX) //66)
                   {
@@ -287,7 +289,7 @@ int famos_mailbox_send(struct famos_mailbox* mailbox, int* data, int r4)
       
       famosThreadAdjustPriority(thread, 1);
       
-      irqFlags = famos_save_flags_and_cli();
+      irqFlags = FAMOS_EnterCriticalSection();
       //21c791c8
       t = famos_get_timestamp();
       
@@ -343,7 +345,7 @@ int famos_mailbox_send(struct famos_mailbox* mailbox, int* data, int r4)
             //21c79240
          }
          //21c79240
-         irqFlags = famos_save_flags_and_cli();
+         irqFlags = FAMOS_EnterCriticalSection();
       }
       //21c79278
       famos_restore_flags(irqFlags);

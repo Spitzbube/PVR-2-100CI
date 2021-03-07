@@ -53,11 +53,11 @@ CXX        = $(SDKHOME)/bin/$(CCTARGET)-g++$(TOOL_EXT)
 #CCVERSION := $(shell "$(CC)" -dumpversion)
 
 ################################################################################
-#CCFLAGS   += -D$(BOARD)
+CCFLAGS    = -D$(BOARD)
 #CCFLAGS   += -DBOARDNAME="\"$(BOARDNAME)\""
 #CCFLAGS   += -DBOARD_INCLUDE_FILE="\"boards/$(BOARDNAME).h\""
-#CCFLAGS   += -D$(DECODER)
-CCFLAGS    = -mcpu=arm1176jzf-s
+CCFLAGS   += -D$(DECODER)
+CCFLAGS   += -mcpu=arm1176jzf-s
 CCFLAGS   += -O2
 CCFLAGS   += -fno-delete-null-pointer-checks
 CCFLAGS   += -fno-tree-vrp
@@ -69,6 +69,13 @@ CCFLAGS   += -mlittle-endian
 CCFLAGS   += -funsigned-char
 CCFLAGS   += -Wall
 CCFLAGS   += -I.
+ifeq ($(FREG_INLINE),1)
+CCFLAGS   += -DFREG_USE_INLINE=1
+CCFLAGS   += -DFREG_VIC_NO_INLINE=1
+CCFLAGS   += -DINLINE=__attribute__\(\(always_inline\)\)inline
+else
+CCFLAGS   += -DINLINE=__inline__
+endif 
 CCFLAGS   += -DPROGRAM_STACK_BYTES=$(PROGRAM_STACK_BYTES)
 CCFLAGS   += -DPROGRAM_HEAP_BYTES=$(PROGRAM_HEAP_BYTES)
 CCFLAGS   += $(INSTALL_INCLUDE_DIRECTORIES:%=-I%)

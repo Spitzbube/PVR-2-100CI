@@ -20,4 +20,5 @@ release-software-applications-ctlserver    = n
 release-software-applications-sample       = y
 release-software-applications-adidemo      = n
 release-software-applications-onvifserver  = n
+release-software-applications-smartgo-hd   = y
 

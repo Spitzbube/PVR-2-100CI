@@ -1,6 +1,7 @@
 
 #include <stdio.h>
 //#include "cpu_polling.h"
+#include "fapi/sys_services.h"
 #include "fapi/reg_irq_ctrl.h"
 #include "fapi/drv_intr.h"
 #include "famos_interrupt.h"

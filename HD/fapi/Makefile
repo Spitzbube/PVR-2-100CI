@@ -48,6 +48,8 @@ include $(TOPDIR)/env/make/Makefile.config
   HEADERS = $(SOURCES:%.c=%.h)
   HEADERS += sys/sys_driver.h
   HEADERS += sys/sys_error.h
+  HEADERS += sys/sys_init.h
+  HEADERS += sys/customer/sys_init_customer.h
 
   LIBRARY = libfapi
   HEADER_SUBDIR = fapi
