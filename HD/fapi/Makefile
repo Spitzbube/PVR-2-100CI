@@ -29,6 +29,7 @@ include $(TOPDIR)/env/make/Makefile.config
 
   SOURCES += drv/gpio/drv_gpio.c
   SOURCES += drv/gpreg/drv_gpreg.c
+  SOURCES += drv/i2c/drv_i2c.c
   SOURCES += drv/intr/drv_intr.c
   SOURCES += drv/mmu/bget.c
   SOURCES += drv/mmu/drv_mmu.c
@@ -37,13 +38,14 @@ include $(TOPDIR)/env/make/Makefile.config
   SOURCES += drv/uart/drv_uart.c
 
   SOURCES += reg/$(DECODER)/reg_gpio.c
+  SOURCES += reg/$(DECODER)/reg_i2c.c
   SOURCES += reg/$(DECODER)/reg_irq_ctrl.c
   SOURCES += reg/$(DECODER)/reg_uart.c
   SOURCES += reg/$(DECODER)/reg_vic.c
 
   SOURCES += sys/sys_services.c
 
-  CCFLAGS_USER += -DINLINE=__inline
+#  CCFLAGS_USER += -DINLINE=__inline
   
   HEADERS = $(SOURCES:%.c=%.h)
   HEADERS += sys/sys_driver.h

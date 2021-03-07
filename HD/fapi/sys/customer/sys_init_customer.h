@@ -238,7 +238,7 @@
     #endif
 
     #ifndef FAPI_SYS_INIT_I2C
-    #define FAPI_SYS_INIT_I2C           0
+    #define FAPI_SYS_INIT_I2C           1
     #endif
 
     #ifndef FAPI_SYS_INIT_ICC

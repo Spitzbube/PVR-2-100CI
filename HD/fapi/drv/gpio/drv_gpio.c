@@ -161,7 +161,7 @@ static struct fapi_gpio_handle
 {
    int magic; //0
    int Data_4; //4
-   struct fapi_gpio_params Data_8; //8
+   FAPI_GPIO_OpenParamsT Data_8; //8
    //24
 } gpioHandleArray[96]; //21b14774
 
@@ -336,15 +336,15 @@ void* FAPI_GPIO_Isr(void)
       for (i = 0; i < 96; i++)
       {
          if ((gpioHandleArray[i].Data_4 != 0) &&
-               ((gpioHandleArray[i].Data_8.Data_8 == 0x138) ||
-               (gpioHandleArray[i].Data_8.Data_8 == 0x143)))
+               ((gpioHandleArray[i].Data_8.function == 0x138) ||
+               (gpioHandleArray[i].Data_8.function == 0x143)))
          {
             struct fapi_gpio_mail sp;
 
             memset(&sp, 0, sizeof(struct fapi_gpio_mail));
 
-            sp.Data_4 = gpioHandleArray[i].Data_8.index;
-            sp.func = gpioHandleArray[i].Data_8.func;
+            sp.Data_4 = gpioHandleArray[i].Data_8.pin;
+            sp.func = gpioHandleArray[i].Data_8.callback;
 
             r4 = fapi_gpio_queue_request(&sp);
             break;
@@ -406,7 +406,7 @@ static int func_21c1ec74(unsigned r0)
 
 
 /* 21b0412c - nearly complete */
-void* FAPI_GPIO_Open(struct fapi_gpio_params* params, int* pres)
+void* FAPI_GPIO_Open(FAPI_GPIO_OpenParamsT* params, int* pres)
 {
    int r16, r17;
    struct fapi_gpio_handle* h = 0;
@@ -428,7 +428,7 @@ void* FAPI_GPIO_Open(struct fapi_gpio_params* params, int* pres)
       return 0;
    }
 
-   if ((params->index > 95) && (params->index != -1))
+   if ((params->pin > 95) && (params->pin != -1))
    {
       if (pres != 0)
       {
@@ -437,7 +437,7 @@ void* FAPI_GPIO_Open(struct fapi_gpio_params* params, int* pres)
       return 0;
    }
 
-   if (params->Data_0 > 0x20000)
+   if (params->version > 0x20000)
    {
       if (pres != 0)
       {
@@ -462,18 +462,18 @@ void* FAPI_GPIO_Open(struct fapi_gpio_params* params, int* pres)
       return 0;
    }
 
-   memcpy(&h->Data_8, params, sizeof(struct fapi_gpio_params));
+   memcpy(&h->Data_8, params, sizeof(FAPI_GPIO_OpenParamsT));
 
    if (pres != 0)
    {
       *pres = res;
    }
 
-   if (h->Data_8.index == -1)
+   if (h->Data_8.pin == -1)
    {
-      h->Data_8.index = func_21c1ec74(h->Data_8.Data_8);
+      h->Data_8.pin = func_21c1ec74(h->Data_8.function);
 
-      if (h->Data_8.index == -1)
+      if (h->Data_8.pin == -1)
       {
          gpioReleaseHandle(h);
 
@@ -489,99 +489,99 @@ void* FAPI_GPIO_Open(struct fapi_gpio_params* params, int* pres)
    }
    else
    {
-      gpioXrefArray[h->Data_8.index].inUse = 1;
-      gpioXrefArray[h->Data_8.index].function = h->Data_8.Data_8;
+      gpioXrefArray[h->Data_8.pin].inUse = 1;
+      gpioXrefArray[h->Data_8.pin].function = h->Data_8.function;
    }
 
-   if ((h->Data_8.Data_8 >= 0x101) && (h->Data_8.Data_8 <= 0x142))
+   if ((h->Data_8.function >= 0x101) && (h->Data_8.function <= 0x142))
    {
-      r17 = h->Data_8.Data_8 - 0x100;
+      r17 = h->Data_8.function - 0x100;
 
-      FREG_GPIO_SetDataOut_DataEnSel(h->Data_8.index, 1);
-      FREG_GPIO_SetDataIn_DataInSel(r17, h->Data_8.index + 2);
+      FREG_GPIO_SetDataOut_DataEnSel(h->Data_8.pin, 1);
+      FREG_GPIO_SetDataIn_DataInSel(r17, h->Data_8.pin + 2);
 
       UNLOCK(gpioSemaphore);
 
       return h;
    }
-   else if ((h->Data_8.Data_8 >= 0x80) && (h->Data_8.Data_8 <= 0xd9))
+   else if ((h->Data_8.function >= 0x80) && (h->Data_8.function <= 0xd9))
    {
-      r16 = h->Data_8.Data_8 - 0x80;
+      r16 = h->Data_8.function - 0x80;
 
-      FREG_GPIO_SetDataOut_DataEnSel(h->Data_8.index, 0);
-      FREG_GPIO_SetDataOut_DataOutSel(h->Data_8.index, r16);
-      FREG_GPIO_SetDataOut_DataEnExchange(h->Data_8.index, 0);
+      FREG_GPIO_SetDataOut_DataEnSel(h->Data_8.pin, 0);
+      FREG_GPIO_SetDataOut_DataOutSel(h->Data_8.pin, r16);
+      FREG_GPIO_SetDataOut_DataEnExchange(h->Data_8.pin, 0);
 
-      if (h->Data_8.Data_8 == 0x9d)
+      if (h->Data_8.function == 0x9d)
       {
-         FREG_GPIO_SetDataOut_DataEnSel(h->Data_8.index, 0x0a);
+         FREG_GPIO_SetDataOut_DataEnSel(h->Data_8.pin, 0x0a);
       }
 
-      if (h->Data_8.Data_8 == 0x94)
+      if (h->Data_8.function == 0x94)
       {
-         FREG_GPIO_SetDataOut_DataEnSel(h->Data_8.index, 0x05);
+         FREG_GPIO_SetDataOut_DataEnSel(h->Data_8.pin, 0x05);
       }
 
-      if ((h->Data_8.Data_8 == 0x98) ||
-            (h->Data_8.Data_8 == 0x99) ||
-            (h->Data_8.Data_8 == 0xc1) ||
-            (h->Data_8.Data_8 == 0xc2))
+      if ((h->Data_8.function == 0x98) ||
+            (h->Data_8.function == 0x99) ||
+            (h->Data_8.function == 0xc1) ||
+            (h->Data_8.function == 0xc2))
       {
-         FREG_GPIO_SetDataOut_DataEnExchange(h->Data_8.index, 1);
+         FREG_GPIO_SetDataOut_DataEnExchange(h->Data_8.pin, 1);
       }
 
       UNLOCK(gpioSemaphore);
 
       return h;
    }
-   else if ((h->Data_8.Data_8 >= 0x940110) &&
-         (h->Data_8.Data_8 <= 0xc20142))
+   else if ((h->Data_8.function >= 0x940110) &&
+         (h->Data_8.function <= 0xc20142))
    {
-      r16 = (h->Data_8.Data_8 >> 16) - 0x80;
-      r17 = (h->Data_8.Data_8 & 0xFFFF) - 0x100;
+      r16 = (h->Data_8.function >> 16) - 0x80;
+      r17 = (h->Data_8.function & 0xFFFF) - 0x100;
 
-      FREG_GPIO_SetDataOut_DataEnSel(h->Data_8.index, 0);
-      FREG_GPIO_SetDataOut_DataEnExchange(h->Data_8.index, 1);
+      FREG_GPIO_SetDataOut_DataEnSel(h->Data_8.pin, 0);
+      FREG_GPIO_SetDataOut_DataEnExchange(h->Data_8.pin, 1);
 
-      if (h->Data_8.Data_8 == 0x9d0112)
+      if (h->Data_8.function == 0x9d0112)
       {
-         FREG_GPIO_SetDataOut_DataEnSel(h->Data_8.index, 0x0a);
-         FREG_GPIO_SetDataOut_DataEnExchange(h->Data_8.index, 0);
+         FREG_GPIO_SetDataOut_DataEnSel(h->Data_8.pin, 0x0a);
+         FREG_GPIO_SetDataOut_DataEnExchange(h->Data_8.pin, 0);
       }
 
-      if (h->Data_8.Data_8 == 0x940110)
+      if (h->Data_8.function == 0x940110)
       {
-         FREG_GPIO_SetDataOut_DataEnSel(h->Data_8.index, 0x05);
-         FREG_GPIO_SetDataOut_DataEnExchange(h->Data_8.index, 0);
+         FREG_GPIO_SetDataOut_DataEnSel(h->Data_8.pin, 0x05);
+         FREG_GPIO_SetDataOut_DataEnExchange(h->Data_8.pin, 0);
       }
 
-      FREG_GPIO_SetDataIn_DataInSel(r17, h->Data_8.index + 2);
-      FREG_GPIO_SetDataOut_DataOutSel(h->Data_8.index, r16);
+      FREG_GPIO_SetDataIn_DataInSel(r17, h->Data_8.pin + 2);
+      FREG_GPIO_SetDataOut_DataOutSel(h->Data_8.pin, r16);
 
       UNLOCK(gpioSemaphore);
 
       return h;
    }
-   else if (h->Data_8.Data_8 == 0x810000)
+   else if (h->Data_8.function == 0x810000)
    {
-      FREG_GPIO_SetDataOut_DataEnableInv(h->Data_8.index, 0);
-      FREG_GPIO_SetDataOut_DataOutInv(h->Data_8.index, 0);
-      FREG_GPIO_SetDataOut_DataEnExchange(h->Data_8.index, 0);
-      FREG_GPIO_SetDataOut_DataOutSel(h->Data_8.index, 0);
-      FREG_GPIO_SetDataOut_DataEnSel(h->Data_8.index, 1);
+      FREG_GPIO_SetDataOut_DataEnableInv(h->Data_8.pin, 0);
+      FREG_GPIO_SetDataOut_DataOutInv(h->Data_8.pin, 0);
+      FREG_GPIO_SetDataOut_DataEnExchange(h->Data_8.pin, 0);
+      FREG_GPIO_SetDataOut_DataOutSel(h->Data_8.pin, 0);
+      FREG_GPIO_SetDataOut_DataEnSel(h->Data_8.pin, 1);
 
       UNLOCK(gpioSemaphore);
 
       return h;
    }
-   else if (h->Data_8.Data_8 == 0x143)
+   else if (h->Data_8.function == 0x143)
    {
-      FREG_GPIO_SetDataOut_DataEnableInv(h->Data_8.index, 0);
-      FREG_GPIO_SetDataOut_DataOutInv(h->Data_8.index, 0);
-      FREG_GPIO_SetDataOut_DataEnExchange(h->Data_8.index, 0);
-      FREG_GPIO_SetDataOut_DataOutSel(h->Data_8.index, 0);
-      FREG_GPIO_SetDataOut_DataEnSel(h->Data_8.index, 1);
-      FREG_GPIO_SetIrqCfg_IrqInput(h->Data_8.index);
+      FREG_GPIO_SetDataOut_DataEnableInv(h->Data_8.pin, 0);
+      FREG_GPIO_SetDataOut_DataOutInv(h->Data_8.pin, 0);
+      FREG_GPIO_SetDataOut_DataEnExchange(h->Data_8.pin, 0);
+      FREG_GPIO_SetDataOut_DataOutSel(h->Data_8.pin, 0);
+      FREG_GPIO_SetDataOut_DataEnSel(h->Data_8.pin, 1);
+      FREG_GPIO_SetIrqCfg_IrqInput(h->Data_8.pin);
       FREG_GPIO_SetIrqCfg_IrqClear(1);
       FREG_GPIO_SetIrqCfg_IrqClear(0);
 
@@ -589,13 +589,13 @@ void* FAPI_GPIO_Open(struct fapi_gpio_params* params, int* pres)
 
       return h;
    }
-   else if (h->Data_8.Data_8 >= 0x810000)
+   else if (h->Data_8.function >= 0x810000)
    {
-      r16 = (h->Data_8.Data_8 >> 16) - 0x80;
+      r16 = (h->Data_8.function >> 16) - 0x80;
 
-      FREG_GPIO_SetDataOut_DataEnSel(h->Data_8.index, 0);
-      FREG_GPIO_SetDataOut_DataEnExchange(h->Data_8.index, 1);
-      FREG_GPIO_SetDataOut_DataOutSel(h->Data_8.index, r16);
+      FREG_GPIO_SetDataOut_DataEnSel(h->Data_8.pin, 0);
+      FREG_GPIO_SetDataOut_DataEnExchange(h->Data_8.pin, 1);
+      FREG_GPIO_SetDataOut_DataOutSel(h->Data_8.pin, r16);
    }
    else
    {
@@ -645,24 +645,24 @@ int FAPI_GPIO_ReadBit(void* a)
       return -12008;
    }
 
-   if (((r4->Data_8.Data_8 >= 0x101) && (r4->Data_8.Data_8 <= 0x142)) ||
-         ((r4->Data_8.Data_8 >= 0x940110) && (r4->Data_8.Data_8 <= 0xc20142)) ||
-         (r4->Data_8.Data_8 == 0x810000) ||
-         (r4->Data_8.Data_8 == 0x143))
+   if (((r4->Data_8.function >= 0x101) && (r4->Data_8.function <= 0x142)) ||
+         ((r4->Data_8.function >= 0x940110) && (r4->Data_8.function <= 0xc20142)) ||
+         (r4->Data_8.function == 0x810000) ||
+         (r4->Data_8.function == 0x143))
    {
-      if ((unsigned)(r4->Data_8.index) <= 31)
+      if ((unsigned)(r4->Data_8.pin) <= 31)
       {
-         return (FREG_GPIO_GetInput_31_0() >> r4->Data_8.index) & 1;
+         return (FREG_GPIO_GetInput_31_0() >> r4->Data_8.pin) & 1;
       }
 
-      if ((r4->Data_8.index >= 32) && (r4->Data_8.index <= 63))
+      if ((r4->Data_8.pin >= 32) && (r4->Data_8.pin <= 63))
       {
-         return (FREG_GPIO_GetInput_63_32() >> (r4->Data_8.index - 32)) & 1;
+         return (FREG_GPIO_GetInput_63_32() >> (r4->Data_8.pin - 32)) & 1;
       }
 
-      if ((r4->Data_8.index >= 64) && (r4->Data_8.index <= 95))
+      if ((r4->Data_8.pin >= 64) && (r4->Data_8.pin <= 95))
       {
-         return (FREG_GPIO_GetInput_95_64() >> (r4->Data_8.index - 64)) & 1;
+         return (FREG_GPIO_GetInput_95_64() >> (r4->Data_8.pin - 64)) & 1;
       }
    }
 
@@ -685,17 +685,17 @@ int FAPI_GPIO_WriteBit(void* a, int b)
       return -12001;
    }
 
-   if (((r5->Data_8.Data_8 >= 0x80) && (r5->Data_8.Data_8 <= 0xd9)) ||
-         ((r5->Data_8.Data_8 >= 0x940110) && (r5->Data_8.Data_8 <= 0xc20142)) ||
-         (r5->Data_8.Data_8 == 0x810000))
+   if (((r5->Data_8.function >= 0x80) && (r5->Data_8.function <= 0xd9)) ||
+         ((r5->Data_8.function >= 0x940110) && (r5->Data_8.function <= 0xc20142)) ||
+         (r5->Data_8.function == 0x810000))
    {
-      if (r5->Data_8.Data_8 != 0x810000)
+      if (r5->Data_8.function != 0x810000)
       {
-         FREG_GPIO_SetDataOut_DataOutSel(r5->Data_8.index, b);
+         FREG_GPIO_SetDataOut_DataOutSel(r5->Data_8.pin, b);
       }
       else
       {
-         FREG_GPIO_SetDataOut_DataEnSel(r5->Data_8.index, b);
+         FREG_GPIO_SetDataOut_DataEnSel(r5->Data_8.pin, b);
       }
    }
    else
@@ -716,8 +716,8 @@ void gpioReleaseHandle(struct fapi_gpio_handle* a)
       {
          a->Data_4 = 0;
          a->magic = 0x6770696f; //gpio
-         a->Data_8.Data_8 = 0xFF;
-         a->Data_8.index = 96;
+         a->Data_8.function = 0xFF;
+         a->Data_8.pin = 96;
       }
    }
 }

@@ -1,6 +1,7 @@
 #ifndef DRV_GPIO_H_
 #define DRV_GPIO_H_
 
+    #define FAPI_GPIO_PIN_AUTODETECT      0xFFFFFFFFUL                    //!< Identifier to set pin auto-detect mode during open
 
     #define FAPI_GPIO_OUT_OFFSET          0x0080                          //!< offset for output functions
     #define FAPI_GPIO_IN_OFFSET           0x0100                          //!< offset for input functions
@@ -171,6 +172,10 @@
             ((FAPI_GPIO_OUT_I2C0_DATA<<16)+FAPI_GPIO_IN_I2C0_DATA)        //!< In/Out function: I2C data
     #define FAPI_GPIO_BIDI_I2C0_CLK \
             ((FAPI_GPIO_OUT_I2C0_CLK<<16)+FAPI_GPIO_IN_I2C0_CLK)          //!< In/Out function: I2C clock
+    #define FAPI_GPIO_BIDI_I2C1_DATA \
+            ((FAPI_GPIO_OUT_I2C1_DATA<<16)+FAPI_GPIO_IN_I2C1_DATA)        //!< In/Out function: I2C data
+    #define FAPI_GPIO_BIDI_I2C1_CLK \
+            ((FAPI_GPIO_OUT_I2C1_CLK<<16)+FAPI_GPIO_IN_I2C1_CLK)          //!< In/Out function: I2C clock
 
     #define FAPI_GPIO_IN_GENERIC_SW_FUNCTION \
             ((FAPI_GPIO_OUT_1<<16)+0)                                     //!< A generic input SW function
@@ -179,16 +184,20 @@
 
 extern FAPI_SYS_DriverT FAPI_GPIO_Driver; //21b12e94
 
-struct fapi_gpio_params
+typedef enum {
+    FAPI_GPIO_VERSION = (int32_t)0x00020000   //!< The current driver version
+} FAPI_GPIO_VersionEnumT;
+
+typedef struct
 {
-   int Data_0; //0
-   unsigned index; //4
-   unsigned Data_8; //8
-   void (*func)(int); //12
-};
+   int version; //0
+   unsigned pin; //4
+   unsigned function; //8
+   void (*callback)(int); //12
+} FAPI_GPIO_OpenParamsT;
 
 extern int FAPI_GPIO_Init(void);
-extern void* FAPI_GPIO_Open(struct fapi_gpio_params*, int*);
+extern void* FAPI_GPIO_Open(FAPI_GPIO_OpenParamsT*, int*);
 extern int FAPI_GPIO_Close(void*);
 extern int FAPI_GPIO_WriteBit(void*, int);
 extern int FAPI_GPIO_ReadBit(void*);

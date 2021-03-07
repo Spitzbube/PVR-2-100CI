@@ -164,7 +164,7 @@ int FAPI_UART_Init(void)
    unsigned j = 0;
    volatile unsigned long* r17 = (void*) 0x2000000;
    
-   struct fapi_gpio_params gpio_params; 
+   FAPI_GPIO_OpenParamsT gpio_params;
    
    if (uartInitialized != 0)
    {
@@ -235,19 +235,19 @@ int FAPI_UART_Init(void)
    {
       memset(&gpio_params, 0, sizeof(gpio_params));
       
-      gpio_params.Data_0 = 0x20000;
-      gpio_params.func = 0;
-      gpio_params.index = -1;
-//      gpio_params.Data_8 = 0;
+      gpio_params.version = 0x20000;
+      gpio_params.callback = 0;
+      gpio_params.pin = -1;
+//      gpio_params.function = 0;
 
       //UART TX
       if (uartHandleStdlibc.index == 0)
       {
-         gpio_params.Data_8 = 0x97;
+         gpio_params.function = 0x97;
       }
       else
       {
-         gpio_params.Data_8 = 0xAC;
+         gpio_params.function = 0xAC;
       }
       
       hGpio = FAPI_GPIO_Open(&gpio_params, 0);
@@ -257,16 +257,16 @@ int FAPI_UART_Init(void)
          FAPI_GPIO_Close(hGpio); 
       }
 
-      gpio_params.index = -1;
+      gpio_params.pin = -1;
       
       //UART RX
       if (uartHandleStdlibc.index == 0)
       {
-         gpio_params.Data_8 = 0x115;
+         gpio_params.function = 0x115;
       }
       else
       {
-         gpio_params.Data_8 = 0x140;
+         gpio_params.function = 0x140;
       }
       
       if (hGpio != 0)

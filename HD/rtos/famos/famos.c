@@ -964,7 +964,9 @@ void famos_bsr_thread(int a)
 /* 21c7ad24 - complete */
 void famos_report_thread(int a)
 {
+#if 0
     printf("famos_report_thread\n");
+#endif
 
    while (1)
    {

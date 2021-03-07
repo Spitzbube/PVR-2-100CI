@@ -40,6 +40,11 @@ extern int FAPI_SYS_IsIsrActive(void);
 extern void FAPI_SYS_SetMasterCpu(void);
 extern int FAPI_SYS_IsMasterCpu(void);
 
+
+#define FAPI_SYS_NO_SUSPEND         0x00000000UL
+#define FAPI_SYS_SUSPEND            0xFFFFFFFFUL
+
+
 #define FAPI_SYS_DISABLE_IRQ                           \
         ( ( FAPI_SYS_Services.disableIrq != NULL ) \
         ? FAPI_SYS_Services.disableIrq()           \
