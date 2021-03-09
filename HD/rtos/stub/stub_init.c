@@ -298,7 +298,7 @@ void RTOS_STUB_InitServices(void)
    RTOS_STUB_Services.enableIrq = RTOS_STUB_EnableIrq;
    RTOS_STUB_Services.createSemaphore = RTOS_STUB_CreateSemaphore;
    RTOS_STUB_Services.deleteSemaphore = RTOS_STUB_DestroySemaphore;
-   RTOS_STUB_Services.requestSemaphore = RTOS_STUB_GetSemaphore;
+   RTOS_STUB_Services.getSemaphoreFunc = RTOS_STUB_GetSemaphore;
    RTOS_STUB_Services.releaseSemaphore = RTOS_STUB_SetSemaphore;
    RTOS_STUB_Services.printfFunc = RTOS_STUB_Printf;
    

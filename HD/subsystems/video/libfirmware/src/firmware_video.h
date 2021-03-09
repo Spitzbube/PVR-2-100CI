@@ -1,0 +1,4 @@
+#ifndef FIRMWARE_VIDEO_H_
+#define FIRMWARE_VIDEO_H_
+
+#endif /*FIRMWARE_VIDEO_H_*/

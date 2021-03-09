@@ -1654,25 +1654,23 @@ void famos_init_services(void)
    famos_services.enableIrq = famos_restore_flags;
    famos_services.createSemaphore = famos_semaphore_create;
    famos_services.deleteSemaphore = famos_semaphore_delete;
-   famos_services.requestSemaphore = semaphore_request;
+   famos_services.getSemaphoreFunc = semaphore_request;
    famos_services.releaseSemaphore = semaphore_release;
 #if 0
    famos_services.createMailqueue = famos_mailqueue_create;
    famos_services.destroyMailqueue = famos_mailqueue_destroy;
    famos_services.getMailqueue = mailqueue_read;
    famos_services.setMailqueue = mailqueue_write;
-   famos_services.getPhysAddr = FAPI_MMU_GetPhysAddr;
-   famos_services.getVirtAddr = FAPI_MMU_GetVirtAddr;
 #endif
+   famos_services.getPhysAddressFunc = FAPI_MMU_GetPhysAddr;
+   famos_services.getVirtAddressFunc = FAPI_MMU_GetVirtAddr;
    famos_services.mallocFunc = famos_malloc_uncached;
 #if 0
    famos_services.mallocUncached = famos_malloc_uncached;
    famos_services.Data_64 = famos_malloc_uncached;
 #endif
    famos_services.mallocCachedFunc = famos_malloc_cached;
-#if 0
-   famos_services.mallocSegment = famos_malloc_segment;
-#endif
+   famos_services.mallocSegmentFunc = famos_malloc_segment;
    famos_services.freeFunc = famos_free;
    famos_services.printfFunc = famos_printf;
    famos_services.initDrivers = famos_init_drivers;

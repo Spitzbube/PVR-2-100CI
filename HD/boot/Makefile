@@ -25,6 +25,8 @@ include $(TOPDIR)/env/make/Makefile.config
 
 #  DIRECTORIES += u-boot
   DIRECTORIES += startup
+#  DIRECTORIES += flash
+#  DIRECTORIES += rom
 
 ################################################################################
 # include library specific targets ( if available )

@@ -1,0 +1,5 @@
+#ifndef FIRMWARE_AUDIO_H_
+#define FIRMWARE_AUDIO_H_
+
+
+#endif /*FIRMWARE_AUDIO_H_*/

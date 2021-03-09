@@ -106,8 +106,6 @@ int rtos_mailbox_send(void* a, int* b, int c)
 }
 
 
-#if 0
-
 /* 21c7868c - complete */
 void* rtos_create_semaphore(unsigned a)
 {
@@ -135,6 +133,8 @@ int rtos_release_semaphore(void* a, int b)
    return famos_release_semaphore(a, b);
 }
 
+
+#if 0
 
 /* 21d01608 - complete */
 RTOS_MailqueueT RTOS_CreateMailqueue( uint32_t queueElements,

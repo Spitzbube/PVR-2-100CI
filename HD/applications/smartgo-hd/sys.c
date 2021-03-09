@@ -49,7 +49,9 @@
 #include "device.h"
 #include "drv_uart.h"
 #include "dev_usb.h"
+#endif
 #include "sys.h"
+#if 0
 #include "sys_osd.h"
 #include "flash.h"
 //#include "app_main.h"
@@ -254,6 +256,7 @@ int func_21b8d494(void)
    return 0;
 }
 
+#endif
 
 /* 21b8e50c - complete */
 struct appData* func_21b8e50c(void)
@@ -261,6 +264,7 @@ struct appData* func_21b8e50c(void)
    return &Data_21f7be58;
 }
 
+#if 0
 
 /* 21b8e53c - complete */
 int SYS_GetPowerOn(void)
@@ -340,7 +344,6 @@ void SYS_PrintString(char* a)
    }
 }
 
-#if 0
 
 /* 21b8eaf0 - todo */
 int SYS_SendRequestMessage(Struct_35e444* a, void* msg, int* c)
@@ -394,6 +397,7 @@ void* SYS_ReceiveRequestMessage(Struct_35e444* a)
    return (void*) sp;
 }
 
+#if 0
 
 /* 21b8e9e8 - todo */
 uint64_t func_21b8e9e8(void)
@@ -450,6 +454,8 @@ int func_21b8e9f0(Struct_35e444* a, unsigned b)
 }
 
 
+#endif
+
 /* 21b8e9c0 - complete */
 int SYS_SendResponseMessage(Struct_35e444* a, void* b)
 {
@@ -463,7 +469,7 @@ int SYS_SendResponseMessage(Struct_35e444* a, void* b)
 
 
 /* 21b8ecf8 - todo */
-int func_21b8ecf8(Struct_35e444* a, int* b)
+int ITC_Init(Struct_35e444* a, int* b)
 {
    memset(a, 0, sizeof(Struct_35e444));
 
@@ -497,6 +503,7 @@ int func_21b8ecf8(Struct_35e444* a, int* b)
    return 0;
 }
 
+#if 0
 
 /* 21b8eec0 - todo */
 void func_21b8eec0(void)
@@ -820,20 +827,22 @@ void StartupThread(int a)
       {
          goto end;
       }
+#endif
       
       res = av_init();
       if (res != 0)
       {
          goto end;
       }
-      
+
+#if 0
       if (Data_21f7be58.Func_156)
       {
          (Data_21f7be58.Func_156)();
       }
-      
-      func_21b79318(1);
 #endif
+      
+      AV_PowerupScreenShow(1);
       
       res = EVT_Init(); 
       if (res != 0)

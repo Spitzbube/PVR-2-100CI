@@ -18,8 +18,8 @@ struct appData
    int Data_24; //24
    int Data_28; //28
    int Data_32; //32
-   void* Data_36; //36
-   int Data_40; //40
+   void* bootScreen; //Data_36; //36
+   int bootScreenSize; //Data_40; //40
    void* Data_44; //44
    int Data_48; //48
    int fill_52[3]; //52

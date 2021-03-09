@@ -23,15 +23,17 @@ include $(TOPDIR)/env/make/Makefile.config
 
   DIRECTORIES += env
 
-#  DIRECTORIES += linux
+  DIRECTORIES += boot_rom
 
   DIRECTORIES += fapi
 
+  DIRECTORIES += boot
+
+#  DIRECTORIES += linux
+
 #  DIRECTORIES += image
 
-#  DIRECTORIES += subsystem
-
-  DIRECTORIES += boot
+  DIRECTORIES += subsystems
 
   DIRECTORIES += rtos
 

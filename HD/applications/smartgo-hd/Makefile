@@ -24,11 +24,15 @@ include $(TOPDIR)/env/make/Makefile.config
 
 SOURCES += sys.c
 SOURCES += app_ref/src/app_main.c
+
+SOURCES += sys/src/av.c
 SOURCES += sys/src/main.c
 SOURCES += sys/src/event_queue.c
 SOURCES += sys/src/input.c
 
 SOURCES += test.c
+
+SOURCES += reg_bm.c    #obsolete
 
 HEADERS += sys/src/event_queue.h
 
@@ -49,7 +53,7 @@ HEADERS += sys/src/event_queue.h
 # define library used
 ################################################################################
 
-LIBRARIES  = fapi famos
+LIBRARIES  = fapi famos val firmwarevideo firmwareaudio
 
 ################################################################################
 # define target name

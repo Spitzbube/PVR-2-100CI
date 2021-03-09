@@ -91,11 +91,11 @@
     #endif
 
     #ifndef FAPI_SYS_INIT_REG_BM
-    #define FAPI_SYS_INIT_REG_BM        0
+    #define FAPI_SYS_INIT_REG_BM        1
     #endif
 
     #ifndef FAPI_SYS_INIT_REG_CLKPWR
-    #define FAPI_SYS_INIT_REG_CLKPWR    0
+    #define FAPI_SYS_INIT_REG_CLKPWR    1
     #endif
 
     #ifndef FAPI_SYS_INIT_REG_DMA
@@ -115,7 +115,7 @@
     #endif
 
     #ifndef FAPI_SYS_INIT_REG_I2C
-    #define FAPI_SYS_INIT_REG_I2C       0
+    #define FAPI_SYS_INIT_REG_I2C       1
     #endif
 
     #ifndef FAPI_SYS_INIT_REG_ICC
@@ -131,7 +131,7 @@
     #endif
 
     #ifndef FAPI_SYS_INIT_REG_SFLASH
-    #define FAPI_SYS_INIT_REG_SFLASH    0
+    #define FAPI_SYS_INIT_REG_SFLASH    1
     #endif
 
     #ifndef FAPI_SYS_INIT_REG_SSP
@@ -139,7 +139,7 @@
     #endif
 
     #ifndef FAPI_SYS_INIT_REG_TSD
-    #define FAPI_SYS_INIT_REG_TSD       0
+    #define FAPI_SYS_INIT_REG_TSD       1
     #endif
 
     #ifndef FAPI_SYS_INIT_REG_UART
@@ -147,15 +147,15 @@
     #endif
 
     #ifndef FAPI_SYS_INIT_REG_UPI
-    #define FAPI_SYS_INIT_REG_UPI       0
+    #define FAPI_SYS_INIT_REG_UPI       1
     #endif
 
     #ifndef FAPI_SYS_INIT_REG_VE
-    #define FAPI_SYS_INIT_REG_VE        0
+    #define FAPI_SYS_INIT_REG_VE        1
     #endif
 
     #ifndef FAPI_SYS_INIT_REG_VE_HD
-    #define FAPI_SYS_INIT_REG_VE_HD     0
+    #define FAPI_SYS_INIT_REG_VE_HD     1
     #endif
 
     #ifndef FAPI_SYS_INIT_REG_VIC
@@ -163,7 +163,7 @@
     #endif
 
     #ifndef FAPI_SYS_INIT_REG_VO
-    #define FAPI_SYS_INIT_REG_VO        0
+    #define FAPI_SYS_INIT_REG_VO        1
     #endif
 
     //***********************************************************************
@@ -198,15 +198,15 @@
     #endif
 
     #ifndef FAPI_SYS_INIT_BM
-    #define FAPI_SYS_INIT_BM            0
+    #define FAPI_SYS_INIT_BM            1
     #endif
 
     #ifndef FAPI_SYS_INIT_BOOT
-    #define FAPI_SYS_INIT_BOOT          0
+    #define FAPI_SYS_INIT_BOOT          1
     #endif
 
     #ifndef FAPI_SYS_INIT_CLKPWR
-    #define FAPI_SYS_INIT_CLKPWR        0
+    #define FAPI_SYS_INIT_CLKPWR        1
     #endif
 
     #ifndef FAPI_SYS_INIT_DESC
@@ -226,7 +226,7 @@
     #endif
 
     #ifndef FAPI_SYS_INIT_FLASH
-    #define FAPI_SYS_INIT_FLASH         0
+    #define FAPI_SYS_INIT_FLASH         1
     #endif
 
     #ifndef FAPI_SYS_INIT_GPREG
@@ -234,7 +234,7 @@
     #endif
 
     #ifndef FAPI_SYS_INIT_HDMI
-    #define FAPI_SYS_INIT_HDMI          0
+    #define FAPI_SYS_INIT_HDMI          1
     #endif
 
     #ifndef FAPI_SYS_INIT_I2C
@@ -258,7 +258,7 @@
     #endif
 
     #ifndef FAPI_SYS_INIT_SYNC
-    #define FAPI_SYS_INIT_SYNC          0
+    #define FAPI_SYS_INIT_SYNC          1
     #endif
 
     #ifndef FAPI_SYS_INIT_TIMER
@@ -266,7 +266,7 @@
     #endif
 
     #ifndef FAPI_SYS_INIT_TSD
-    #define FAPI_SYS_INIT_TSD           0
+    #define FAPI_SYS_INIT_TSD           1
     #endif
 
     #ifndef FAPI_SYS_INIT_TTX
@@ -278,7 +278,7 @@
     #endif
 
     #ifndef FAPI_SYS_INIT_UPI
-    #define FAPI_SYS_INIT_UPI           0
+    #define FAPI_SYS_INIT_UPI           1
     #endif
 
     #ifndef FAPI_SYS_INIT_USB
@@ -290,11 +290,11 @@
     #endif
 
     #ifndef FAPI_SYS_INIT_VIENC
-    #define FAPI_SYS_INIT_VIENC         0
+    #define FAPI_SYS_INIT_VIENC         1
     #endif
 
     #ifndef FAPI_SYS_INIT_VISCALE
-    #define FAPI_SYS_INIT_VISCALE       0
+    #define FAPI_SYS_INIT_VISCALE       1
     #endif
 
     // to be continued ...

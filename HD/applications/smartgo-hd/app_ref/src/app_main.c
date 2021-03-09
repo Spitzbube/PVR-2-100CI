@@ -17,8 +17,6 @@
 #endif
 #include "app_main.h"
 
-#if 0
-
 int Data_21e9b270[24920/4] =  //21e9b270
 {
  0x000001b3, 0x2d024083,
@@ -1581,6 +1579,8 @@ int Data_21e9b270[24920/4] =  //21e9b270
  0x37000da4, 0xcf8fc17c, 0x81000000, 0x01b70000,
 };
 
+#if 0
+
 extern Data_21ea13c8;
 
 
@@ -1628,8 +1628,10 @@ int main()
 #if 0
    fp160.Data_28 = 512; //0x200
    fp160.Data_32 = 256; //0x100
-   fp160.Data_36 = &Data_21e9b270;
-   fp160.Data_40 = 24920; //0x6158;
+#endif
+   fp160.bootScreen = &Data_21e9b270;
+   fp160.bootScreenSize = 24920; //0x6158;
+#if 0
    fp160.Data_44 = &Data_21ea13c8;
 #endif
    fp160.Data_48 = 110632;

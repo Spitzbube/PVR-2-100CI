@@ -490,6 +490,7 @@ int FAPI_INTR_UnregisterSwi(unsigned a)
    return 0;
 }
 
+#endif
 
 /* 21b052c8 - complete */
 int FAPI_INTR_ThrowPollingModeIrq(unsigned a)
@@ -510,6 +511,7 @@ int FAPI_INTR_ThrowPollingModeIrq(unsigned a)
    return 0;
 }
 
+#if 0
 
 static int func_21c2a2a8(unsigned a)
 {   
