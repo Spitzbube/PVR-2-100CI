@@ -445,15 +445,6 @@ int func_21cb5250(void (*a)(void))
 
 
 
-/* 21b790e8 - todo */
-int func_21b790e8(int a, int b)
-{
-   FAPI_SYS_PRINT_MSG("func_21b790e8\n");
-
-   return 0;
-}
-
-
 /* 21b7e0a8 - todo */
 int func_21b7e0a8(void)
 {
@@ -845,6 +836,7 @@ int func_21b02e64(int a, unsigned* b)
    return 0;
 }
 
+#endif
 
 /* 21ca9b8c - todo */
 int func_21ca9b8c(void* a, char* b, char* c)
@@ -863,6 +855,7 @@ int func_21cadb54(int a)
    return 0;
 }
 
+#if 0
 
 /* 218aa904 - todo */
 int func_218aa904(void* a, int* b)

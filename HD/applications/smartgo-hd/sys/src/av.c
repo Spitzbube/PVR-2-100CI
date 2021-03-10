@@ -1,14 +1,15 @@
 
+#define DEBUG 5
+
 #include <string.h>
 #include <fapi/sys_services.h>
 #include <fapi/drv_gpio.h>
 #include <fapi/drv_timer.h>
-
-#if 0
-
+#include <fapi/drv_tsd.h>
 #include <fapi/drv_vienc.h>
 #include <fapi/drv_viscale.h>
 #include <fapi/drv_videc.h>
+#if 0
 #include "rtos.h"
 #include "frontend.h"
 #endif
@@ -258,6 +259,61 @@ int AVINT_VideoInit(void)
 }
 
 
+/* 21b790e8 - todo */
+int32_t AVINT_SetTsInput (uint8_t tsd, /*RSRC_TS_E*/int ts)
+{
+    FAPI_TSD_TsInputSettingsT   tsInputSettings;
+    int32_t                     retVal = FAPI_OK;
+    uint32_t                    tsSelect;
+
+    if ( (ts  >= 2/*RSRC_TS_NUMS*/)
+      || (tsd >= 4/*RSRC_TSD_NUMS*/) )
+    {
+        retVal = -0x989681; //APPL_SMARTGO_ERR_BAD_PARAMETER;
+    }
+    else
+    {
+        memset (&tsInputSettings, 0, sizeof(tsInputSettings));
+
+        switch ( ts )
+        {
+            case 0/*RSRC_TS_A*/:     tsSelect = FAPI_TS_A;       break;
+            case 1/*RSRC_TS_B*/:     tsSelect = FAPI_TS_B;       break;
+            case -1/*RSRC_TS_NONE*/:
+            default:            tsSelect = FAPI_TS_DISABLE; break;
+        }
+
+        /* TS input settings */
+        tsInputSettings.version              = 0x00050000; //FAPI_TSD_VERSION;
+        tsInputSettings.tsSelect             = tsSelect;
+        tsInputSettings.automaticSync        = 0;
+        tsInputSettings.packetStartPolarity  = 0;
+        tsInputSettings.enablePolarity       = 0;
+        tsInputSettings.clockInvert          = 0;
+        tsInputSettings.serialParallelMode  = 0x3;
+//        tsInputSettings.packetBufferOverflow = 0;
+//        tsInputSettings.writeEndian          = 0;
+        tsInputSettings.sbz                  = 0;
+        tsInputSettings.syncByteDistance     = 0;
+//        tsInputSettings.tsErrorSettings.version         = FAPI_TSD_VERSION;
+//        tsInputSettings.tsErrorSettings.removeTsPacket  = 1;
+//        tsInputSettings.tsErrorSettings.irqMode         = 0x2;
+//        tsInputSettings.tsErrorSettings.countStartValue = 0;
+//        tsInputSettings.tsErrorSettings.sbz             = 0;
+
+//        retVal = FAPI_TSD_Configure(tsd, &tsInputSettings, NULL);
+        retVal = FAPI_TSD_Configure(tsd, (tsd == 0)? 1: 0, &tsInputSettings, NULL);
+    }
+
+    if ( retVal != FAPI_OK )
+    {
+        FAPI_SYS_PRINT_DEBUG(1,"[AV] AVINT_SetTsInput failed: %i\n", retVal);
+    }
+
+    return retVal;
+}
+
+
 /* 21b7b4f4 - todo */
 int av_init(void)
 {
@@ -295,8 +351,6 @@ int av_init(void)
    }
 
    memset(av, 0, sizeof(struct av));
-
-#if 0
 
 #if 0
    av->bData_55524 = -1;
@@ -371,9 +425,10 @@ int av_init(void)
    //21b7b6f0
    for (r4 = 0; r4 < 4; r4++)
    {
-      func_21b790e8(r4, -1);
+       AVINT_SetTsInput/*func_21b790e8*/(r4, -1);
    }
 
+#if 0
    sp36.Data_0 = 20;
    sp36.Data_4 = 100;
 
@@ -754,6 +809,7 @@ void func_21b802f0(int a)
    printf("func_21b802f0\n");
 }
 
+#endif
 
 /* 21b7e92c - complete */
 int av_display_iframe(uint32_t* dataPtr, uint32_t sizeInBytes)
@@ -796,7 +852,6 @@ int av_display_iframe(uint32_t* dataPtr, uint32_t sizeInBytes)
    return res;
 }
 
-#endif
 
 /* 21b79318 - complete */
 int32_t AV_PowerupScreenShow(int openVideo)
@@ -818,15 +873,17 @@ int32_t AV_PowerupScreenShow(int openVideo)
       if (res == 0)
       {
 #if 0
-         func_21b97f04(2);
+         func_21b97f04(2); //scart 4/3 or 16/9 control
+#endif
 
+#if 0
          if (0 == func_21b98284(&sp))
          {
-            func_21b97fb8(sp);
+            func_21b97fb8(sp); //scart rgb / cvbs control
          }
+#endif
 
          res = av_display_iframe(sysCfg->bootScreen, sysCfg->bootScreenSize);
-#endif
 
          av->Data_72740.bootScreenActive = 1;
       }
@@ -953,7 +1010,6 @@ int AVINT_VideoOpen(void)
    
    memset(&sp, 0, sizeof(sp));
    
-#if 0
    if (sp32 == 1)
    {
       sp.displayAspectRatio[1] = FAPI_VISCALE_AR_16_9;
@@ -962,11 +1018,9 @@ int AVINT_VideoOpen(void)
    {
       sp.displayAspectRatio[1] = FAPI_VISCALE_AR_4_3;
    }
-#endif
    
    sp.hdSystemType = hdSys;
    sp.sdSystemType = sdSys;
-#if 0
    sp.displayAspectRatio[0] = FAPI_VISCALE_AR_NONE;
    sp.scalingMethod = FAPI_VISCALE_SM_PLBOX;
    
@@ -992,7 +1046,6 @@ int AVINT_VideoOpen(void)
       sp.scalingMethod = FAPI_VISCALE_SM_NONE;
       break;
    }
-#endif
 
    FAPI_SYS_PRINT_MSG("\n hdSys=%d sdSys=%d",
          hdSys, sdSys);
@@ -1002,7 +1055,6 @@ int AVINT_VideoOpen(void)
    r6->Data_72776 = 0;
    r6->Data_72780 = -1;
    
-#if 0
    FAPI_VISCALE_SetWssState(
          VAL_GetViscaleHd(r6->valDataPtr), 
          FAPI_VISCALE_WSS_ENABLE_AUTO);
@@ -1024,7 +1076,6 @@ int AVINT_VideoOpen(void)
    {
       r6->Data_72792 = 0;
    }
-#endif
 
    return res;
 }

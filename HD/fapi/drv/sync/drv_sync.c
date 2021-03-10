@@ -131,9 +131,9 @@ void FAPI_SYNC_Exit(void)
 FAPI_SYS_HandleT FAPI_SYNC_Open(const FAPI_SYNC_OpenParamsT* pParams,
                                  int32_t* errorCodePtr)
 {
-   FAPI_SYS_PRINT_MSG("FAPI_SYNC_Open\n");
+   FAPI_SYS_PRINT_MSG("FAPI_SYNC_Open: TODO!\n");
 
-   return 0;
+   return 1;
 }
 
 

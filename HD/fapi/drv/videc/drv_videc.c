@@ -130,7 +130,7 @@ FAPI_SYS_DriverT FAPI_VIDEC_Driver1 = //21efc858
 };
 
 
-int Data_21f67030 = 0; //21f67030
+int videcDriverIsInitialized = 0; //21f67030
 int Data_21b6b8f4 = 0; //21f67034
 int32_t Data_21B6B8F8 = 0; //21f67038
 uint32_t Data_21B6B8FC = 0; //21f67040
@@ -182,7 +182,7 @@ void fapi_videc_clear_entropy_decoding_data(FAPI_VIDEC_VideoDecoderIsrDataT*);
 /* 21c4e204 - todo */
 void func_21c4e204(FAPI_VIDEC_VideoDecoderIsrDataT* a)
 {
-   FAPI_SYS_PRINT_MSG("func_21c4e204\n");
+//   FAPI_SYS_PRINT_MSG("func_21c4e204\n");
 }
 
 
@@ -3622,7 +3622,7 @@ void func_21c42e8c(int ip, int r1, int r2, int lr)
 {
    int32_t res = 0;
 
-   if (Data_21f67030 == 0)
+   if (videcDriverIsInitialized == 0)
    {
       if ((ip != 0) &&
             (r1 != 0) &&
@@ -3665,7 +3665,7 @@ void FAPI_VIDEC_PreInit(const FAPI_VIDEC_DecoderNumberEnumT
    if ((Data_21efc808.Data_0 == 1) &&
          (Data_21efc808.Data_20 == 0))
    {
-      if (Data_21f67030 != 0)
+      if (videcDriverIsInitialized != 0)
       {
          return;
       }
@@ -4140,13 +4140,22 @@ void fapi_videc_release_memory_info_data(FAPI_VIDEC_MemoryInfoDataT* a)
 /* 21c44730 - todo */
 void fapi_videc_clear_isr_data(FAPI_VIDEC_VideoDecoderIsrDataT* a)
 {
-   FAPI_SYS_PRINT_MSG("fapi_videc_clear_isr_data\n");
+    printf("fapi_videc_clear_isr_data\n");
+//   FAPI_SYS_PRINT_MSG("fapi_videc_clear_isr_data\n");
 }
 
 
-static int32_t func_218cd1d4(FAPI_VIDEC_VideoDecoderMemoryDataT* r4)
+/*  - todo */
+static int32_t initMemorySegment(FAPI_VIDEC_VideoDecoderMemoryDataT* r4)
 {
    int32_t res = 0;
+
+#if 0
+   printf("r4->piDone = %d\n", r4->piDone);
+   printf("r4->piMemoryAllocationType = 0x%x\n", r4->piMemoryAllocationType);
+   printf("Data_21efc808.Data_4 = 0x%x\n", Data_21efc808.Data_4);
+   printf("Data_21efc808.Data_12 = 0x%x\n", Data_21efc808.Data_12);
+#endif
 
    if (r4->piDone == 1)
    {
@@ -4343,7 +4352,7 @@ int32_t FAPI_VIDEC_Init(void)
    int32_t res = 0;
    unsigned i = 0;
 
-   if (Data_21f67030 != 0) return res;
+   if (videcDriverIsInitialized != 0) return res;
 
    videcSemaphore = FAPI_SYS_CREATE_SEMAPHORE(1);
 
@@ -4354,10 +4363,10 @@ int32_t FAPI_VIDEC_Init(void)
    
    for (i = 0; i < 1; i++)
    {
-      res = func_218cd1d4(&Data_21f67074[i]);
+      res = initMemorySegment(&Data_21f67074[i]);
       if (res != 0)
       {
-         Data_21f67030 = 0;
+         videcDriverIsInitialized = 0;
       }
       else
       {
@@ -4365,7 +4374,7 @@ int32_t FAPI_VIDEC_Init(void)
          
          fapi_videc_clear_isr_data(&Data_21bf62c8[i]);
          
-         Data_21f67030 = 1;
+         videcDriverIsInitialized = 1;
          Data_21b6b8f4 = 1;
       }
    } //for (i = 0; i < 1; i++)
@@ -5147,7 +5156,7 @@ FAPI_SYS_HandleT FAPI_VIDEC_Open(const FAPI_VIDEC_OpenParamsT* paramsPtr,
    int32_t res = 0;
    FAPI_SYS_HandleT sp0x20 = 0;
    
-   if (Data_21f67030 == 0)
+   if (videcDriverIsInitialized == 0)
    {
       //21c45ae8
       res = -28004;

@@ -20,15 +20,11 @@
 #define VAL_FASTMODE_SPEEDUP
 
 #include <fapi/sys_services.h>
-#if 0
 #include <fapi/drv_bm.h>
 #include <fapi/drv_tsd.h>
 #include <fapi/drv_videc.h>
-#endif
 #include <fapi/drv_vienc.h>
-#if 0
 #include <fapi/drv_viscale.h>
-#endif
 #include <fapi/drv_hdmi.h>
 
 #if 0
@@ -50,11 +46,11 @@
 
 #define VAL_DEFAULT_HDSYS           VAL_1920x1080x50I //5
 #define VAL_DEFAULT_SDSYS           VAL_SD_PAL //4
-#if 0
 #define VAL_DEFAULT_AR_SD           FAPI_VISCALE_AR_NONE
 #define VAL_DEFAULT_AR_HD           FAPI_VISCALE_AR_16_9
 #define VAL_DEFAULT_SM_HD           FAPI_VISCALE_SM_PLBOX
 
+#if 0
 #define VAL_DEFAULT_DECODERFBSIZE   FAPEX_VIDEC_FRAME_BANK_SIZE_1920HD
 
 #define VAL_HDMI_HDP_STATUS_MASK        0x0F
@@ -99,9 +95,7 @@ extern int32_t fd_TSD[];
 
 #endif
 static VAL_DataT    gnrDat; //21f77258
-#if 0
 static VAL_OpenT    openDat; //21f77b94
-#endif
 static VAL_DataT*   gnrDataPtr  = NULL; //21f77254
 
 //*****************************************************************************
@@ -115,8 +109,10 @@ static int32_t VAL_IntGoUp         (VAL_DataT* dataPtr,
                                     VAL_SdEncoderT sdSystemType);
 #if 0
 static int32_t VAL_IntGoDown       (VAL_DataT* dataPtr);
+#endif
 static int32_t VAL_IntOpen         (VAL_OpenT* openPtr,
                                     const VAL_OpenParamsT* paramsPtr);
+#if 0
 static int32_t VAL_IntClose        (VAL_OpenT* openPtr);
 static int32_t VAL_IntStart        (VAL_OpenT* openPtr, uint32_t pid,
                                     VAL_PlayModeEnumT mode,
@@ -124,8 +120,8 @@ static int32_t VAL_IntStart        (VAL_OpenT* openPtr, uint32_t pid,
 static int32_t VAL_IntStop         (VAL_OpenT* openPtr, uint8_t freeze);
 static int32_t VAL_IntReboot       (VAL_OpenT* openPtr,
                                     const VAL_DecoderTypeT* decoderPtr);
-static int32_t VAL_ArgCheckOpen    (const VAL_OpenT* openPtr);
 #endif
+static int32_t VAL_ArgCheckOpen    (const VAL_OpenT* openPtr);
 
 static int32_t VAL_ViencInitClocks (VAL_HdEncoderT hdSys);
 static int32_t VAL_ViencOpen       (VAL_DataT* dataPtr,
@@ -134,10 +130,11 @@ static int32_t VAL_ViencOpen       (VAL_DataT* dataPtr,
 static int32_t VAL_ViencClose      (VAL_DataT* dataPtr);
 
 static int32_t VAL_HdmiOpen        (VAL_DataT* dataPtr);
-#if 0
 static int32_t VAL_HdmiClose       (VAL_DataT* dataPtr);
+#if 0
 static int32_t VAL_HdmiUpdateStatus(VAL_DataT* dataPtr, uint8_t* connectedPtr,
                                     uint8_t* changePtr);
+#endif
 
 static int32_t VAL_ViscaleOpen     (VAL_DataT* dataPtr,
                                     VAL_HdEncoderT hdSys);
@@ -146,9 +143,11 @@ static void    VAL_ViscaleParamChgCb(FAPI_VISCALE_ParamChangeInfoT* paramChangeP
                                     void* paramChangeOptData);
 
 static int32_t VAL_ChannelOpen  (VAL_OpenT* openPtr, const VAL_OpenParamsT* paramsPtr, int);
+#if 0
 static int32_t VAL_ChannelClose (VAL_OpenT* openPtr);
 static int32_t VAL_ChannelStart (VAL_OpenT* openPtr, uint16_t pid);
 static int32_t VAL_ChannelStop  (VAL_OpenT* openPtr);
+#endif
 
 static int32_t VAL_VidecOpen       (VAL_OpenT* openPtr,
                                     const VAL_DecoderTypeT* decoderPtr,
@@ -156,6 +155,7 @@ static int32_t VAL_VidecOpen       (VAL_OpenT* openPtr,
                                     VAL_EnvironmentT environment,
                                     int Data_16);
 static int32_t VAL_VidecClose      (VAL_OpenT* openPtr);
+#if 0
 static int32_t VAL_VidecStart      (VAL_OpenT* openPtr,
                                     int32_t mode,
                                     uint8_t feedViaTsd,
@@ -164,9 +164,11 @@ static int32_t VAL_VidecStop       (VAL_OpenT* openPtr, uint8_t freeze);
 static void    VAL_VidecFrameAvlCb (void* optData);
 static void    VAL_VidecFrameDecCb (void* optData);
 static void    VAL_VidecFrameInfoCb(void* optData);
+#endif
 static void    VAL_VidecParamChgCb (FAPI_VIDEC_FrameInfoStateT* nextFrameInfoPtr,
                                     FAPI_VIDEC_FrameInfoStateT* lastFrameInfoPtr,
                                     void* optData);
+#if 0
 static int32_t VAL_GetFrameBankSize(const /*FAPEX_VIDEC_VESParamStrT*/VAL_VESParamStrT* paramsPtr,
                                     int32_t* fbSizePtr);
 
@@ -232,11 +234,9 @@ int32_t VAL_Init (void)
             gnrDataPtr->appSdSystemType          = VAL_DEFAULT_SDSYS;
             gnrDataPtr->viencHdEncoder           = VAL_DEFAULT_HDSYS;
             gnrDataPtr->viencSdEncoder           = VAL_DEFAULT_SDSYS;
-#if 0
             gnrDataPtr->vioutDispAr[VAL_VOUT_SD] = VAL_DEFAULT_AR_SD;
             gnrDataPtr->vioutDispAr[VAL_VOUT_HD] = VAL_DEFAULT_AR_HD;
             gnrDataPtr->vioutHdScalingMethod     = VAL_DEFAULT_SM_HD;
-#endif
         }
         
         FAPI_SYS_PRINT_DEBUG(3, "[VAL] VAL_Init: %i\n", err_code);
@@ -284,11 +284,9 @@ VAL_DataT* VAL_GoUp (const VAL_UpParamsT* paramsPtr, int32_t* errCodePtr)
                 dataPtr->appSdSystemType = paramsPtr->sdSystemType;
                 dataPtr->viencHdEncoder  = paramsPtr->hdSystemType;
                 dataPtr->viencSdEncoder  = paramsPtr->sdSystemType;
-#if 0
                 dataPtr->vioutDispAr[VAL_VOUT_SD] = paramsPtr->displayAspectRatio[VAL_VOUT_SD];
                 dataPtr->vioutDispAr[VAL_VOUT_HD] = paramsPtr->displayAspectRatio[VAL_VOUT_HD];
                 dataPtr->vioutHdScalingMethod     = paramsPtr->scalingMethod;
-#endif
                 
                 dataPtr->Data_2308 = 0;
                 dataPtr->bData_2312 = 0;
@@ -861,6 +859,8 @@ int32_t VAL_Blank (VAL_DataT* dataPtr, uint8_t blankOrUnblank)
     return err_code;
 }
 
+#endif
+
 /*!
 *******************************************************************************
 ** \brief   Get current HDMI driver handle.
@@ -1017,6 +1017,8 @@ VAL_OpenT* VAL_Open (VAL_DataT* dataPtr, const VAL_OpenParamsT* paramsPtr,
         return openPtr;
     }
 }
+
+#if 0
 
 /*!
 *******************************************************************************
@@ -1750,6 +1752,7 @@ FAPI_SYS_HandleT VAL_GetVidecHandle (VAL_OpenT* openPtr)
 }
 
 /* ------------------------------------------------------------------------- */
+#endif
 
 /*!
 *******************************************************************************
@@ -1786,7 +1789,7 @@ int32_t VAL_IFrameDecode (VAL_OpenT* openPtr, const uint32_t* dataPtr,
         {
             err_code = SUBSYS_VIDEO_VAL_ALREADY_STARTED;
         }
-        else if ( openPtr->decoder.system != FAPEX_VIDEC_CODEC_TYPE_MPEG2 )
+        else if ( openPtr->decoder.system != FAPI_VIDEC_MPEG2_MPHL )
         {
             err_code = SUBSYS_VIDEO_VAL_ERR_FEATURE_NOT_SUPPORTED;
         }
@@ -1915,6 +1918,8 @@ int32_t VAL_IFrameDisplay (VAL_OpenT* openPtr)
     
     return err_code;
 }
+
+#if 0
 
 /*!
 *******************************************************************************
@@ -2429,22 +2434,18 @@ static int32_t VAL_IntGoUp (VAL_DataT* dataPtr, VAL_HdEncoderT hdSystemType,
            }
         }
         //21caa2c4    
-#if 0
         err_code = VAL_ViscaleOpen (dataPtr, hdSystemType);
         if ( err_code != FAPI_OK )
         {
             break;
         }
-#endif
     }
     while ( 0 );
 
     if ( err_code != FAPI_OK )
     {
-#if 0
         (void)VAL_HdmiClose    (dataPtr);
         (void)VAL_ViscaleClose (dataPtr);
-#endif
         (void)VAL_ViencClose   (dataPtr);
     }
 
@@ -2476,6 +2477,8 @@ static int32_t VAL_IntGoDown (VAL_DataT* dataPtr)
 
     return err_code;
 }
+
+#endif
 
 /*!
 *******************************************************************************
@@ -2524,6 +2527,8 @@ static int32_t VAL_IntOpen (VAL_OpenT* openPtr/*r5*/,
 
     return err_code;
 }
+
+#if 0
 
 /*!
 *******************************************************************************
@@ -2795,6 +2800,7 @@ static int32_t VAL_IntReboot (VAL_OpenT* openPtr,
     return err_code;
 }
 
+#endif
 
 /*!
 *******************************************************************************
@@ -2892,7 +2898,7 @@ static int32_t VAL_ChannelOpen (VAL_OpenT* openPtr,
         
         FAPI_BM_SetBufferReadPointer(openPtr->bmHandle,
               0xfffc00, 1);
-        
+
         sp124.version = 0x00050000; //FAPI_TSD_VERSION;
         sp124.blockIndex = 0;
         sp124.channelId = -1;
@@ -2900,6 +2906,7 @@ static int32_t VAL_ChannelOpen (VAL_OpenT* openPtr,
         openPtr->tsdHandle = FAPI_TSD_Open(&sp124, &err_code);
         if (openPtr->tsdHandle == 0)
         {
+            FAPI_SYS_PRINT_MSG("FAPI_TSD_Open failed\n");
            //21ca8f20
            break;
         }
@@ -2911,7 +2918,6 @@ static int32_t VAL_ChannelOpen (VAL_OpenT* openPtr,
             break;
         }
         //21ca8e44
-        
         err_code = FAPI_TSD_SetBuffer(openPtr->tsdHandle, sp24);
         if ( err_code != FAPI_OK )
         {
@@ -3061,6 +3067,8 @@ static int32_t VAL_ChannelOpen (VAL_OpenT* openPtr,
 
     return err_code;
 }
+
+#if 0
 
 /*!
 *******************************************************************************
@@ -3670,6 +3678,8 @@ int32_t func_21ca7e40(void* a,
    return res;
 }
 
+#endif
+
 
 /* 21ca7b08 - complete */
 static void VAL_ViscaleParamChgCb(FAPI_VISCALE_ParamChangeInfoT* paramChangePtr,
@@ -3684,7 +3694,6 @@ static void VAL_ViscaleParamChgCb(FAPI_VISCALE_ParamChangeInfoT* paramChangePtr,
       (dataPtr->Func_2296)(paramChangePtr, dataPtr->Data_2300);
    }
 }
-
 
 /*!
 *******************************************************************************
@@ -3873,8 +3882,6 @@ static int32_t VAL_ViscaleClose (VAL_DataT* dataPtr)
 
 /* ------------------------------------------------------------------------- */
 
-#endif
-
 
 /* 21ca9a94 - todo */
 void func_21ca9a94(VAL_DataT* dataPtr, int b, int c, int d)
@@ -3914,8 +3921,6 @@ static int32_t VAL_HdmiOpen (VAL_DataT* dataPtr)
     return err_code;
 }
 
-#if 0
-
 /*!
 *******************************************************************************
 ** \brief   Internal function, close HDMI driver.
@@ -3951,6 +3956,8 @@ static int32_t VAL_HdmiClose (VAL_DataT* dataPtr)
 
     return err_code;
 }
+
+#if 0
 
 /*!
 *******************************************************************************
@@ -4093,6 +4100,8 @@ static void VAL_VidecCheckTask(void *optData)
 #endif
 }
 
+#endif
+
 /*!
 *******************************************************************************
 ** \brief   Internal function, open video decoder driver.
@@ -4226,6 +4235,8 @@ static int32_t VAL_VidecClose (VAL_OpenT* openPtr)
     return err_code;
 }
 
+
+#if 0
 
 /*!
 *******************************************************************************
@@ -4654,6 +4665,7 @@ static void VAL_VidecFrameInfoCb (void* optData)
     openPtr->videcFrameInfoAvailable = 1;
 }
 
+#endif
 
 /* 21ca7b98 - complete */
 static void VAL_VidecParamChgCb(FAPI_VIDEC_FrameInfoStateT* nextFrameInfoPtr,
@@ -4699,6 +4711,7 @@ static void VAL_VidecParamChgCb(FAPI_VIDEC_FrameInfoStateT* nextFrameInfoPtr,
    }
 }
 
+#if 0
 
 /*!
 *******************************************************************************
@@ -4754,6 +4767,8 @@ static int32_t VAL_GetFrameBankSize (const /*FAPEX_VIDEC_VESParamStrT*/VAL_VESPa
     return err_code;
 }
 
+#endif
+
 /*!
 *******************************************************************************
 ** \brief   Internal function, checks validity of openPtr handle.
@@ -4795,6 +4810,7 @@ static int32_t VAL_ArgCheckOpen (const VAL_OpenT* openPtr)
     return err_code;
 }
 
+#if 0
 
 /* 21ca7a28 - complete */
 int32_t func_21ca7a28(VAL_DataT* a, VAL_Data_2316* b)

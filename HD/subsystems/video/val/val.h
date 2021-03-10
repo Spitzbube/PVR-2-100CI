@@ -105,7 +105,6 @@
 #define SUBSYS_VIDEO_VAL_BAD_MODE                (SUBSYS_VIDEO_VAL_ERR_BASE - 3)
 #define SUBSYS_VIDEO_VAL_INTERNAL                (SUBSYS_VIDEO_VAL_ERR_BASE - 4)
 
-#if 0
 
 //*****************************************************************************
 //*****************************************************************************
@@ -128,8 +127,6 @@ typedef enum
     VAL_ENV_NUMS //2        //!< Number of modes, internally used.
 
 } VAL_EnvironmentT;
-
-#endif
 
 /*!
 *******************************************************************************
@@ -203,8 +200,6 @@ typedef enum
     VAL_SD_PAL_N_ARG                //!< PAL N Argentina System.
     
 } VAL_SdEncoderT;
-
-#if 0
 
 /*!
 *******************************************************************************
@@ -284,7 +279,6 @@ typedef struct
     int32_t                              frameBankSize; //4 //!< Frame bank size.
     
 } VAL_DecoderTypeT;
-#endif
 
 /*!
 *******************************************************************************
@@ -298,14 +292,11 @@ typedef struct
 {
     VAL_HdEncoderT                       hdSystemType; //0
     VAL_SdEncoderT                       sdSystemType; //4
-#if 0
     FAPI_VISCALE_AspectRatioEnumT        displayAspectRatio[VAL_VOUT_NUMS]; //8
     FAPI_VISCALE_ScalingMethodEnumT      scalingMethod; //16
-#endif
     //20
 } VAL_UpParamsT;
 
-#if 0
 /*!
 *******************************************************************************
 ** \brief Parameters for opening a VAL instance.
@@ -323,6 +314,7 @@ typedef struct
     //20
 } VAL_OpenParamsT;
 
+#if 0
 
 typedef struct
 {
@@ -357,27 +349,21 @@ typedef struct
     void*                                openPtr; //8
     
     FAPI_SYS_HandleT                     viencHandle[VAL_VOUT_NUMS]; //12
-#if 0
     FAPI_SYS_HandleT                     viscaleHandle[VAL_VOUT_NUMS]; //20        
-#endif
     FAPI_SYS_HandleT                     hdmiHandle; //28
     
     VAL_HdEncoderT                       appHdSystemType; //32
     VAL_SdEncoderT                       appSdSystemType; //36
     VAL_HdEncoderT                       viencHdEncoder; //40
     VAL_SdEncoderT                       viencSdEncoder; //44
-#if 0
 //    FAPEX_VIOUT_ScalerParamStrT          vioutParams[VAL_VOUT_NUMS];
     FAPI_VISCALE_ScalerParamsT           sdScalerParams; //48
     FAPI_VISCALE_ScalerParamsT           hdScalerParams; //1164
     FAPI_VISCALE_AspectRatioEnumT        vioutDispAr[VAL_VOUT_NUMS]; //2280
     FAPI_VISCALE_ScalingMethodEnumT      vioutHdScalingMethod; //2288
-#endif
     uint8_t                              videoBlanked; //2292
-#if 0
     void (*Func_2296)(FAPI_VISCALE_ParamChangeInfoT*, void*); //2296
     void* Data_2300; //2300
-#endif
     uint8_t                              hdmiConnected; //2304
     uint8_t                              hdmiHaveEDID; //2305
     int                                  Data_2308; //2308
@@ -388,7 +374,6 @@ typedef struct
     //2364
 } VAL_DataT;
 
-#if 0
 
 /*!
 *******************************************************************************
@@ -454,6 +439,8 @@ typedef struct
     //172
 } VAL_OpenT;
 
+#if 0
+
 /*!
 *******************************************************************************
 ** \brief Publicly available VAL status parameters.
@@ -482,6 +469,7 @@ typedef struct
    uint32_t                             decodedHeight; //4
 } VAL_VESParamStrT;
 
+#endif
 
 //*****************************************************************************
 //*****************************************************************************
@@ -504,6 +492,7 @@ extern "C" {
 int32_t          VAL_Init               (void);
 VAL_DataT*       VAL_GoUp               (const VAL_UpParamsT* paramsPtr,
                                          int32_t* errCodePtr);
+#if 0
 int32_t          VAL_GoDown             (VAL_DataT* dataPtr);
 int32_t          VAL_UpdateHDMIConnectionStatus
                                         (VAL_DataT* dataPtr,
@@ -530,14 +519,18 @@ int32_t          VAL_Blank              (VAL_DataT* dataPtr,
                                          uint8_t blankOrUnblank);
 
 FAPI_SYS_HandleT VAL_GetHdmi            (VAL_DataT* dataPtr);
+#endif
 FAPI_SYS_HandleT VAL_GetViencSd         (VAL_DataT* dataPtr);
+#if 0
 FAPI_SYS_HandleT VAL_GetViencHd         (VAL_DataT* dataPtr);
 FAPI_SYS_HandleT VAL_GetViscaleSd       (VAL_DataT* dataPtr);
+#endif
 FAPI_SYS_HandleT VAL_GetViscaleHd       (VAL_DataT* dataPtr);
 
 VAL_OpenT*       VAL_Open               (VAL_DataT* dataPtr,
                                          const VAL_OpenParamsT* paramsPtr,
                                          int32_t* errCodePtr);
+#if 0
 int32_t          VAL_Close              (VAL_OpenT* openPtr);
 
 int32_t          VAL_Task               (VAL_OpenT* openPtr);
@@ -570,6 +563,7 @@ int32_t          VAL_IsFrameAvailable   (VAL_OpenT* openPtr, uint8_t* avlPtr);
 FAPI_SYS_HandleT VAL_GetBmHandle        (VAL_OpenT* openPtr);
 FAPI_SYS_HandleT VAL_GetTsdHandle       (VAL_OpenT* openPtr);
 FAPI_SYS_HandleT VAL_GetVidecHandle     (VAL_OpenT* openPtr);
+#endif
 
 /* specific for I-frame presentation operation */
 
@@ -578,6 +572,7 @@ int32_t          VAL_IFrameDecode       (VAL_OpenT* openPtr,
                                          uint32_t sizeInBytes);
 int32_t          VAL_IFrameDisplay      (VAL_OpenT* openPtr);
 
+#if 0
 /* specific for PVR playback operation */
 
 int32_t          VAL_PlayChangeMode     (VAL_OpenT* openPtr,
@@ -589,10 +584,10 @@ int32_t          VAL_PlayPrepareNextFrame(VAL_OpenT* openPtr);
 
 int32_t          func_21ca7a28(VAL_DataT* a, VAL_Data_2316* b);
 
-#ifdef __cplusplus
-}
 #endif
 
+#ifdef __cplusplus
+}
 #endif
 
 #endif /* VAL_H */

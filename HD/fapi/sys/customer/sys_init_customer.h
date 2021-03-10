@@ -286,7 +286,7 @@
     #endif
 
     #ifndef FAPI_SYS_INIT_VIDEC
-    #define FAPI_SYS_INIT_VIDEC         0
+    #define FAPI_SYS_INIT_VIDEC         1
     #endif
 
     #ifndef FAPI_SYS_INIT_VIENC
