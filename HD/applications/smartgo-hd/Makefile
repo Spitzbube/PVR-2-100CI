@@ -24,24 +24,77 @@ include $(TOPDIR)/env/make/Makefile.config
 
 SOURCES += sys.c
 SOURCES += app_ref/src/app_main.c
+SOURCES += app_ref/src/app_osd.c
+SOURCES += app_ref/src/app_scaler.c
+SOURCES += app_ref/src/app_menustack.c
+SOURCES += app_ref/src/app_menu_common.c
+SOURCES += app_ref/src/app_menu_welcome.c
 
 SOURCES += sys/src/av.c
+SOURCES += sys/src/av_int.c
+SOURCES += sys/src/av_api.c
 SOURCES += sys/src/main.c
+SOURCES += sys/src/device.c
 SOURCES += sys/src/event_queue.c
+SOURCES += sys/src/flash.c
 SOURCES += sys/src/input.c
+SOURCES += sys/src/settings.c
+SOURCES += sys/src/stringop.c
+SOURCES += sys/src/time.c
+SOURCES += osd_window.c
+SOURCES += 21ba8d28.c
+SOURCES += 21b902b8.c
 
 SOURCES += test.c
 
 SOURCES += reg_bm.c    #obsolete
 
+
+SOURCES += fgs/src/fgs.c
+#  SOURCES += fgs/src/fgs_box.c
+#  SOURCES += fgs/src/fgs_item_char.c
+#  SOURCES += fgs/src/fgs_item_check.c
+#  SOURCES += fgs/src/fgs_item_number.c
+#  SOURCES += fgs/src/fgs_item_select.c
+#  SOURCES += fgs/src/fgs_item_text.c
+#  SOURCES += fgs/src/fgs_list.c
+#  SOURCES += fgs/src/fgs_navilist.c
+SOURCES += fgs/src/fgs_panel.c
+#  SOURCES += fgs/src/fgs_pininput.c
+
+  
 HEADERS += sys/src/event_queue.h
+HEADERS += sys/src/device.h
+HEADERS += sys/src/flash.h
+HEADERS += sys/src/stringop.h
+HEADERS += sys/src/sys_osd.h
+HEADERS += sys/src/av.h
+HEADERS += sys/src/sys_time.h
+HEADERS += sys/src/av_api.h
+HEADERS += sys.h
+HEADERS += osd.h
+HEADERS += osd_window.h
+HEADERS += app_main.h
+HEADERS += app_osd.h
+HEADERS += 21ba8d28.h
+
+HEADERS += app_ref/src/menustack.h
+HEADERS += inc/smartgo_types.h 
+HEADERS += inc/sys_api.h 
+#HEADERS += app_ref/inc/app_osd.h 
+HEADERS += app_ref/inc/app_lang.h 
+HEADERS += app_ref/inc/app_scaler.h 
+
+HEADERS += fgs/inc/fgs.h
+HEADERS += fgs/inc/fgs_config.h
+HEADERS += fgs/inc/fgs_keys.h
 
 
 ################################################################################
 # define define user cc flags
 ################################################################################
 
-
+CCFLAGS_USER += -Ifgs/inc -Iinc
 
 ################################################################################
 # define define user ld flags
@@ -53,7 +106,23 @@ HEADERS += sys/src/event_queue.h
 # define library used
 ################################################################################
 
-LIBRARIES  = fapi famos val firmwarevideo firmwareaudio
+LIBRARIES  = fapi 
+LIBRARIES += fapiboard 
+LIBRARIES += famos 
+LIBRARIES += val 
+LIBRARIES += firmwarevideo 
+LIBRARIES += firmwareaudio 
+LIBRARIES += flashfs 
+LIBRARIES += fatfs
+LIBRARIES += fontserver
+LIBRARIES += fontserver_engine_ft
+LIBRARIES += freetype2
+LIBRARIES += osdhandler
+#LIBRARIES += picture
+LIBRARIES += draw
+LIBRARIES += png
+LIBRARIES += z
+
 
 ################################################################################
 # define target name

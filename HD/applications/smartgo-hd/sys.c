@@ -7,12 +7,14 @@
 #include <sys_init_customer.h>
 #endif
 #include <fapi/sys_init.h>
-#if 0
 #include <fapi/board_ifc.h>
+#if 0
 #include <fapi/drv_boot.h>
 #include <fapi/drv_flash.h>
 #include <flashfs/flashfs.h>
-#include <osdhandler.h>
+#endif
+#include "osdhandler/osdhandler.h"
+#if 0
 #include "rtos.h"
 #endif
 #include "rtos/rtos_kernel.h"
@@ -46,14 +48,16 @@
 #include "fapi_usb.h"
 #include "fapi_sync.h"
 #include "fapi_tsd.h"
+#endif
 #include "device.h"
+#if 0
 #include "drv_uart.h"
 #include "dev_usb.h"
 #endif
 #include "sys.h"
-#if 0
 #include "sys_osd.h"
 #include "flash.h"
+#if 0
 //#include "app_main.h"
 #include "stringop.h"
 
@@ -182,38 +186,16 @@ struct fapi_driver* FAPI_SYS_DriverArr[] = //21ed5db0
 };
 #endif
 
-
-struct Struct_21f02a10
-{
-   void* Data_0; //0
-   int Data_4; //4
-   int Data_8; //8
-   int Data_12; //12
-   int32_t flashDeviceSize; //16
-   int32_t flashSectorCount; //20
-   uint16_t Data_24; //24
-   int powerOn; //28
-   int Data_32; //32
-   void* Data_36; //36
-   struct 
-   {
-      int inUse; //0
-      int (*reqCb)(char); //4
-      //8
-   } arData_40[3];
-   int fill_64[64]; //64
-   //320
-};
-
-struct Struct_21f02a10* Data_21f02a10 = 0; //21f02a10
 #endif
+
+
+SYS_DATA_S* sysData = 0; //21f02a10
 int Data_21f02a14; //21f02a14
-#if 0
 int Data_21f02a1c[256]; //21f02a1c 
 
 int Data_21f7ba30; //21f7ba30
-#endif
-struct appData Data_21f7be58; //21f7be58
+
+struct appData sysConfig; //21f7be58
 
 #if 0
 
@@ -235,6 +217,7 @@ void func_21b407ac(int* a)
    }
 }
 
+#endif
 
 int func_21b865e4(void)
 {
@@ -256,29 +239,28 @@ int func_21b8d494(void)
    return 0;
 }
 
-#endif
 
 /* 21b8e50c - complete */
-struct appData* func_21b8e50c(void)
+struct appData* SYS_GetConfig(void)
 {
-   return &Data_21f7be58;
+   return &sysConfig;
 }
 
-#if 0
 
 /* 21b8e53c - complete */
 int SYS_GetPowerOn(void)
 {
 //   printf("SYS_GetPowerOn\n");
 
-   return Data_21f02a10->powerOn;
+   return sysData->powerOn;
 }
 
+#if 0
 
 /* 21b8e550 - complete */
 int func_21b8e550(void)
 {
-   return Data_21f02a10->Data_32;
+   return sysData->Data_32;
 }
 
 
@@ -289,7 +271,7 @@ int func_21b8e564(unsigned a)
    
    if (a < 2)
    {
-      Data_21f02a10->Data_32 = a;
+      sysData->Data_32 = a;
    }
    else
    {
@@ -299,6 +281,8 @@ int func_21b8e564(unsigned a)
    return res;
 }
 
+
+#endif
 
 /* 21b8e770 - complete */
 uint64_t SYS_TimeDiff(uint64_t a, uint64_t b)
@@ -313,8 +297,6 @@ uint64_t SYS_TimeDiff(uint64_t a, uint64_t b)
    }
 }
 
-
-#endif
 
 /* 21b8e7bc - complete */
 void* SYS_MemoryAllocate(int a)
@@ -503,10 +485,9 @@ int ITC_Init(Struct_35e444* a, int* b)
    return 0;
 }
 
-#if 0
 
 /* 21b8eec0 - todo */
-void func_21b8eec0(void)
+void SYS_PrintStartupHdr(void)
 {
    FAPI_SYS_HandleT flHdl;
    const char_t* flName;
@@ -594,7 +575,7 @@ void func_21b8eec0(void)
    FAPI_SYS_PRINT_MSG("%-35s #\n", "YES");
    FAPI_SYS_PRINT_MSG("# Booter information : ");
    //21b8f33c
-   if (0 == func_21bcb4a4(&sp24))
+   if (0 == SYS_GetBootInfo(&sp24))
    {
       FAPI_SYS_PRINT_MSG("boot slot %-2d               #\n", sp24.Data_8);
    }
@@ -609,7 +590,6 @@ void func_21b8eec0(void)
    //21b8f390
 }
 
-#endif
 
 /* 21b8f4bc - todo */
 int SYS_ThreadCreate(void (*func)(int), 
@@ -633,17 +613,18 @@ int SYS_ThreadCreate(void (*func)(int),
    return 0;
 }
 
-#if 0
 
 /* 21b8fe1c - todo */
-int func_21b8fe1c(void)
+int SYS_GoUp(void)
 {
-//   printf("func_21b8fe1c");
+//   printf("SYS_GoUp");
 
    av_send_start_message(); //->av_int.c
    av_send_null_message();
    
+#if 0
    SYS_DeviceWakeup();
+#endif
 
    //TODO
 
@@ -652,52 +633,51 @@ int func_21b8fe1c(void)
 
 
 /* 21b90360 - todo */
-int32_t func_21b90360(struct appData* a)
+int32_t SYS_Init(struct appData* a)
 {
    FAPI_FLASH_OpenParamsT flashParams;
    int32_t res;
    FAPI_SYS_HandleT flashHandle;
 
-   if (Data_21f02a10 != 0)
+   if (sysData != 0)
    {
       return -10000003;
    }
    
-   Data_21f02a10 = SYS_MemoryAllocate(sizeof(struct Struct_21f02a10));
+   sysData = SYS_MemoryAllocate(sizeof(SYS_DATA_S));
    
-   if (Data_21f02a10 == 0)
+   if (sysData == 0)
    {
       return -10000002;
    }
    
-   memset(Data_21f02a10, 0, sizeof(struct Struct_21f02a10));
+   memset(sysData, 0, sizeof(SYS_DATA_S));
    
-   Data_21f02a10->powerOn = -1;
-   Data_21f02a10->arData_40[0].inUse = 0;
-   Data_21f02a10->arData_40[1].inUse = 0;
-   Data_21f02a10->arData_40[2].inUse = 0;
-   Data_21f02a10->Data_32 = 0;
+   sysData->powerOn = -1;
+   sysData->arData_40[0].inUse = 0;
+   sysData->arData_40[1].inUse = 0;
+   sysData->arData_40[2].inUse = 0;
+   sysData->Data_32 = 0;
    
-   Data_21f02a10->Data_36 = rtos_create_semaphore(1);
+   sysData->mutexId = rtos_create_semaphore(1);
    
-   if (Data_21f02a10->Data_36 == 0)
+   if (sysData->mutexId == 0)
    {
       return -10001010;
    }
    
-   func_21b902b8(&Data_21f02a10->Data_8);
+   SYS_GetFlashDeviceType(&sysData->flashDeviceType);
    
-   Data_21f02a10->Data_4 = 0x20000;
+   sysData->bufSize = 0x20000;
+   sysData->pBuf = SYS_MemoryAllocate(0x20004); //131076);
    
-   Data_21f02a10->Data_0 = SYS_MemoryAllocate(0x20004); //131076);
-   
-   if (Data_21f02a10->Data_0 == 0)
+   if (sysData->pBuf == 0)
    {
       return -10000002;
    }
    
-   Data_21f02a10->Data_0 = (void*) (((unsigned)(Data_21f02a10->Data_0) + 3) & ~3);
-   Data_21f02a10->Data_8 = 1;
+   sysData->pBuf = (void*) (((unsigned)(sysData->pBuf) + 3) & ~3);
+   sysData->flashDeviceType = 1;
    
    flashParams.version = FAPI_FLASH_VERSION;
    flashParams.deviceType = FAPI_FLASH_DEVICE_SFLASH;
@@ -720,27 +700,27 @@ int32_t func_21b90360(struct appData* a)
       return res;
    }
    
-   Data_21f02a10->Data_12 = res;
+   sysData->flashStartAddr = res;
    
-   Data_21f02a10->flashDeviceSize = FAPI_FLASH_GetDeviceSize(flashHandle);
+   sysData->flashDeviceSize = FAPI_FLASH_GetDeviceSize(flashHandle);
    
-   if (Data_21f02a10->flashDeviceSize == 0)
+   if (sysData->flashDeviceSize == 0)
    {
       return -10000001;
    }
    
-   Data_21f02a10->flashSectorCount = FAPI_FLASH_GetSectorCount(flashHandle);
+   sysData->flashSectorCount = FAPI_FLASH_GetSectorCount(flashHandle);
 
-   if (Data_21f02a10->flashSectorCount == -10001)
+   if (sysData->flashSectorCount == -10001)
    {
       return -10000001;
    }
 
-   Data_21f02a10->Data_24 = 0;
+   sysData->flashUsrStartSector = 0;
 
-   while ((int32_t)Data_21f02a10->Data_24 < Data_21f02a10->flashSectorCount)
+   while ((int32_t)sysData->flashUsrStartSector < sysData->flashSectorCount)
    {
-      res = FAPI_FLASH_GetSectorStart(flashHandle, Data_21f02a10->Data_24);
+      res = FAPI_FLASH_GetSectorStart(flashHandle, sysData->flashUsrStartSector);
 
       if (res < 0)
       {
@@ -752,17 +732,17 @@ int32_t func_21b90360(struct appData* a)
          break;
       }
 
-      Data_21f02a10->Data_24++;
+      sysData->flashUsrStartSector++;
    }
    
-   if (Data_21f02a10->Data_24 >= Data_21f02a10->flashSectorCount)
+   if (sysData->flashUsrStartSector >= sysData->flashSectorCount)
    {
       return -10001002;
    }
 
    res = FAPI_FLASH_Close(flashHandle);
    
-   res = func_21ba1adc(a); //->stringop.c
+   res = STR_Init(a);
    
    if (res != 0)
    {
@@ -775,17 +755,15 @@ int32_t func_21b90360(struct appData* a)
 
 void* func_21bb8718(void);
 
-#endif
-
 
 /* 21b90574 - nearly complete */
 void StartupThread(int a)
 {
    int32_t res;
    
-#if 0
-   func_21b8eec0();
+   SYS_PrintStartupHdr();
    
+#if 0
    res = VFD_Init();
    if (res != 0)
    {
@@ -797,14 +775,15 @@ void StartupThread(int a)
    func_21ba4eb4();   
    func_21ba5b48("booting", 0, 0);
 
-   if ((char)(Data_21f7be58.bData_0-1) < 2)
+   if ((char)(sysConfig.bData_0-1) < 2)
 #endif
    {
 #if 0
       //21b90664
       func_21ba5b48("flash...", 0, 0);
+#endif
       
-      res = func_21b90360(&Data_21f7be58);
+      res = SYS_Init(&sysConfig);
       if (res != 0)
       {
          goto end;
@@ -827,7 +806,6 @@ void StartupThread(int a)
       {
          goto end;
       }
-#endif
       
       res = av_init();
       if (res != 0)
@@ -835,12 +813,10 @@ void StartupThread(int a)
          goto end;
       }
 
-#if 0
-      if (Data_21f7be58.Func_156)
+      if (sysConfig.appGetStartupOperationMode)
       {
-         (Data_21f7be58.Func_156)();
+         (sysConfig.appGetStartupOperationMode)();
       }
-#endif
       
       AV_PowerupScreenShow(1);
       
@@ -850,7 +826,6 @@ void StartupThread(int a)
          goto end;
       }
       
-#if 0
       res = TIME_Init();
       if (res != 0)
       {
@@ -865,16 +840,17 @@ void StartupThread(int a)
          goto end;
       }
       
-      res = func_21b99a10(); //->settings.c
+      res = SETTINGS_Init();
       if (res != 0)
       {
          goto end;
       }
       
-      func_21c9de38();
-      
+      func_21c9de38(); //->api_f.c: f_enterFS()
+
       func_21b98644(&Data_21f7ba30); //->settings.c
       
+#if 0
       if (Data_21f7ba30 == 0)
       {
          FAPI_SYS_PRINT_MSG("\n SYS_enableHDD = [%d] %d ",
@@ -892,12 +868,15 @@ void StartupThread(int a)
          }
          //->21b90748
       }
+#endif
       //21b90748
+#if 0
       res = dev_usb_init();
       if (res != 0)
       {
          goto end;
       }
+#endif
       
       res = (int) func_21bb8718();
       if (res != 0)
@@ -929,19 +908,19 @@ void StartupThread(int a)
          goto end;
       }
       
-      res = func_21bb2824(&Data_21f7be58.bData_76);
+      res = func_21bb2824(&sysConfig.bData_76);
       if (res != 0)
       {
          goto end;
       }
       
-      res = func_21bc4e78(&Data_21f7be58.bData_80);
+      res = func_21bc4e78(&sysConfig.bData_80);
       if (res != 0)
       {
          goto end;
       }
       
-      res = func_21bc0814(&Data_21f7be58.bData_84);
+      res = func_21bc0814(&sysConfig.bData_84);
       if (res != 0)
       {
          goto end;
@@ -968,7 +947,6 @@ void StartupThread(int a)
       {
          goto end;
       }
-#endif
 
       res = input_init();
       if (res != 0)
@@ -976,7 +954,6 @@ void StartupThread(int a)
          goto end;
       }
       
-#if 0
       res = func_21b8cee4();
       if (res != 0)
       {
@@ -1001,7 +978,7 @@ void StartupThread(int a)
          goto end;
       }
       
-      res = func_21bcdd0c(&Data_21f7be58);
+      res = func_21bcdd0c(&sysConfig);
       
       FAPI_SYS_PRINT_MSG("\n %s %d retVal=%x ",
             "sys/src/main.c", 1102, res);
@@ -1011,7 +988,7 @@ void StartupThread(int a)
          goto end;
       }
       
-      res = func_21b8fe1c();
+      res = SYS_GoUp();
       
       FAPI_SYS_PRINT_MSG("\n %s %d retVal=%x ",
             "sys/src/main.c", 1124, res);
@@ -1020,7 +997,6 @@ void StartupThread(int a)
       {
          goto end;
       }
-#endif
       
       extern void ApplicationThread(int a);
 
@@ -1246,23 +1222,24 @@ int FAPI_SYS_Init(void)
 #endif
 
 
-extern int func_21cb1018(int, int);
+#define BOARDS_INSTALL_PLATFORM_SUPPORT      BOARD_GMI_MB86H60_STB_CI_RegisterBoardIfc
+#define BOARDS_INSTALL_FRONTEND_SUPPORT      BOARD_GMI_MB86H60_STB_CI_RegisterFrontends
+
+extern int BOARD_GMI_MB86H60_STB_CI_RegisterBoardIfc(int, int);
 
 
 /* 21b91298 - todo */
-int func_21b91298(struct appData* a)
+int SYS_Start(struct appData* a)
 {
    int i, j, crc;
    int res = 0;
 
    Data_21f02a14 = 0;
 
-#if 0
-   func_21cb1018(0, 0);
-   func_21cb2088(0, 0);
-#endif
+   BOARDS_INSTALL_PLATFORM_SUPPORT(0, 0);
+   BOARDS_INSTALL_FRONTEND_SUPPORT(0, 0);
 
-   Data_21f7be58 = *a;
+   sysConfig = *a;
 
    RTOS_InitServices();
 
@@ -1276,10 +1253,9 @@ int func_21b91298(struct appData* a)
    {      
       if (0 != RTOS_InitKernel())
       {
-#if 0
          FAPI_BOARD_INIT_DETECT_FUNCTION(0, 0);
 
-         func_21bcb810(); 
+         SYS_GetBootloaderInfo();
 
          // Initialize the CRC table
          for (i = 0; i < 256; i++)
@@ -1300,7 +1276,6 @@ int func_21b91298(struct appData* a)
 
             Data_21f02a1c[i] = crc;
          }
-#endif
 
          res = SYS_ThreadCreate(StartupThread, 
             0, 58, 0x2000, "Startup", 0);
@@ -1324,7 +1299,6 @@ int func_21b91298(struct appData* a)
    return res;
 }
 
-#if 0
 
 /* 21b97e54 - todo */
 int func_21b97e54()
@@ -1346,6 +1320,7 @@ int func_21ba3ce8(void)
 //   printf("func_21ba3ce8");
    return 0;
 }
+
 
 int func_21bb0bc4(void)
 {
@@ -1395,6 +1370,7 @@ int func_21bc1d4c(void)
    return 0;
 }
 
+#if 0
 
 int func_21bc2b90(void)
 {
@@ -1402,6 +1378,7 @@ int func_21bc2b90(void)
    return 0;
 }
 
+#endif
 
 int func_21bc4e78(int a)
 {
@@ -1416,13 +1393,14 @@ int func_21bc6ab8(void)
    return 0;
 }
 
-int Data_21f0b1d8; //21f0b1d8
-FAPI_BOOT_InfoT Data_21f7e338; //21f7e338
-uint32_t Data_21f7e34c; //21f7e34c
+
+int bootInfValid; //21f0b1d8
+FAPI_BOOT_InfoT bootInf; //21f7e338
+uint32_t bootMode; //21f7e34c
 
 
 /* 21bcb810 - todo */
-int func_21bcb810(void)
+int SYS_GetBootloaderInfo(void)
 {
    int32_t res;
    FAPI_SYS_HandleT r6;
@@ -1437,7 +1415,7 @@ int func_21bcb810(void)
       return res;            
    }
    
-   res = FAPI_BOOT_GetBootMode(r6, &Data_21f7e34c);
+   res = FAPI_BOOT_GetBootMode(r6, &bootMode);
    
    if (res != 0)
    {
@@ -1446,46 +1424,46 @@ int func_21bcb810(void)
       return res;
    }
    
-   if (Data_21f7e34c == 3)
+   if (bootMode == 3)
    {
-      FAPI_BOOT_GetInfo(r6, &Data_21f7e338);
+      FAPI_BOOT_GetInfo(r6, &bootInf);
       
       FAPI_SYS_PRINT_MSG("FAPI_BOOT_GetInfo says mode %d device %d\n",
-            Data_21f7e338.bootMode, 
-            Data_21f7e338.bootDevice);
+            bootInf.bootMode,
+            bootInf.bootDevice);
       
-      if (Data_21f7e338.slotAddress1 == 0)
+      if (bootInf.slotAddress1 == 0)
       {         
-         if (Data_21f7e338.slotAddress0 == 0)
+         if (bootInf.slotAddress0 == 0)
          {
             //21bcb8f8
-            Data_21f7e338.slotAddress1 = 0xa0000;
-            Data_21f7e338.slotIndex = 0;
-            Data_21f7e338.slotAddress0 = 0x40000;
-            Data_21f7e338.slotAddress1 = 0xa0000;
+            bootInf.slotAddress1 = 0xa0000;
+            bootInf.slotIndex = 0;
+            bootInf.slotAddress0 = 0x40000;
+            bootInf.slotAddress1 = 0xa0000;
             //->21bcb8e8
          }
          else 
          {
             //21bcb8c0            
-            int r3 = Data_21f7e338.slotAddress0 - 0x40000;
-            int r2 = Data_21f7e338.slotAddress0 - 0xa0000;
+            int r3 = bootInf.slotAddress0 - 0x40000;
+            int r2 = bootInf.slotAddress0 - 0xa0000;
             
             if (r3 < 0) r3 = -r3;            
             if (r2 < 0) r2 = -r2;
             
             if (r3 > r2)
             {
-               Data_21f7e338.slotAddress1 = 0x40000;
+               bootInf.slotAddress1 = 0x40000;
             }
             else
             {
-               Data_21f7e338.slotAddress1 = 0xa0000;
+               bootInf.slotAddress1 = 0xa0000;
             }
          }
       }
       //->21bcb8e8
-      Data_21f0b1d8 = 1;
+      bootInfValid = 1;
    }   
    //21bcb86c
    FAPI_BOOT_Close(r6);
@@ -1501,19 +1479,18 @@ int func_21bc9b6c(void)
 }
 
 
-
 /* 21bcb4a4 - complete */
-int func_21bcb4a4(FAPI_BOOT_InfoT* a)
+int SYS_GetBootInfo(FAPI_BOOT_InfoT* a)
 {
    int res = 0;
    
-   if (Data_21f0b1d8 == 0)
+   if (bootInfValid == 0)
    {
       res = -10001006;
    }
    else
    {
-      *a = Data_21f7e338;
+      *a = bootInf;
    }
    
    return res;
@@ -1533,12 +1510,14 @@ int func_21bcdd0c(void* a)
    return 0;
 }
 
+#if 0
 
 int func_21b35b58(void* a)
 {
    return 0;
 }
 
+#endif
 
 /* 21b8e58c - todo */
 /* v3.8: 36072c - complete */
@@ -1597,7 +1576,7 @@ int SYS_OnOff(int a)
 {     
    int res;
    
-   if (a == Data_21f02a10->powerOn)
+   if (a == sysData->powerOn)
    {
       return 0;
    } 
@@ -1657,10 +1636,10 @@ int SYS_GetOsdLayer(struct sys_osd_layer_params* r5, int (*reqCb)(char))
 
    index = sys_get_osd_layer_index(layer);
    
-   if (Data_21f02a10->arData_40[index].inUse)
+   if (sysData->arData_40[index].inUse)
    {
-      if ((Data_21f02a10->arData_40[index].reqCb != 0) &&
-            (0 != (Data_21f02a10->arData_40[index].reqCb)(layer)))
+      if ((sysData->arData_40[index].reqCb != 0) &&
+            (0 != (sysData->arData_40[index].reqCb)(layer)))
       {
          res = SYS_GiveOsdLayer(r5->layer);
          
@@ -1675,7 +1654,7 @@ int SYS_GetOsdLayer(struct sys_osd_layer_params* r5, int (*reqCb)(char))
       else
       {
          FAPI_SYS_PRINT_MSG("[SYS] reqCb 0x%x\n", 
-               Data_21f02a10->arData_40[index].reqCb);
+               sysData->arData_40[index].reqCb);
          return -10001001;
       }
    }
@@ -1688,8 +1667,8 @@ int SYS_GetOsdLayer(struct sys_osd_layer_params* r5, int (*reqCb)(char))
       return res;
    }
 
-   Data_21f02a10->arData_40[index].inUse = 1;
-   Data_21f02a10->arData_40[index].reqCb = reqCb;
+   sysData->arData_40[index].inUse = 1;
+   sysData->arData_40[index].reqCb = reqCb;
    
    return 0;
 }
@@ -1710,14 +1689,13 @@ int SYS_GiveOsdLayer(int layer)
    
    index = sys_get_osd_layer_index(layer);
    
-   if (Data_21f02a10->arData_40[index].inUse)
+   if (sysData->arData_40[index].inUse)
    {
       OSDHANDLER_StopLayer(layer, &errorCode);
       
-      Data_21f02a10->arData_40[index].inUse = 0;
+      sysData->arData_40[index].inUse = 0;
    }
    
    return 0;
 }
 
-#endif

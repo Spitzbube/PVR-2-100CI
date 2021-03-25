@@ -1,8 +1,10 @@
 
 #include <fapi/sys_services.h>
-#if 0
+#include "smartgo_types.h"
 #include "stringop.h"
-#endif
+#include "app_osd.h"
+#include "menustack.h"
+#include "fgs.h"
 
 struct appData
 {
@@ -42,7 +44,7 @@ struct appData
    unsigned short wData_94; //94
    unsigned short wData_96; //96
    int fill_100[3]; //100
-   void (*Func_112)(void); //112
+   void (*setStartupDefaults)(void); //112
    void (*Func_116)(void); //116
    void (*Func_120)(void); //120
    void (*Func_124)(void); //124
@@ -53,26 +55,34 @@ struct appData
    void (*Func_144)(void); //144
    int (*init)(void); //148
    void (*handleEvent)(int, void*); //152
-   void (*Func_156)(void); //156
+   void (*appGetStartupOperationMode)(void); //156
    //160
 };
 
 
 struct Struct_21f02400
 {
-   int fill_0[6102]; //0
+   int fill_0[3938]; //0
+   FGS_POS_S rootPos; //15752
+   FGS_MEMBER_S* pStartupMem; //15764
+   FGS_MEMBER_S* pRootMem; //15768
+   int fill_15772[875]; //15772
+   int Data_19272; //19272
+   int fill_19276[1283]; //19276
    int Data_24408; //24408
-   int fill_24412[7582]; //24412
+   int fill_24412[616]; //24412
+   int Data_26876; //26876
+   int fill_26880[6965]; //26880
    struct appData* Data_54740; //54740
    int fill_54744[3]; //54744
    int osdLayerStarted; //54756
-   char arData_54760[4][9]; //54760
-   int fill_54796[151]; //54796
+   char schemeData[4][9]; //54760
+   MENUSTACK_INST_S menuStack; //54796 +604
    int Data_55400; //55400
    int Data_55404; //55404
-   int Data_55408; //55408
-   int Data_55412; //55412
-   int Data_55416; //55416
+   void (*osdUpdateCb)(void); //55408
+   void (*menuTimerHandler)(void*); //55412
+   void* menuTimerArg; //55416
    int Data_55420; //55420
    int fill_55424[11]; //55424
    int Data_55468; //55468
@@ -89,12 +99,10 @@ struct Struct_21f02400
    char bData_55892; //55892
    int Data_55896; //55896
    int Data_55900; //55900
-#if 0
    struct Struct_21ba1a6c Data_55904; //55904
    struct Struct_21ba1a6c Data_55924; //55924
    struct Struct_21ba1a6c Data_55944; //55944
    struct Struct_21ba1a6c Data_55964; //55964
-#endif
    int Data_55984; //55984
    FAPI_SYS_HandleT fontserverHandle; //55988
    void* Data_55992; //55992

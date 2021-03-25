@@ -135,9 +135,7 @@ void input_thread(int a)
    sp.header.tag = 23; //14;
    sp.header.size = sizeof(struct Event_23);
    
-#if 0
    func_21b8961c(); //->device.c
-#endif
    
    while (1)
    {

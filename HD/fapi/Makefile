@@ -103,6 +103,8 @@ include $(TOPDIR)/env/make/Makefile.config
 
   LIBRARY = libfapi
   HEADER_SUBDIR = fapi
+  
+  DIRECTORIES = board   
 
 ################################################################################
 # define user targets
@@ -110,16 +112,37 @@ include $(TOPDIR)/env/make/Makefile.config
 
 default: all
 
-clean: clean-objects clean-library
+clean: $(DIRECTORIES:%=subdir-clean-%) clean-objects clean-library
 
-build: headers build-objects build-library
+build: $(DIRECTORIES:%=subdir-build-%) build-objects build-library
 
-headers: install-headers
+headers: $(DIRECTORIES:%=subdir-headers-%) install-headers
 
-install: build install-library
+install: build $(DIRECTORIES:%=subdir-install-%) install-library
 
 all: clean build install
 
 
 include $(TOPDIR)/env/make/Makefile.rules
 
+
+subdir-clean-%:
+	@$(NEWLINE)
+	@$(ECHO) $(ECHOPREFIX) Making [$(SUBDIR)/$(@:subdir-clean-%=%)] for target [$(TARGET)]
+	@$(SUBMAKE) -C $(@:subdir-clean-%=%) clean TARGET=$(TARGET)
+
+subdir-headers-%:
+	@$(NEWLINE)
+	@$(ECHO) $(ECHOPREFIX) Making [$(SUBDIR)/$(@:subdir-headers-%=%)] for target [$(TARGET)]
+	@$(SUBMAKE) -C $(@:subdir-headers-%=%) headers TARGET=$(TARGET)
+
+subdir-build-%:
+	@$(NEWLINE)
+	@$(ECHO) $(ECHOPREFIX) Making [$(SUBDIR)/$(@:subdir-build-%=%)] for target [$(TARGET)]
+	@$(SUBMAKE) -C $(@:subdir-build-%=%) build TARGET=$(TARGET)
+
+subdir-install-%:
+	@$(NEWLINE)
+	@$(ECHO) $(ECHOPREFIX) Making [$(SUBDIR)/$(@:subdir-install-%=%)] for target [$(TARGET)]
+	@$(SUBMAKE) -C $(@:subdir-install-%=%) install TARGET=$(TARGET)
+	

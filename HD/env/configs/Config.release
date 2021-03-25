@@ -17,7 +17,7 @@ release-software-subsystem-audio_process   = n
 release-software-subsystem-lcd_drv         = n
 
 release-software-applications-ctlserver    = n
-release-software-applications-sample       = y
+release-software-applications-sample       = n
 release-software-applications-adidemo      = n
 release-software-applications-onvifserver  = n
 release-software-applications-smartgo-hd   = y

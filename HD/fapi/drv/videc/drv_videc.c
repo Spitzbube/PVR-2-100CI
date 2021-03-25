@@ -93,7 +93,7 @@ struct Struct_21efc820 Data_21efc820 = //21efc820
    0x4131
 };
 
-int Data_21b6b934[] = //21b6b934
+int FAPI_VIDEC_MAX_VIDEO_STREAM_BUFFER_SIZE[] = //21b6b934
 {
       0,
       0x3ffc00,
@@ -131,29 +131,29 @@ FAPI_SYS_DriverT FAPI_VIDEC_Driver1 = //21efc858
 
 
 int videcDriverIsInitialized = 0; //21f67030
-int Data_21b6b8f4 = 0; //21f67034
-int32_t Data_21B6B8F8 = 0; //21f67038
-uint32_t Data_21B6B8FC = 0; //21f67040
+int videcDriverLoadFirmwaresState = 0; //21f67034
+int32_t videoDriverLoadFirmwareErrorCode = 0; //21f67038
+uint32_t videc0HandleAllocated = 0; //21f67040
 FAPI_SYS_SemaphoreT videcSemaphore = 0; //21f6703c
-uint32_t Data_21B6B904 = 0; //21f67044
-uint32_t Data_21B6B908 = 0; //21f67048
-uint32_t Data_21B6B90C = 0; //21f6704c
+uint32_t fvm0la = 0; //21f67044
+uint32_t fvm1la = 0; //21f67048
+uint32_t fvm2la = 0; //21f6704c
 
-uint32_t Data_21B6B910 = 0; //21f67050
-uint32_t Data_21B6B914 = 0; //21f67054
-uint32_t Data_21B6B918 = 0; //21f67058
+uint32_t fvm0sz = 0; //21f67050
+uint32_t fvm1sz = 0; //21f67054
+uint32_t fvm2sz = 0; //21f67058
 
-uint32_t Data_21B6B91C = 0; //21f6705c
-uint32_t Data_21B6B920 = 0; //21f67060
-uint32_t Data_21B6B924 = 0; //21f67064
+uint32_t fvh0la = 0; //21f6705c
+uint32_t fvh1la = 0; //21f67060
+uint32_t fvh2la = 0; //21f67064
 
-uint32_t Data_21B6B928 = 0; //21f67068
-uint32_t Data_21B6B92C = 0; //21f6706c
-uint32_t Data_21B6B930 = 0; //21f67070
+uint32_t fvh0sz = 0; //21f67068
+uint32_t fvh1sz = 0; //21f6706c
+uint32_t fvh2sz = 0; //21f67070
 
-FAPI_VIDEC_VideoDecoderMemoryDataT Data_21f67074[1]; //21f67074
+FAPI_VIDEC_VideoDecoderMemoryDataT videcMemoryData[1]; //21f67074
 
-FAPI_VIDEC_VideoDecoderHandleT videcHandleArray[1]; //21f67164
+FAPI_VIDEC_VideoDecoderHandleT videcHandles[1]; //21f67164
 
 struct Struct_21bf62c8
 {
@@ -162,8 +162,7 @@ struct Struct_21bf62c8
 };
 
 //struct Struct_21bf62c8
-FAPI_VIDEC_VideoDecoderIsrDataT
-Data_21bf62c8[1]; //21fbea84
+FAPI_VIDEC_VideoDecoderIsrDataT videcIsrData[1]; //21fbea84
 
 FAPI_VIDEC_VideoDecoderHandleT* Data_21f67278; //21f67278
 
@@ -177,6 +176,7 @@ void func_21c4894c(FAPI_VIDEC_VideoDecoderIsrDataT*);
 void fapi_videc_clear_aud_info_data(FAPI_VIDEC_VideoDecoderIsrDataT*);
 void fapi_videc_clear_entropy_decoding_data(FAPI_VIDEC_VideoDecoderIsrDataT*);
 
+static int32_t videcDriverLoadFirmwares(void);
 
 
 /* 21c4e204 - todo */
@@ -3672,10 +3672,10 @@ void FAPI_VIDEC_PreInit(const FAPI_VIDEC_DecoderNumberEnumT
 
       if (piMemoryForDecoderNumber == FAPI_VIDEC_DECODER_NUMBER_0)
       {
-         Data_21f67074[i].piDone = 0;
-         Data_21f67074[i].piError = 0;
-         Data_21f67074[i].piMemoryForDecoderNumber = FAPI_VIDEC_UNKNOWN_DECODER_NUMBER;
-         Data_21f67074[i].piMemoryAllocationType = 0;
+         videcMemoryData[i].piDone = 0;
+         videcMemoryData[i].piError = 0;
+         videcMemoryData[i].piMemoryForDecoderNumber = FAPI_VIDEC_UNKNOWN_DECODER_NUMBER;
+         videcMemoryData[i].piMemoryAllocationType = 0;
 
          if (Data_21efc808.Data_4 ==
                (piMemoryAllocationType & Data_21efc808.Data_4))
@@ -3685,13 +3685,13 @@ void FAPI_VIDEC_PreInit(const FAPI_VIDEC_DecoderNumberEnumT
             {
                if ((piMemoryAllocationType & 0xfff) == 0)
                {
-                  Data_21f67074[i].piDone = 1;
-                  Data_21f67074[i].piMemoryForDecoderNumber = piMemoryForDecoderNumber;
-                  Data_21f67074[i].piMemoryAllocationType = piMemoryAllocationType;
+                  videcMemoryData[i].piDone = 1;
+                  videcMemoryData[i].piMemoryForDecoderNumber = piMemoryForDecoderNumber;
+                  videcMemoryData[i].piMemoryAllocationType = piMemoryAllocationType;
                }
                else
                {
-                  Data_21f67074[i].piError = -28135;
+                  videcMemoryData[i].piError = -28135;
                }
             }
          }
@@ -3703,31 +3703,31 @@ void FAPI_VIDEC_PreInit(const FAPI_VIDEC_DecoderNumberEnumT
             {
                if ((piMemoryAllocationType & 0xfff) == 0)
                {
-                  Data_21f67074[i].piDone = 1;
-                  Data_21f67074[i].piMemoryForDecoderNumber = piMemoryForDecoderNumber;
-                  Data_21f67074[i].piMemoryAllocationType = piMemoryAllocationType;
+                  videcMemoryData[i].piDone = 1;
+                  videcMemoryData[i].piMemoryForDecoderNumber = piMemoryForDecoderNumber;
+                  videcMemoryData[i].piMemoryAllocationType = piMemoryAllocationType;
                }
                else
                {
-                  Data_21f67074[i].piError = -28135;
+                  videcMemoryData[i].piError = -28135;
                }
             }
          }
          else if (piMemoryAllocationType == (uint32_t)-1)
          {
-            Data_21f67074[i].piDone = 1;
-            Data_21f67074[i].piMemoryForDecoderNumber = piMemoryForDecoderNumber;
-            Data_21f67074[i].piMemoryAllocationType = piMemoryAllocationType;
+            videcMemoryData[i].piDone = 1;
+            videcMemoryData[i].piMemoryForDecoderNumber = piMemoryForDecoderNumber;
+            videcMemoryData[i].piMemoryAllocationType = piMemoryAllocationType;
          }
          else if (piMemoryAllocationType == (uint32_t)-2)
          {
-            Data_21f67074[i].piDone = 1;
-            Data_21f67074[i].piMemoryForDecoderNumber = piMemoryForDecoderNumber;
-            Data_21f67074[i].piMemoryAllocationType = piMemoryAllocationType;
+            videcMemoryData[i].piDone = 1;
+            videcMemoryData[i].piMemoryForDecoderNumber = piMemoryForDecoderNumber;
+            videcMemoryData[i].piMemoryAllocationType = piMemoryAllocationType;
          }
          else
          {
-            Data_21f67074[i].piError = -28135;
+            videcMemoryData[i].piError = -28135;
          }
       }
    }
@@ -3735,7 +3735,7 @@ void FAPI_VIDEC_PreInit(const FAPI_VIDEC_DecoderNumberEnumT
    {
       for (i = 0; i < 1; i++)
       {
-         Data_21f67074[i].piError = Data_21efc808.Data_20;
+         videcMemoryData[i].piError = Data_21efc808.Data_20;
       }
    }
 }
@@ -4078,7 +4078,7 @@ void fapi_videc_clear_handle(FAPI_VIDEC_VideoDecoderHandleT* a)
    a->opParams.decodeFrameBankSizeType = FAPI_VIDEC_UNKNOWN_FRAME_BANK_SIZE;
    a->opParams.decoderPlaybackMode = FAPI_VIDEC_UNKNOWN_PLAYBACK_MODE;
    a->opParams.decoderAfdState = FAPI_VIDEC_UNKNOWN_AFD_STATE;
-   a->opParams.Data_28 = -1;
+   a->opParams.decoderDelimiterType = FAPI_VIDEC_UNKNOWN_DELIMITER;
    a->virtualMemoryInfoPtr = 0;
    a->physicalMemoryInfoPtr = 0;
    a->isrDataPtr = 0;
@@ -4138,10 +4138,508 @@ void fapi_videc_release_memory_info_data(FAPI_VIDEC_MemoryInfoDataT* a)
 
 
 /* 21c44730 - todo */
-void fapi_videc_clear_isr_data(FAPI_VIDEC_VideoDecoderIsrDataT* a)
+void fapi_videc_clear_isr_data(FAPI_VIDEC_VideoDecoderIsrDataT* isrPtr)
 {
-    printf("fapi_videc_clear_isr_data\n");
-//   FAPI_SYS_PRINT_MSG("fapi_videc_clear_isr_data\n");
+    uint32_t idx = 0;
+
+#ifdef FAPI_VIDEC_EXTENDED_INFO
+    uint32_t i = 0;
+#endif
+
+    isrPtr->inUse = 0;
+    isrPtr->isrMask = 0;
+    isrPtr->isrStatus = 0;
+    isrPtr->isrCurrField = 0;
+#if 0
+    isrPtr->isrCurrLinePosition = 0;
+    isrPtr->currAudDetectTimeMsec = 0;
+#endif
+    isrPtr->currVcpbDecTimeMsec = 0;
+#if 0
+    isrPtr->currVdpbDecTimeMsec = 0;
+    isrPtr->currHealthChkTimeMsec = 0;
+    isrPtr->isrTslAudMsec = 0;
+    isrPtr->isrTslVcpbMsec = 0;
+    isrPtr->isrTslVdpbMsec = 0;
+    isrPtr->isrTslHealthChkMsec = 0;
+#endif
+    isrPtr->virtualMemoryInfoPtr = 0;
+    isrPtr->physicalMemoryInfoPtr = 0;
+#if 0
+    isrPtr->ppInfo.pesParserType = FAPI_VIDEC_UNKNOWN_PESPARSER;
+    isrPtr->ppInfo.ptsLocation = 0;
+    isrPtr->fmInfo.state = FAPI_VIDEC_UNKNOWN_VERSION_MATCH_STATE;
+    isrPtr->fmInfo.versionInFlash = 0;
+    isrPtr->fmInfo.versionSupported = 0;
+    isrPtr->abrInfo.audCount = 0;
+    isrPtr->abrInfo.audStateVar = 0;
+    isrPtr->abrInfo.lastFoundPtr = 0;
+    isrPtr->abrInfo.monitorStartTime = 0;
+    isrPtr->abrInfo.totalCodedStreamSize = 0;
+    isrPtr->abrInfo.bitrate = 0;
+    isrPtr->cbrInfo.audCount = 0;
+    isrPtr->cbrInfo.audStateVar = 0;
+    isrPtr->cbrInfo.lastFoundPtr = 0;
+    isrPtr->cbrInfo.monitorStartTime = 0;
+    isrPtr->cbrInfo.totalCodedStreamSize = 0;
+    isrPtr->cbrInfo.bitrate = 0;
+#endif
+    isrPtr->channelInfo.blockIndex = 0xFFFFFFFF;
+    isrPtr->channelInfo.channelId = 0xFFFFFFFF;
+#if 0
+    isrPtr->afdInfo.state = FAPI_VIDEC_UNKNOWN_AFD_STATE;
+    isrPtr->afdInfo.value = 0;
+    isrPtr->delimiterInfo.type = FAPI_VIDEC_UNKNOWN_DELIMITER;
+    isrPtr->delimiterInfo.state = FAPI_VIDEC_UNKNOWN_DELIMITER_STATE;
+    isrPtr->bufferInfo.startAddress = 0;
+#endif
+    isrPtr->bufferInfo.size = 0;
+    isrPtr->bufferInfo.criticalThreshold = 0;
+    isrPtr->bufferInfo.optimalThreshold = 0;
+    isrPtr->bufferInfo.fillLevel = 0;
+    isrPtr->bufferInfo.availableSpace = 0;
+#if 0
+    isrPtr->daInfo.lastWptr = 0xFFFFFFFF;
+    isrPtr->daInfo.currWptr = 0xFFFFFFFF;
+    isrPtr->daInfo.eState = FAPI_VIDEC_UNKNOWN_DATA_AVAILABILE_STATE;
+    isrPtr->daInfo.state = FAPI_VIDEC_UNKNOWN_DATA_AVAILABILE_STATE;
+    isrPtr->playbackEnvironment = FAPI_VIDEC_LIVE_PLAYBACK_ENVIRONMENT;
+    isrPtr->playbackMode = FAPI_VIDEC_UNKNOWN_PLAYBACK_MODE;
+    isrPtr->streamSegmentMode = FAPI_VIDEC_UNKNOWN_STREAM_SEGMENT_MODE;
+#endif
+    isrPtr->bootState = FAPI_VIDEC_NOT_BOOTED;
+    isrPtr->resetState = FAPI_VIDEC_UNKNOWN_RESET_STATE;
+    isrPtr->startStopState = FAPI_VIDEC_UNKNOWN_START_STOP_STATE;
+#if 0
+    isrPtr->skipRepeatState = FAPI_VIDEC_UNKNOWN_SKIP_REPEAT_STATE;
+#endif
+    isrPtr->healthState = FAPI_VIDEC_UNKNOWN_HEALTH;
+#if 0
+    isrPtr->syncState = FAPI_VIDEC_UNKNOWN_SYNC_STATE;
+    isrPtr->vesInfo.vesProfile = FAPI_VIDEC_UNKNOWN_PROFILE;
+    isrPtr->vesInfo.vesLevel = FAPI_VIDEC_UNKNOWN_LEVEL;
+#endif
+    isrPtr->vesInfo.vesAverageBitRate = 0;
+    isrPtr->vesInfo.vesCurrBitRate = 0;
+    isrPtr->vesInfo.vesAspectRatio = FAPI_VIDEC_AR_NONE;
+    isrPtr->vesInfo.vesFrameRate = 0;
+#if 0
+    isrPtr->vesInfo.vesDecoderLatency = 2*FAPI_VIDEC_PTS_TICKS_PER_FRAME_25HZ;
+#endif
+    isrPtr->vesInfo.proggInter = 0xFFFFFFFF;
+    isrPtr->vesInfo.displayWidth = 0;
+    isrPtr->vesInfo.displayHeight = 0;
+    isrPtr->vesInfo.decodedWidth = 0;
+    isrPtr->vesInfo.decodedHeight = 0;
+#if 0
+    isrPtr->vesInfo.sarWidth = 1;
+    isrPtr->vesInfo.sarHeight = 1;
+#endif
+    isrPtr->audLastPts = 0xFFFFFFFFFFFFFFFFULL;
+    isrPtr->audIdx = 0;
+    isrPtr->vcpbLoadIdx = 0;
+    isrPtr->vcpbIdx = 0;
+    isrPtr->oodSerialNum = 0;
+    isrPtr->oodEntropyDecodedAudIdx = 0;
+    isrPtr->oodIdx = 0;
+    isrPtr->vdpbDecodedFramesAvailable = 0;
+    isrPtr->vdpbSerialNum = 0;
+#if 0
+    isrPtr->vdpbVclDecodedAudIdx = 0;
+#endif
+    isrPtr->vdpbIdx = 0;
+    isrPtr->lkgFrameCrop.aspectRatio = FAPI_VIDEC_AR_NONE;
+#if 0
+    isrPtr->lkgFrameCrop.singleField = FAPI_VIDEC_INVALID_FIELD;
+#endif
+    isrPtr->lkgFrameCrop.frameField = 0xFFFFFFFF;
+    isrPtr->lkgFrameCrop.fieldInversion = 0;
+#if 0
+    isrPtr->lkgFrameCrop.quarterLineOffset = 0;
+    isrPtr->lkgFrameCrop.oneLineOffset = 0;
+#endif
+    isrPtr->lkgFrameCrop.x0 = 0;
+    isrPtr->lkgFrameCrop.y0 = 0;
+    isrPtr->lkgFrameCrop.displayWidth = 0;
+    isrPtr->lkgFrameCrop.displayHeight = 0;
+    isrPtr->lkgFrameCrop.decodedWidth = 0;
+    isrPtr->lkgFrameCrop.decodedHeight = 0;
+    isrPtr->lkgFrameCrop.topFieldSerialNo = 0;
+    isrPtr->lkgFrameCrop.botFieldSerialNo = 0;
+    isrPtr->lkgFrameCrop.currAfd = 0;
+    isrPtr->lkgFrameCrop.frameIdx = 0;
+#if 0
+    isrPtr->cucrInfo.vdpbContidionUpdateReq = 0;
+    isrPtr->cucrInfo.oodSerialNumContidionUpdateReq = 0xFFFFFFFF;
+    isrPtr->cucrInfo.decodedWidth = 0;
+    isrPtr->cucrInfo.decodedHeight = 0;
+    isrPtr->cucrInfo.lastDecodedWidth = 0;
+    isrPtr->cucrInfo.lastDecodedHeight = 0;
+    isrPtr->fbcrInfo.mode = FAPI_VIDEC_FBCR_MODE_UNDEFINED;
+    isrPtr->fbcrInfo.state = FAPI_VIDEC_FRAME_BANK_SET;
+    isrPtr->fbcrInfo.openParamsFbi.decoderNumber = FAPI_VIDEC_UNKNOWN_DECODER_NUMBER;
+    isrPtr->fbcrInfo.openParamsFbi.decoderType = FAPI_VIDEC_UNKNOWN_DECODER;
+    isrPtr->fbcrInfo.openParamsFbi.frameBankSizeType = FAPI_VIDEC_UNKNOWN_FRAME_BANK_SIZE;
+    isrPtr->fbcrInfo.openParamsFbi.coreSel = 0xFFFFFFFF;
+    isrPtr->fbcrInfo.openParamsFbi.bankSize = 0;
+    isrPtr->fbcrInfo.openParamsFbi.bankNum = 0;
+    isrPtr->fbcrInfo.openParamsFbi.bankNumForBumping = 0;
+    isrPtr->fbcrInfo.currFbi.decoderNumber = FAPI_VIDEC_UNKNOWN_DECODER_NUMBER;
+    isrPtr->fbcrInfo.currFbi.decoderType = FAPI_VIDEC_UNKNOWN_DECODER;
+    isrPtr->fbcrInfo.currFbi.frameBankSizeType = FAPI_VIDEC_UNKNOWN_FRAME_BANK_SIZE;
+    isrPtr->fbcrInfo.currFbi.coreSel = 0xFFFFFFFF;
+    isrPtr->fbcrInfo.currFbi.bankSize = 0;
+    isrPtr->fbcrInfo.currFbi.bankNum = 0;
+    isrPtr->fbcrInfo.currFbi.bankNumForBumping = 0;
+    isrPtr->fbcrInfo.targetFbi.decoderNumber = FAPI_VIDEC_UNKNOWN_DECODER_NUMBER;
+    isrPtr->fbcrInfo.targetFbi.decoderType = FAPI_VIDEC_UNKNOWN_DECODER;
+    isrPtr->fbcrInfo.targetFbi.frameBankSizeType = FAPI_VIDEC_UNKNOWN_FRAME_BANK_SIZE;
+    isrPtr->fbcrInfo.targetFbi.coreSel = 0xFFFFFFFF;
+    isrPtr->fbcrInfo.targetFbi.bankSize = 0;
+    isrPtr->fbcrInfo.targetFbi.bankNum = 0;
+    isrPtr->fbcrInfo.targetFbi.bankNumForBumping = 0;
+    isrPtr->edcrInfo.userEnableAfterNumFrames0 = 0xFFFFFFFF;
+    isrPtr->edcrInfo.currEnableAfterNumFramesCntr0 = 0;
+    isrPtr->edcrInfo.userEnableAfterNumFrames1 = 0;
+    isrPtr->edcrInfo.currEnableAfterNumFramesCntr1 = 0;
+    isrPtr->edcrInfo.currEnableAfterNumFramesStep = 1;
+    isrPtr->edcrInfo.userEdChangeReqState = FAPI_VIDEC_ENABLE_DISABLE_STATE_SET;
+    isrPtr->edcrInfo.cuEdChangeReqState = FAPI_VIDEC_ENABLE_DISABLE_STATE_SET;
+    isrPtr->edcrInfo.userEnableDisableState = FAPI_VIDEC_ENABLE_FORCE_OFF;
+    isrPtr->edcrInfo.cuEnableDisableState = FAPI_VIDEC_ENABLE_FORCE_OFF;
+    isrPtr->edcrInfo.currEnableState = FAPI_VIDEC_UNKNOWN_ENABLE_DISABLE_STATE;
+#endif
+    isrPtr->pecrInfo.playbackEnvironmentChangeReqState = FAPI_VIDEC_DECODER_PLAYBACK_ENVIRONMENT_SET;
+    isrPtr->pecrInfo.currPlaybackEnvironment = FAPI_VIDEC_LIVE_PLAYBACK_ENVIRONMENT;
+    isrPtr->pecrInfo.targetPlaybackEnvironment = FAPI_VIDEC_LIVE_PLAYBACK_ENVIRONMENT;
+    isrPtr->pmcrInfo.playbackModeChangeReqState = FAPI_VIDEC_DECODER_PLAYBACK_MODE_SET;
+    isrPtr->pmcrInfo.currPlaybackMode = FAPI_VIDEC_UNKNOWN_PLAYBACK_MODE;
+    isrPtr->pmcrInfo.targetPlaybackMode = FAPI_VIDEC_UNKNOWN_PLAYBACK_MODE;
+#if 0
+    isrPtr->sbInfo.ptsToStcState = FAPI_VIDEC_PTS_NOT_SET_TO_STC;
+    isrPtr->sbInfo.base = FAPI_VIDEC_UNKNOWN_SYNC_BASE;
+    isrPtr->sbInfo.pts = 0;
+#endif
+    isrPtr->pctInfo.paramChangeTrigger = 0;
+    isrPtr->pctInfo.lastFrameInfo.aspectRatio = FAPI_VIDEC_AR_NONE;
+    isrPtr->pctInfo.lastFrameInfo.frameField = 0xFFFFFFFF;
+    isrPtr->pctInfo.lastFrameInfo.fieldInversion = 0;
+    isrPtr->pctInfo.lastFrameInfo.decodedWidth = 0;
+    isrPtr->pctInfo.lastFrameInfo.decodedHeight = 0;
+    isrPtr->pctInfo.nextFrameInfo.aspectRatio = FAPI_VIDEC_AR_NONE;
+    isrPtr->pctInfo.nextFrameInfo.frameField = 0xFFFFFFFF;
+    isrPtr->pctInfo.nextFrameInfo.fieldInversion = 0;
+    isrPtr->pctInfo.nextFrameInfo.decodedWidth = 0;
+    isrPtr->pctInfo.nextFrameInfo.decodedHeight = 0;
+#if 0
+    isrPtr->odInfo.startTime = 0;
+    isrPtr->odInfo.delayInMsec = 0;
+    isrPtr->odInfo.delayInPtsTicks = 0;
+    isrPtr->odInfo.startDisplayState = FAPI_VIDEC_STOP_DISPLAY;
+    isrPtr->difInfo.mode = FAPI_VIDEC_NON_DIRECT_IFRAME_MODE;
+    isrPtr->difInfo.state = FAPI_VIDEC_NON_DIRECT_IFRAME_STATE;
+    isrPtr->frInfo.encValue = 0;
+    isrPtr->frInfo.intpValue = 0;
+    isrPtr->frInfo.state = FAPI_VIDEC_UNKNOWN_FRAMERATE;
+    isrPtr->psInfo.wPtr = 0;
+    isrPtr->psInfo.eState = FAPI_VIDEC_UNKNOWN_PTS_STABILITY_STATE;
+    isrPtr->psInfo.state = FAPI_VIDEC_UNKNOWN_PTS_STABILITY_STATE;
+    for(idx = 0; idx < PTS_STABILITY_FIFO_MAX_NUM; idx++){
+        isrPtr->psInfo.pts[idx] = 0;
+    }
+    isrPtr->arInfo.state = FAPI_VIDEC_NO_RECOVER;
+    isrPtr->arInfo.timeInterval = FAPI_VIDEC_BSR_AUTO_RECOVER_HEALTH_CHECK_TIMELIMIT;
+    isrPtr->arInfo.userRequest = FAPI_VIDEC_AUTO_RECOVER_DISABLE;
+    isrPtr->frcInfo.encFpsDivider = 1000;
+    isrPtr->frcInfo.encFrps = 2500000;
+    isrPtr->frcInfo.encFeps = 5000000;
+    isrPtr->frcInfo.targetFpsDivider = 1000;
+    isrPtr->frcInfo.targetFrps = 0;
+    isrPtr->frcInfo.targetFeps = 0;
+    isrPtr->frcInfo.frameCntMax = 6;
+    isrPtr->frcInfo.frameCnt = 0;
+    isrPtr->frcInfo.state = FAPI_VIDEC_UNKNOWN_FRC_STATE;
+    isrPtr->displayInfo.mode = FAPI_VIDEC_UNKNOWN_DISPLAY_MODE;
+    isrPtr->displayInfo.proggInter = 0xFFFFFFFF;
+    isrPtr->frameLastStc = 0;
+    isrPtr->frameLastPts = 0;
+#endif
+    isrPtr->frameFieldState = FAPI_VIDEC_NO_FIELD_FREEZE_STATE;
+#if 0
+    isrPtr->frameInitialStartState = FAPI_VIDEC_WAIT_FOR_INITIAL_START_STATE;
+#endif
+    isrPtr->frameState = FAPI_VIDEC_UNKNOWN_FRAME_STATE;
+    isrPtr->frameBank = 0;
+    isrPtr->frameCrop.aspectRatio = FAPI_VIDEC_AR_NONE;
+    isrPtr->frameCrop.activeAspectRatioL0 = FAPI_VIDEC_AR_NONE;
+    isrPtr->frameCrop.activeAspectRatioL1 = FAPI_VIDEC_AR_NONE;
+#if 0
+    isrPtr->frameCrop.sarWidth = 1;
+    isrPtr->frameCrop.sarHeight = 1;
+    isrPtr->frameCrop.singleField = FAPI_VIDEC_INVALID_FIELD;
+#endif
+    isrPtr->frameCrop.frameField = 0xFFFFFFFF;
+    isrPtr->frameCrop.fieldInversion = 0;
+#if 0
+    isrPtr->frameCrop.quarterLineOffset = 0;
+    isrPtr->frameCrop.oneLineOffset = 0;
+#endif
+    isrPtr->frameCrop.x0 = 0;
+    isrPtr->frameCrop.y0 = 0;
+    isrPtr->frameCrop.displayWidth = 0;
+    isrPtr->frameCrop.displayHeight = 0;
+    isrPtr->frameCrop.decodedWidth = 0;
+    isrPtr->frameCrop.decodedHeight = 0;
+    isrPtr->frameCrop.topFieldSerialNo = 0;
+    isrPtr->frameCrop.botFieldSerialNo = 0;
+    isrPtr->frameCrop.currAfd = 0;
+    isrPtr->frameCrop.codedInterlaceProggState = FAPI_VIDEC_UNKNOWN_IP;
+    isrPtr->frameCrop.readoutInterlaceProggState = FAPI_VIDEC_UNKNOWN_IP;
+    isrPtr->frameCrop.frameIdx = 0;
+    isrPtr->frameDisplayOrderInfo = FAPI_VIDEC_DOI_UNKNOWN;
+    isrPtr->frameTopFieldNo = 0;
+    isrPtr->frameBotFieldNo = 0;
+    isrPtr->frameSerialNum = 0;
+    isrPtr->frameIdx = 0;
+    isrPtr->frameDecError = 0;
+#if 0
+    isrPtr->frameFreeIdx = 0;
+    isrPtr->lastFrameBankFreeState = FAPI_VIDEC_REQUEST_TO_FREE_LAST_FRAME_BANK_IS_INVALID;
+#endif
+    isrPtr->invokeAutoScalers = 0;
+
+    isrPtr->entropyDecInfoCbk = 0;
+    isrPtr->entropyOptData = 0;
+    isrPtr->entropyDecInfoData.serialNum = 0;
+    isrPtr->entropyDecInfoData.afdUserDataActiveFormatFlag = 0;
+
+#ifdef FAPI_VIDEC_EXTENDED_INFO
+    isrPtr->entropyDecInfoData.ccUserDataProcessCcDataFlag = 0;
+    isrPtr->entropyDecInfoData.barUserDataTopBarFlag = 0;
+    isrPtr->entropyDecInfoData.barUserDataBotBarFlag = 0;
+    isrPtr->entropyDecInfoData.barUserDataLeftBarFlag = 0;
+    isrPtr->entropyDecInfoData.barUserDataRightBarFlag = 0;
+    isrPtr->entropyDecInfoData.currAfd = 0XFFFFFFFF;
+    isrPtr->entropyDecInfoData.barUserDataEndOfTopBar = 0XFFFFFFFF;
+    isrPtr->entropyDecInfoData.barUserDataStartOfBotBar = 0XFFFFFFFF;
+    isrPtr->entropyDecInfoData.barUserDataEndOfLeftBar = 0XFFFFFFFF;
+    isrPtr->entropyDecInfoData.barUserDataStartOfRightBar = 0XFFFFFFFF;
+    isrPtr->entropyDecInfoData.ccUserDataCcCount = 0;
+    for(i = 0; i < 32; i++){
+        isrPtr->entropyDecInfoData.ccUserDataCcValid[i] = 0XFFFFFFFF;
+        isrPtr->entropyDecInfoData.ccUserDataCcType[i] = 0XFFFFFFFF;
+        isrPtr->entropyDecInfoData.ccUserDataCcData1[i] = 0XFFFFFFFF;
+        isrPtr->entropyDecInfoData.ccUserDataCcData2[i] = 0XFFFFFFFF;
+    }
+#endif
+
+    isrPtr->entropyDecInfoData.MPEG2HorizontalSizeValue = 0xFFFFFFFF;
+    isrPtr->entropyDecInfoData.MPEG2VerticalSizeValue = 0xFFFFFFFF;
+    isrPtr->entropyDecInfoData.MPEG2AspectRatioInformation = 0xFFFFFFFF;
+    isrPtr->entropyDecInfoData.MPEG2ProgressiveSequence = 0xFFFFFFFF;
+    isrPtr->entropyDecInfoData.MPEG2DisplayHorizontalSize = 0xFFFFFFFF;
+    isrPtr->entropyDecInfoData.MPEG2DisplayVerticalSize = 0xFFFFFFFF;
+    isrPtr->entropyDecInfoData.H264PicStructurePresentFlag = 0xFFFFFFFF;
+    isrPtr->entropyDecInfoData.H264PicStructure = 0xFFFFFFFF;
+    isrPtr->entropyDecInfoData.H264PicWidthInMbsMinus1 = 0xFFFFFFFF;
+    isrPtr->entropyDecInfoData.H264FrameHeightInMbs = 0xFFFFFFFF;
+    isrPtr->entropyDecInfoData.H264FieldPicFlag = 0xFFFFFFFF;
+    isrPtr->entropyDecInfoData.H264AspectRatioInfoPresentFlag = 0xFFFFFFFF;
+    isrPtr->entropyDecInfoData.H264AspectRatioIdc = 0xFFFFFFFF;
+    isrPtr->entropyDecInfoData.H264SarWidth = 0xFFFFFFFF;
+    isrPtr->entropyDecInfoData.H264SarHeight = 0xFFFFFFFF;
+    isrPtr->videoDecInfoCbk = 0;
+    isrPtr->videoOptData = 0;
+    isrPtr->videoDecInfoData.rPtr = 0;
+    isrPtr->videoDecInfoData.serialNum = 0xFFFFFFFF;
+    isrPtr->videoDecInfoData.frameBank = 0xFFFFFFFF;
+    isrPtr->videoDecInfoData.displayWidth = 0;
+    isrPtr->videoDecInfoData.displayHeight = 0;
+    isrPtr->videoDecInfoData.decodedWidth = 0;
+    isrPtr->videoDecInfoData.decodedHeight = 0;
+    isrPtr->videoDecInfoData.displayOrderInfo = FAPI_VIDEC_DOI_UNKNOWN;
+    isrPtr->videoDecInfoData.topFieldSerialNo = 0xFFFFFFFF;
+    isrPtr->videoDecInfoData.botFieldSerialNo = 0xFFFFFFFF;
+    isrPtr->videoDecInfoData.ptsValidFlag = 0;
+    isrPtr->videoDecInfoData.dtsValidFlag = 0;
+    isrPtr->videoDecInfoData.pts = 0;
+    isrPtr->videoDecInfoData.dts = 0;
+    isrPtr->hdAutoScaleCbk = 0;
+    isrPtr->hdScalerHandle = 0;
+    isrPtr->sdAutoScaleCbk = 0;
+    isrPtr->sdScalerHandle = 0;
+    isrPtr->frameDecodedCbk = 0;
+    isrPtr->frameDecodedOptData = 0;
+    isrPtr->frameAvailableCbk = 0;
+    isrPtr->frameAvailableOptData = 0;
+    isrPtr->vesOverflowCbk = 0;
+    isrPtr->vesOverflowOptData = 0;
+    isrPtr->paramChangeCbk = 0;
+    isrPtr->paramChangeOptData = 0;
+
+    isrPtr->audInfo.wPtr = 0;
+    isrPtr->audInfo.rPtr = 0;
+    isrPtr->audInfo.fPtr = 0;
+    isrPtr->audInfo.fillLevel = 0;
+    isrPtr->audInfo.fillLevelLimit = 1;
+    isrPtr->audInfo.entryPointFound = 0;
+    isrPtr->audInfo.seqStartFound = 0;
+    isrPtr->audInfo.seqStartPtr = 0;
+    for(idx = 0; idx < AUD_FIFO_MAX_NUM; idx++){
+#if 0
+        isrPtr->audInfo.codedPic[idx].time = 0;
+        isrPtr->audInfo.codedPic[idx].headerHitPosition = 0xFFFFFFFF;
+        isrPtr->audInfo.codedPic[idx].headerLength = 0;
+        isrPtr->audInfo.codedPic[idx].picType = 0xFFFFFFFF;
+        isrPtr->audInfo.codedPic[idx].serialNum = 0xFFFFFFFF;
+        isrPtr->audInfo.codedPic[idx].decMode = 0xFFFFFFFF;
+        isrPtr->audInfo.codedPic[idx].streamFlushMarker = 0;
+        isrPtr->audInfo.codedPic[idx].pesHeaderAuFlag = 0;
+#endif
+        isrPtr->audInfo.codedPic[idx].codedPicPtr = 0;
+        isrPtr->audInfo.codedPic[idx].codedPicSize = 0;
+#if 0
+        isrPtr->audInfo.codedPic[idx].ptsValidFlag = 0;
+        isrPtr->audInfo.codedPic[idx].dtsValidFlag = 0;
+#endif
+        isrPtr->audInfo.codedPic[idx].pts = 0;
+        isrPtr->audInfo.codedPic[idx].dts = 0;
+        isrPtr->audInfo.codedPic[idx].state = FAPI_VIDEC_AUD_STATE_FREE;
+    }
+
+#if 0
+    isrPtr->oodInfo.lastSearchStartIdx = 0xFFFFFFFF;
+#endif
+    isrPtr->oodInfo.wPtr = 0;
+    isrPtr->oodInfo.rPtrMemory = 0;
+#if 0
+    isrPtr->oodInfo.auIdx = 0;
+    isrPtr->oodInfo.auStructureInfo = 0;
+    isrPtr->oodInfo.auFirstStructIdx = 0;
+    isrPtr->oodInfo.auSecondStructIdx = 0;
+#endif
+    for(idx = 0; idx < OOD_FIFO_MAX_NUM; idx++)
+    {
+#if 0
+        isrPtr->oodInfo.serialNum[idx] = 0xFFFFFFFF;
+        isrPtr->oodInfo.decError[idx] = 0xFFFFFFFF;
+#endif
+        isrPtr->oodInfo.table[idx].decodedPicAspectRatio = FAPI_VIDEC_AR_NONE;
+#if 0
+        isrPtr->oodInfo.table[idx].sarWidth = 1;
+        isrPtr->oodInfo.table[idx].sarHeight = 1;
+#endif
+        isrPtr->oodInfo.table[idx].decodedWidth = 0;
+        isrPtr->oodInfo.table[idx].decodedHeight = 0;
+        isrPtr->oodInfo.table[idx].codedInterlaceProggState = FAPI_VIDEC_UNKNOWN_IP;
+
+#ifdef FAPI_VIDEC_EXTENDED_INFO
+        isrPtr->oodInfo.table[idx].afdUserDataActiveFormatFlag = 0;
+        isrPtr->oodInfo.table[idx].currAfd = 0;
+        isrPtr->oodInfo.table[idx].ccUserDataProcessCcDataFlag = 0;
+        isrPtr->oodInfo.table[idx].ccUserDataCcCount = 0;
+        for(i = 0; i < 32; i++){
+            isrPtr->oodInfo.table[idx].ccUserDataCcValid[i] = 0;
+            isrPtr->oodInfo.table[idx].ccUserDataCcType[i] = 0;
+            isrPtr->oodInfo.table[idx].ccUserDataCcData1[i] = 0;
+            isrPtr->oodInfo.table[idx].ccUserDataCcData2[i] = 0;
+        }
+        isrPtr->oodInfo.table[idx].barUserDataTopBarFlag = 0;
+        isrPtr->oodInfo.table[idx].barUserDataEndOfTopBar = 0;
+        isrPtr->oodInfo.table[idx].barUserDataBotBarFlag = 0;
+        isrPtr->oodInfo.table[idx].barUserDataStartOfBotBar = 0;
+        isrPtr->oodInfo.table[idx].barUserDataLeftBarFlag = 0;
+        isrPtr->oodInfo.table[idx].barUserDataEndOfLeftBar = 0;
+        isrPtr->oodInfo.table[idx].barUserDataRightBarFlag = 0;
+        isrPtr->oodInfo.table[idx].barUserDataStartOfRightBar = 0;
+#endif
+        isrPtr->oodInfo.table[idx].MPEG2HorizontalSizeValue = 0xFFFFFFFF;
+        isrPtr->oodInfo.table[idx].MPEG2VerticalSizeValue = 0xFFFFFFFF;
+        isrPtr->oodInfo.table[idx].MPEG2AspectRatioInformation = 0xFFFFFFFF;
+        isrPtr->oodInfo.table[idx].MPEG2FrameRateCode = 0xFFFFFFFF;
+#if 0
+        isrPtr->oodInfo.table[idx].MPEG2ProfileLevelIndication = 0xFFFFFFFF;
+#endif
+        isrPtr->oodInfo.table[idx].MPEG2ProgressiveSequence = 0xFFFFFFFF;
+        isrPtr->oodInfo.table[idx].MPEG2DisplayHorizontalSize = 0xFFFFFFFF;
+        isrPtr->oodInfo.table[idx].MPEG2DisplayVerticalSize = 0xFFFFFFFF;
+
+#if 0
+        isrPtr->oodInfo.table[idx].H264VdpbContidionUpdateReq = 0;
+#endif
+        isrPtr->oodInfo.table[idx].H264PicStructurePresentFlag = 0xFFFFFFFF;
+        isrPtr->oodInfo.table[idx].H264PicStructure = 0xFFFFFFFF;
+        isrPtr->oodInfo.table[idx].H264PicWidthInMbsMinus1 = 0xFFFFFFFF;
+        isrPtr->oodInfo.table[idx].H264FrameHeightInMbs = 0xFFFFFFFF;
+        isrPtr->oodInfo.table[idx].H264FrameMbsOnlyFlag = 0xFFFFFFFF;
+        isrPtr->oodInfo.table[idx].H264ProfileIdc = 0xFFFFFFFF;
+        isrPtr->oodInfo.table[idx].H264LevelIdc = 0xFFFFFFFF;
+        isrPtr->oodInfo.table[idx].H264FieldPicFlag = 0xFFFFFFFF;
+        isrPtr->oodInfo.table[idx].H264NumUnitsInTick = 0xFFFFFFFF;
+        isrPtr->oodInfo.table[idx].H264TimeScale = 0xFFFFFFFF;
+        isrPtr->oodInfo.table[idx].H264FixedFrameRateFlag = 0xFFFFFFFF;
+        isrPtr->oodInfo.table[idx].H264AspectRatioInfoPresentFlag = 0xFFFFFFFF;
+        isrPtr->oodInfo.table[idx].H264AspectRatioIdc = 0xFFFFFFFF;
+        isrPtr->oodInfo.table[idx].H264SarWidth = 0xFFFFFFFF;
+        isrPtr->oodInfo.table[idx].H264SarHeight = 0xFFFFFFFF;
+    }
+
+    isrPtr->frameInfo.wPtr = 0;
+    isrPtr->frameInfo.rPtr = 0;
+    isrPtr->frameInfo.fillLevel = 0;
+    isrPtr->frameInfo.fillLevelLimit = 1;
+    for(idx = 0; idx < FRAME_FIFO_MAX_NUM; idx++){
+        isrPtr->frameInfo.decodedPic[idx].serialNum         = 0xFFFFFFFF;
+        isrPtr->frameInfo.decodedPic[idx].displayFrameBank  = 0xFFFFFFFF;
+        isrPtr->frameInfo.decodedPic[idx].displayWidth      = 0;
+        isrPtr->frameInfo.decodedPic[idx].displayHeight     = 0;
+        isrPtr->frameInfo.decodedPic[idx].decodedWidth      = 0;
+        isrPtr->frameInfo.decodedPic[idx].decodedHeight     = 0;
+        isrPtr->frameInfo.decodedPic[idx].displayOrderInfo  = FAPI_VIDEC_DOI_UNKNOWN;
+        isrPtr->frameInfo.decodedPic[idx].topFieldSerialNo  = 0xFFFFFFFF;
+        isrPtr->frameInfo.decodedPic[idx].botFieldSerialNo  = 0xFFFFFFFF;
+#if 0
+        isrPtr->frameInfo.decodedPic[idx].quarterLineOffset = 0;
+        isrPtr->frameInfo.decodedPic[idx].oneLineOffset     = 0;
+#endif
+        isrPtr->frameInfo.decodedPic[idx].ptsValidFlag      = 0;
+        isrPtr->frameInfo.decodedPic[idx].dtsValidFlag      = 0;
+        isrPtr->frameInfo.decodedPic[idx].pts               = 0;
+        isrPtr->frameInfo.decodedPic[idx].dts               = 0;
+        isrPtr->frameInfo.decodedPic[idx].state             = FAPI_VIDEC_UNKNOWN_FRAME_STATE;
+        isrPtr->frameInfo.decodedPic[idx].topDecError       = 0xFFFFFFFF;
+        isrPtr->frameInfo.decodedPic[idx].botDecError       = 0xFFFFFFFF;
+        isrPtr->frameInfo.decodedPic[idx].vdpbDispCount     = 0;
+        isrPtr->frameInfo.decodedPic[idx].decodedPicAspectRatio = FAPI_VIDEC_AR_NONE;
+        isrPtr->frameInfo.decodedPic[idx].activePicAspectRatioL0 = FAPI_VIDEC_AR_NONE;
+        isrPtr->frameInfo.decodedPic[idx].activePicAspectRatioL1 = FAPI_VIDEC_AR_NONE;
+#if 0
+        isrPtr->frameInfo.decodedPic[idx].sarWidth = 1;
+        isrPtr->frameInfo.decodedPic[idx].sarHeight = 1;
+#endif
+        isrPtr->frameInfo.decodedPic[idx].currAfd = 0;
+        isrPtr->frameInfo.decodedPic[idx].codedInterlaceProggState = FAPI_VIDEC_UNKNOWN_IP;
+        isrPtr->frameInfo.decodedPic[idx].readoutInterlaceProggState = FAPI_VIDEC_UNKNOWN_IP;
+
+#ifdef FAPI_VIDEC_EXTENDED_INFO
+        isrPtr->frameInfo.decodedPic[idx].barUserDataTopBarFlag = 0;
+        isrPtr->frameInfo.decodedPic[idx].barUserDataEndOfTopBar = 0;
+        isrPtr->frameInfo.decodedPic[idx].barUserDataBotBarFlag = 0;
+        isrPtr->frameInfo.decodedPic[idx].barUserDataStartOfBotBar = 0;
+        isrPtr->frameInfo.decodedPic[idx].barUserDataLeftBarFlag = 0;
+        isrPtr->frameInfo.decodedPic[idx].barUserDataEndOfLeftBar = 0;
+        isrPtr->frameInfo.decodedPic[idx].barUserDataRightBarFlag = 0;
+        isrPtr->frameInfo.decodedPic[idx].barUserDataStartOfRightBar = 0;
+#endif
+#if 0
+        isrPtr->frameInfo.decodedPic[idx].frameInfoAssocationState = FAPI_VIDEC_FRAME_INFO_ASSOCIATION_UNKNOWN_STATE;
+#endif
+    }
+#ifdef FAPI_VIDEC_DEBUG
+    isrPtr->trc.rPtr = 0;
+    isrPtr->trc.wPtr = 0;
+#endif
+    isrPtr = 0;
 }
 
 
@@ -4363,19 +4861,19 @@ int32_t FAPI_VIDEC_Init(void)
    
    for (i = 0; i < 1; i++)
    {
-      res = initMemorySegment(&Data_21f67074[i]);
+      res = initMemorySegment(&videcMemoryData[i]);
       if (res != 0)
       {
          videcDriverIsInitialized = 0;
       }
       else
       {
-         fapi_videc_clear_handle(&videcHandleArray[i]);
+         fapi_videc_clear_handle(&videcHandles[i]);
          
-         fapi_videc_clear_isr_data(&Data_21bf62c8[i]);
+         fapi_videc_clear_isr_data(&videcIsrData[i]);
          
          videcDriverIsInitialized = 1;
-         Data_21b6b8f4 = 1;
+         videcDriverLoadFirmwaresState = 1;
       }
    } //for (i = 0; i < 1; i++)
 
@@ -4389,17 +4887,18 @@ void FAPI_VIDEC_Exit(void)
 
 }
 
-uint32_t Data_21c172b8[0x1000/4]; //21fbda84
-uint32_t Data_21c182b8[0x1E000/4]; //21f80a84
-uint32_t Data_21c362b8[0x1000/4]; //21f7fa84
+uint32_t fvm0d[0x1000/4]; //21fbda84
+uint32_t fvm1d[0x1E000/4]; //21f80a84
+uint32_t fvm2d[0x1000/4]; //21f7fa84
 
-uint32_t Data_21c372b8[0x1000/4]; //21fbca84
-uint32_t Data_21c382b8[0x1E000/4]; //21f9ea84
-uint32_t Data_21c562b8[0x1000/4]; //21f7ea84
+uint32_t fvh0d[0x1000/4]; //21fbca84
+uint32_t fvh1d[0x1E000/4]; //21f9ea84
+uint32_t fvh2d[0x1000/4]; //21f7ea84
 
 
-static FAPI_VIDEC_MemoryInfoDataT* func_218ce3f4(int* res)
+static FAPI_VIDEC_MemoryInfoDataT* allocateVirtualMemoryInfo(int* errorCodePtr)
 {
+#if 0
    unsigned r2 = 0;
    int r3 = 0;
    FAPI_VIDEC_MemoryInfoDataT* r11 = 0;
@@ -4407,27 +4906,49 @@ static FAPI_VIDEC_MemoryInfoDataT* func_218ce3f4(int* res)
    for (r2 = 0; r2 < 1; r2++)
    {
       //218ce404
-      if ((Data_21f67074[r2].virtualMemoryInfo.inUse == 0) &&
-         (Data_21f67074[r2].virtualMemoryInfo.memoryInfoAvailable == 1) &&
+      if ((videcMemoryData[r2].virtualMemoryInfo.inUse == 0) &&
+         (videcMemoryData[r2].virtualMemoryInfo.memoryInfoAvailable == 1) &&
          (r3 == 0))
       {
          //218ce424
-         Data_21f67074[r2].virtualMemoryInfo.inUse = 1;
-         r11 = &Data_21f67074[r2].virtualMemoryInfo;
+         videcMemoryData[r2].virtualMemoryInfo.inUse = 1;
+         r11 = &videcMemoryData[r2].virtualMemoryInfo;
          //->218ce440
          break;
       }
       //218ce438
    } //for (r2 = 0; r2 < 1; r2++)
    //218ce440
-   *res = r3;
+   *errorCodePtr = r3;
 
    return r11;
+#else
+   uint32_t index = 0;
+   int32_t err_code = FAPI_VIDEC_ERR_VIDEO_MEMORY_CHUNK_ALLOCATION_FAILURE;
+   FAPI_VIDEC_MemoryInfoDataT* memory_info_ptr = 0;
+
+   for(index = 0; index < FAPI_VIDEC_MAX_NUM_DECODERS; index++){
+       if((videcMemoryData[index].virtualMemoryInfo.inUse == 0) && (videcMemoryData[index].virtualMemoryInfo.memoryInfoAvailable == 1)){
+           err_code = FAPI_OK;
+           videcMemoryData[index].virtualMemoryInfo.inUse = 1;
+           memory_info_ptr = &videcMemoryData[index].virtualMemoryInfo;
+           break;
+       }
+       else{
+           continue;
+       }
+   }
+   if(errorCodePtr != 0){
+       *errorCodePtr = err_code;
+   }
+   return(memory_info_ptr);
+#endif
 }
 
 
-static FAPI_VIDEC_MemoryInfoDataT* func_218ce454(int* res)
+static FAPI_VIDEC_MemoryInfoDataT* allocatePhysicalMemoryInfo(int* errorCodePtr)
 {
+#if 0
    unsigned r2_ = 0;
    int r3_ = 0;
    FAPI_VIDEC_MemoryInfoDataT* r11_ = 0;
@@ -4435,27 +4956,49 @@ static FAPI_VIDEC_MemoryInfoDataT* func_218ce454(int* res)
    for (r2_ = 0; r2_ < 1; r2_++)
    {
       //218ce460
-      if ((Data_21f67074[r2_].physicalMemoryInfo.inUse == 0) &&
-         (Data_21f67074[r2_].physicalMemoryInfo.memoryInfoAvailable == 1) &&
+      if ((videcMemoryData[r2_].physicalMemoryInfo.inUse == 0) &&
+         (videcMemoryData[r2_].physicalMemoryInfo.memoryInfoAvailable == 1) &&
          (r3_ == 0))
       {
          //218ce480
-         Data_21f67074[r2_].physicalMemoryInfo.inUse = 1;
-         r11_ = &Data_21f67074[r2_].physicalMemoryInfo;
+         videcMemoryData[r2_].physicalMemoryInfo.inUse = 1;
+         r11_ = &videcMemoryData[r2_].physicalMemoryInfo;
          //->218ce49c
          break;
       }
       //218ce494
    } //for (r2_ = 0; r2_ < 1; r2_++)
    //218ce49c
-   *res = r3_;
+   *errorCodePtr = r3_;
 
    return r11_;
+#else
+   uint32_t index = 0;
+   int32_t err_code = FAPI_VIDEC_ERR_VIDEO_MEMORY_CHUNK_ALLOCATION_FAILURE;
+   FAPI_VIDEC_MemoryInfoDataT* memory_info_ptr = 0;
+
+   for(index = 0; index < FAPI_VIDEC_MAX_NUM_DECODERS; index++){
+       if((videcMemoryData[index].physicalMemoryInfo.inUse == 0) && (videcMemoryData[index].physicalMemoryInfo.memoryInfoAvailable == 1)){
+           err_code = FAPI_OK;
+           videcMemoryData[index].physicalMemoryInfo.inUse = 1;
+           memory_info_ptr = &videcMemoryData[index].physicalMemoryInfo;
+           break;
+       }
+       else{
+           continue;
+       }
+   }
+   if(errorCodePtr != 0){
+       *errorCodePtr = err_code;
+   }
+   return(memory_info_ptr);
+#endif
 }
 
 
-static FAPI_VIDEC_VideoDecoderIsrDataT* func_218ce4a8(int* res)
+static FAPI_VIDEC_VideoDecoderIsrDataT* allocateIsrStateMachine(int* errorCodePtr)
 {
+#if 0
    //218ce4a8
    unsigned r1_ = 0;
    int r2_ = 0;
@@ -4464,23 +5007,46 @@ static FAPI_VIDEC_VideoDecoderIsrDataT* func_218ce4a8(int* res)
    for (r1_ = 0; r1_ < 1; r1_++)
    {
       //218ce4b8
-      if ((Data_21bf62c8[r1_].inUse == 0) &&
+      if ((videcIsrData[r1_].inUse == 0) &&
             (r2_ == 0))
       {
          //218ce4d0
-         Data_21bf62c8[r1_].inUse = 1; //r7;
-         r12 = &Data_21bf62c8[r1_];
+         videcIsrData[r1_].inUse = 1; //r7;
+         r12 = &videcIsrData[r1_];
          //->218ce4ec
          break;
       }
       //218ce4e4
    } //for (r1_ = 0; r1_ < 1; r1_++)
    //218ce4ec
-   *res = r2_;
+   *errorCodePtr = r2_;
 
    return r12;
+#else
+   uint32_t index = 0;
+   int32_t err_code = FAPI_OK;
+   FAPI_VIDEC_VideoDecoderIsrDataT* isr_ptr = 0;
+
+   for(index = 0; index < FAPI_VIDEC_MAX_NUM_DECODERS; index++){
+       if(videcIsrData[index].inUse == 0){
+           if(err_code == FAPI_OK){
+               videcIsrData[index].inUse = 1;
+               isr_ptr = &videcIsrData[index];
+               break;
+           }
+           else{
+               continue;
+           }
+       }
+   }
+   if(errorCodePtr != 0){
+       *errorCodePtr = err_code;
+   }
+   return(isr_ptr);
+#endif
 }
 
+#if 0
 
 static FAPI_VIDEC_VideoDecoderHandleT* videcAllocateHandle(const FAPI_VIDEC_OpenParamsT* paramsPtr)
 {
@@ -4491,13 +5057,13 @@ static FAPI_VIDEC_VideoDecoderHandleT* videcAllocateHandle(const FAPI_VIDEC_Open
    switch (paramsPtr->decoderNumber)
    {
    case 0:
-      if (Data_21B6B8FC != 0)
+      if (videc0HandleAllocated != 0)
       {
          r3 = 1;
       }
       else
       {
-         Data_21B6B8FC = 1;
+         videc0HandleAllocated = 1;
       }
       break;
 
@@ -4510,39 +5076,14 @@ static FAPI_VIDEC_VideoDecoderHandleT* videcAllocateHandle(const FAPI_VIDEC_Open
    {
       for (r1 = 0; r1 < 1; r1++)
       {
-         if (videcHandleArray[r1].inUse == 0)
+         if (videcHandles[r1].inUse == 0)
          {
             //21c45914
-            //r12 = Data_21f67074(21bf60f0)
-#if 0
-            unsigned r1_, r2_, r2 = 0;
-            int r3_, r3 = 0;
-            FAPI_VIDEC_MemoryInfoDataT* r11_, *r11 = 0;
-            FAPI_VIDEC_VideoDecoderIsrDataT* r12;
-
-            for (r2 = 0; r2 < 1; r2++)
-            {
-               //218ce404
-               if ((Data_21f67074[r2].virtualMemoryInfo.inUse == 0) &&
-                  (Data_21f67074[r2].virtualMemoryInfo.memoryInfoAvailable == 1) &&
-                  (r3 == 0))
-               {
-                  //218ce424
-                  Data_21f67074[r2].virtualMemoryInfo.inUse = 1; //r7;
-                  r11 = &Data_21f67074[r2].virtualMemoryInfo;
-                  //->218ce440
-                  break;
-               }
-               //218ce438
-            } //for (r2 = 0; r2 < 1; r2++)
-            //218ce440
-            videcHandleArray[r1].virtualMemoryInfoPtr = r11;
-#else
+            //r12 = videcMemoryData(21bf60f0)
             int r3 = 0;
 
-            videcHandleArray[r1].virtualMemoryInfoPtr =
-               func_218ce3f4(&r3);
-#endif
+            videcHandles[r1].virtualMemoryInfoPtr =
+               allocateVirtualMemoryInfo(&r3);
 
             if (r3 != 0)
             {
@@ -4550,64 +5091,8 @@ static FAPI_VIDEC_VideoDecoderHandleT* videcAllocateHandle(const FAPI_VIDEC_Open
                break;
             }
             //218ce454
-#if 0
-            r2_ = 0;
-            r3 = 0;
-            r11_ = 0;
-
-            for (r2_ = 0; r2_ < 1; r2_++)
-            {
-               //218ce460
-               if ((Data_21f67074[r2_].physicalMemoryInfo.inUse == 0) &&
-                  (Data_21f67074[r2_].physicalMemoryInfo.memoryInfoAvailable == 1) &&
-                  (r3 == 0))
-               {
-                  //218ce480
-                  Data_21f67074[r2_].physicalMemoryInfo.inUse = 1; //r7;
-                  r11_ = &Data_21f67074[r2_].physicalMemoryInfo;
-                  //->218ce49c
-                  break;
-               }
-               //218ce494
-            } //for (r2_ = 0; r2_ < 1; r2_++)
-            //218ce49c
-            videcHandleArray[r1].physicalMemoryInfoPtr = r11_;
-#else
-            videcHandleArray[r1].physicalMemoryInfoPtr =
-               func_218ce454(&r3);
-#endif
-
-            if (r3 != 0)
-            {
-               //->218ce538
-               break;
-            }
-#if 0
-            //218ce4a8
-            r1_ = 0;
-            r3 = 0;
-            r12 = 0;
-
-            for (r1_ = 0; r1_ < 1; r1_++)
-            {
-               //218ce4b8
-               if ((Data_21bf62c8[r1_].inUse == 0) &&
-                     (r3 == 0))
-               {
-                  //218ce4d0
-                  Data_21bf62c8[r1_].inUse = 1; //r7;
-                  r12 = &Data_21bf62c8[r1_];
-                  //->218ce4ec
-                  break;
-               }
-               //218ce4e4
-            } //for (r1_ = 0; r1_ < 1; r1_++)
-            //218ce4ec
-            videcHandleArray[r1].isrDataPtr = r12;
-#else
-            videcHandleArray[r1].isrDataPtr =
-               func_218ce4a8(&r3);
-#endif
+            videcHandles[r1].physicalMemoryInfoPtr =
+               allocatePhysicalMemoryInfo(&r3);
 
             if (r3 != 0)
             {
@@ -4615,17 +5100,26 @@ static FAPI_VIDEC_VideoDecoderHandleT* videcAllocateHandle(const FAPI_VIDEC_Open
                break;
             }
 
-            videcHandleArray[r1].isrDataPtr->virtualMemoryInfoPtr =
-               videcHandleArray[r1].virtualMemoryInfoPtr;
-            videcHandleArray[r1].isrDataPtr->physicalMemoryInfoPtr =
-               videcHandleArray[r1].physicalMemoryInfoPtr;
+            videcHandles[r1].isrDataPtr =
+               allocateIsrStateMachine(&r3);
 
-            videcHandleArray[r1].inUse = 1;
+            if (r3 != 0)
+            {
+               //->218ce538
+               break;
+            }
 
-            r6 = &videcHandleArray[r1];
+            videcHandles[r1].isrDataPtr->virtualMemoryInfoPtr =
+               videcHandles[r1].virtualMemoryInfoPtr;
+            videcHandles[r1].isrDataPtr->physicalMemoryInfoPtr =
+               videcHandles[r1].physicalMemoryInfoPtr;
+
+            videcHandles[r1].inUse = 1;
+
+            r6 = &videcHandles[r1];
             //->218ce538
             break;
-         } //if (videcHandleArray[r1].inUse == 0)
+         } //if (videcHandles[r1].inUse == 0)
          //218ce518
       } //for (r1 = 0; r1 < 1; r1++)
    }
@@ -4634,7 +5128,7 @@ static FAPI_VIDEC_VideoDecoderHandleT* videcAllocateHandle(const FAPI_VIDEC_Open
       switch (paramsPtr->decoderNumber)
       {
       case 0:
-         Data_21B6B8FC--;
+         videc0HandleAllocated--;
          break;
 
       default:
@@ -4644,6 +5138,89 @@ static FAPI_VIDEC_VideoDecoderHandleT* videcAllocateHandle(const FAPI_VIDEC_Open
    //21c45b74
    return r6;
 }
+#else
+
+static FAPI_VIDEC_VideoDecoderHandleT* allocateHandle
+                                      (const FAPI_VIDEC_OpenParamsT* paramsPtr,
+                                       int32_t* errorCodePtr)
+{
+    uint32_t index = 0;
+    int32_t err_code = FAPI_OK;
+    FAPI_VIDEC_VideoDecoderHandleT* handle_ptr = 0;
+
+    switch(paramsPtr->decoderNumber){
+        case FAPI_VIDEC_DECODER_NUMBER_0:
+            if(videc0HandleAllocated >= FAPI_VIDEC_MAX_NUM_HANDLES_VIDEC_0){
+                err_code = FAPI_VIDEC_ERR_EXCEEDED_MAX_HANDLES;
+            }
+            else{
+                videc0HandleAllocated++;
+                err_code = FAPI_OK;
+            }
+            break;
+        case FAPI_VIDEC_UNKNOWN_DECODER_NUMBER:
+        default:
+                err_code = FAPI_VIDEC_ERR_INVALID_OPEN_PARAMS;
+            break;
+    };
+    if(err_code == FAPI_OK){
+        for(index = 0; index < FAPI_VIDEC_MAX_NUM_DECODERS; index++){
+            if(videcHandles[index].inUse == 0){
+                videcHandles[index].virtualMemoryInfoPtr = allocateVirtualMemoryInfo(&err_code);
+                if(err_code != FAPI_OK){
+                    err_code = FAPI_VIDEC_ERR_VIDEO_MEMORY_CHUNK_ALLOCATION_FAILURE;
+                    break;
+                }
+                videcHandles[index].physicalMemoryInfoPtr = allocatePhysicalMemoryInfo(&err_code);
+                if(err_code != FAPI_OK){
+                    err_code = FAPI_VIDEC_ERR_VIDEO_MEMORY_CHUNK_ALLOCATION_FAILURE;
+                    break;
+                }
+                videcHandles[index].isrDataPtr = allocateIsrStateMachine(&err_code);
+                if(err_code != FAPI_OK){
+                    err_code = FAPI_VIDEC_ERR_ISR_STATE_MACHINE_ALLOCATION_FAILURE;
+                    break;
+                }
+#if 0
+                videcHandles[index].bsrDecodeDataPtr = allocateBsrDecodeStateMachine(&err_code);
+                if(err_code != FAPI_OK){
+                    err_code = FAPI_VIDEC_ERR_BSR_STATE_MACHINE_ALLOCATION_FAILURE;
+                    break;
+                }
+                videcHandles[index].bsrDisplayDataPtr = allocateBsrDisplayStateMachine(&err_code);
+                if(err_code != FAPI_OK){
+                    err_code = FAPI_VIDEC_ERR_BSR_STATE_MACHINE_ALLOCATION_FAILURE;
+                    break;
+                }
+#endif
+                else{
+                    videcHandles[index].isrDataPtr->virtualMemoryInfoPtr = videcHandles[index].virtualMemoryInfoPtr;
+                    videcHandles[index].isrDataPtr->physicalMemoryInfoPtr = videcHandles[index].physicalMemoryInfoPtr;
+                    videcHandles[index].inUse = 1;
+                    handle_ptr = &videcHandles[index];
+                    break;
+                }
+            }
+        }
+    }
+    else{
+        handle_ptr = 0;
+        switch(paramsPtr->decoderNumber){
+            case FAPI_VIDEC_DECODER_NUMBER_0:
+                     videc0HandleAllocated--;
+                 break;
+            case FAPI_VIDEC_UNKNOWN_DECODER_NUMBER:
+            default:
+                 break;
+        };
+    }
+    if(errorCodePtr != 0){
+        *errorCodePtr = err_code;
+    }
+    return(handle_ptr);
+}
+
+#endif
 
 
 /* 2192d30c - todo */
@@ -4677,7 +5254,7 @@ void fapi_videc_release_handle(FAPI_VIDEC_VideoDecoderHandleT* a)
    
    if (a->opParams.decoderNumber == FAPI_VIDEC_DECODER_NUMBER_0)
    {
-      Data_21B6B8FC--;
+      videc0HandleAllocated--;
    }
    
    fapi_videc_release_memory_info_data(a->virtualMemoryInfoPtr);
@@ -4933,7 +5510,7 @@ int32_t fapi_videc_check_firmware_version(FAPI_VIDEC_VideoDecoderHandleT* a)
 }
 
 
-static int32_t func_2192c9ec(FAPI_VIDEC_VideoDecoderHandleT* a)
+static int32_t fapi_videc_initialize_isr(FAPI_VIDEC_VideoDecoderHandleT* a)
 {
    int32_t res = 0;
 
@@ -4958,7 +5535,7 @@ static int32_t func_2192c9ec(FAPI_VIDEC_VideoDecoderHandleT* a)
    a->isrDataPtr->decoderType = a->opParams.decoderType;
    a->isrDataPtr->decodeFrameBankSizeType = a->opParams.decodeFrameBankSizeType;
    a->isrDataPtr->decoderAfdState = a->opParams.decoderAfdState;
-   a->isrDataPtr->Data_120 = a->opParams.Data_28;
+   a->isrDataPtr->Data_120 = a->opParams.decoderDelimiterType;
    a->isrDataPtr->Data_128 = a->physicalMemoryInfoPtr->videoStreamAreaStartAddress;
    a->isrDataPtr->bufferInfo.size = a->decoderBufferSize;
    a->isrDataPtr->bufferInfo.criticalThreshold =
@@ -5103,9 +5680,9 @@ static int32_t func_2192c9ec(FAPI_VIDEC_VideoDecoderHandleT* a)
 
 
 /* 21c4cdd4 - todo */
-int32_t func_2192d1d0(FAPI_VIDEC_VideoDecoderHandleT* a)
+int32_t fapi_videc_0initialize(FAPI_VIDEC_VideoDecoderHandleT* a)
 {
-//   FAPI_SYS_PRINT_MSG("func_2192d1d0\n");
+//   FAPI_SYS_PRINT_MSG("fapi_videc_0initialize\n");
    
    int32_t res = 0;
    
@@ -5120,7 +5697,7 @@ int32_t func_2192d1d0(FAPI_VIDEC_VideoDecoderHandleT* a)
    {
       Data_21f67278 = a;
    
-      func_2192c9ec(a);
+      fapi_videc_initialize_isr(a);
 
       fapi_videc_set_ramif(a);
 
@@ -5150,7 +5727,7 @@ int32_t func_2192d1d0(FAPI_VIDEC_VideoDecoderHandleT* a)
 FAPI_SYS_HandleT FAPI_VIDEC_Open(const FAPI_VIDEC_OpenParamsT* paramsPtr,
                           int32_t* errorCodePtr)
 {
-   FAPI_SYS_PRINT_DEBUG(4, "FAPI_VIDEC_Open\n");
+//   FAPI_SYS_PRINT_DEBUG(4, "FAPI_VIDEC_Open\n");
       
    FAPI_VIDEC_VideoDecoderHandleT* r6;
    int32_t res = 0;
@@ -5167,7 +5744,7 @@ FAPI_SYS_HandleT FAPI_VIDEC_Open(const FAPI_VIDEC_OpenParamsT* paramsPtr,
       return 0;
    }
 
-   if (Data_21b6b8f4 == 0)
+   if (videcDriverLoadFirmwaresState == 0)
    {
       //21c45ae8
       res = -28004;
@@ -5177,10 +5754,11 @@ FAPI_SYS_HandleT FAPI_VIDEC_Open(const FAPI_VIDEC_OpenParamsT* paramsPtr,
       }
       return 0;
    }
-
-   if (Data_21b6b8f4 == 1)
+   else
+   if (videcDriverLoadFirmwaresState == 1)
    {
       //->21c45afc
+#if 0
       FAPI_SYS_HandleT r6;
       int32_t sp0x1c = 0;
       FAPI_BOOT_OpenParamsT sp0x18;
@@ -5196,7 +5774,7 @@ FAPI_SYS_HandleT FAPI_VIDEC_Open(const FAPI_VIDEC_OpenParamsT* paramsPtr,
          FAPI_BOOT_ImageHeaderT sp4;
 
          memset(&sp4, 0, sizeof(sp4));
-         uint32_t imageVersion = 0x4d30001b;
+         uint32_t imageVersion = RELEASE_VIDEC_MPEG_0_VERSION; //0x4d30001b;
          
          sp0x1c = FAPI_BOOT_GetImageInfoByVersion(r6, 
                imageVersion, &sp4);
@@ -5208,7 +5786,7 @@ FAPI_SYS_HandleT FAPI_VIDEC_Open(const FAPI_VIDEC_OpenParamsT* paramsPtr,
          }
          //21c45be0
          sp0x1c = FAPI_BOOT_LoadImageByVersion(r6, 
-               imageVersion, (uint32_t) &Data_21c172b8);
+               imageVersion, (uint32_t) &fvm0d);
          
          if (sp0x1c != 0)
          {
@@ -5216,11 +5794,11 @@ FAPI_SYS_HandleT FAPI_VIDEC_Open(const FAPI_VIDEC_OpenParamsT* paramsPtr,
             break;            
          }
          //21c45c00
-         Data_21B6B910 = sp4.imageSize * 4;
-         Data_21B6B904 = sp4.loadAddress;
+         fvm0sz = sp4.imageSize * 4;
+         fvm0la = sp4.loadAddress;
          
          memset(&sp4, 0, sizeof(sp4));
-         imageVersion = 0x4d31001b;
+         imageVersion = RELEASE_VIDEC_MPEG_1_VERSION; //0x4d31001b;
                   
          sp0x1c = FAPI_BOOT_GetImageInfoByVersion(r6, 
                imageVersion, &sp4);
@@ -5232,7 +5810,7 @@ FAPI_SYS_HandleT FAPI_VIDEC_Open(const FAPI_VIDEC_OpenParamsT* paramsPtr,
          }
          //21c46068
          sp0x1c = FAPI_BOOT_LoadImageByVersion(r6, 
-               imageVersion, (uint32_t) &Data_21c182b8);
+               imageVersion, (uint32_t) &fvm1d);
          
          if (sp0x1c != 0)
          {
@@ -5240,11 +5818,11 @@ FAPI_SYS_HandleT FAPI_VIDEC_Open(const FAPI_VIDEC_OpenParamsT* paramsPtr,
             break;            
          }
          //21c46088
-         Data_21B6B914 = sp4.imageSize * 4;
-         Data_21B6B908 = sp4.loadAddress;
+         fvm1sz = sp4.imageSize * 4;
+         fvm1la = sp4.loadAddress;
          
          memset(&sp4, 0, sizeof(sp4));
-         imageVersion = 0x4d32001b;
+         imageVersion = RELEASE_VIDEC_MPEG_2_VERSION; //0x4d32001b;
                   
          sp0x1c = FAPI_BOOT_GetImageInfoByVersion(r6, 
                imageVersion, &sp4);
@@ -5256,7 +5834,7 @@ FAPI_SYS_HandleT FAPI_VIDEC_Open(const FAPI_VIDEC_OpenParamsT* paramsPtr,
          }
          //21c460d8
          sp0x1c = FAPI_BOOT_LoadImageByVersion(r6, 
-               imageVersion, (uint32_t) &Data_21c362b8);
+               imageVersion, (uint32_t) &fvm2d);
          
          if (sp0x1c != 0)
          {
@@ -5264,11 +5842,11 @@ FAPI_SYS_HandleT FAPI_VIDEC_Open(const FAPI_VIDEC_OpenParamsT* paramsPtr,
             break;            
          }
          //21c460f8
-         Data_21B6B918 = sp4.imageSize * 4;
-         Data_21B6B90C = sp4.loadAddress;
+         fvm2sz = sp4.imageSize * 4;
+         fvm2la = sp4.loadAddress;
          //21c45c58
          memset(&sp4, 0, sizeof(sp4));
-         imageVersion = 0x48302004;
+         imageVersion = RELEASE_VIDEC_H264_0_VERSION; //0x48302004;
                   
          sp0x1c = FAPI_BOOT_GetImageInfoByVersion(r6, 
                imageVersion, &sp4);
@@ -5280,7 +5858,7 @@ FAPI_SYS_HandleT FAPI_VIDEC_Open(const FAPI_VIDEC_OpenParamsT* paramsPtr,
          }
          //21c45c90
          sp0x1c = FAPI_BOOT_LoadImageByVersion(r6, 
-               imageVersion, (uint32_t) &Data_21c372b8);
+               imageVersion, (uint32_t) &fvh0d);
          
          if (sp0x1c != 0)
          {
@@ -5288,11 +5866,11 @@ FAPI_SYS_HandleT FAPI_VIDEC_Open(const FAPI_VIDEC_OpenParamsT* paramsPtr,
             break;            
          }
          //21c45cb0
-         Data_21B6B928 = sp4.imageSize * 4;
-         Data_21B6B91C = sp4.loadAddress;
+         fvh0sz = sp4.imageSize * 4;
+         fvh0la = sp4.loadAddress;
          
          memset(&sp4, 0, sizeof(sp4));
-         imageVersion = 0x48312004;
+         imageVersion = RELEASE_VIDEC_H264_1_VERSION; //0x48312004;
                   
          sp0x1c = FAPI_BOOT_GetImageInfoByVersion(r6, 
                imageVersion, &sp4);
@@ -5304,7 +5882,7 @@ FAPI_SYS_HandleT FAPI_VIDEC_Open(const FAPI_VIDEC_OpenParamsT* paramsPtr,
          }
          //21c45d00
          sp0x1c = FAPI_BOOT_LoadImageByVersion(r6, 
-               imageVersion, (uint32_t) &Data_21c382b8);
+               imageVersion, (uint32_t) &fvh1d);
          
          if (sp0x1c != 0)
          {
@@ -5312,11 +5890,11 @@ FAPI_SYS_HandleT FAPI_VIDEC_Open(const FAPI_VIDEC_OpenParamsT* paramsPtr,
             break;            
          }
          //21c45d20
-         Data_21B6B92C = sp4.imageSize * 4;
-         Data_21B6B920 = sp4.loadAddress;
+         fvh1sz = sp4.imageSize * 4;
+         fvh1la = sp4.loadAddress;
          
          memset(&sp4, 0, sizeof(sp4));
-         imageVersion = 0x48322004;
+         imageVersion = RELEASE_VIDEC_H264_2_VERSION; //0x48322004;
                   
          sp0x1c = FAPI_BOOT_GetImageInfoByVersion(r6, 
                imageVersion, &sp4);
@@ -5328,7 +5906,7 @@ FAPI_SYS_HandleT FAPI_VIDEC_Open(const FAPI_VIDEC_OpenParamsT* paramsPtr,
          }
          //21c45d70
          sp0x1c = FAPI_BOOT_LoadImageByVersion(r6, 
-               imageVersion, (uint32_t) &Data_21c562b8);
+               imageVersion, (uint32_t) &fvh2d);
          
          if (sp0x1c != 0)
          {
@@ -5336,18 +5914,21 @@ FAPI_SYS_HandleT FAPI_VIDEC_Open(const FAPI_VIDEC_OpenParamsT* paramsPtr,
             break;            
          }
          //21c45d90
-         Data_21B6B930 = sp4.imageSize * 4;
-         Data_21B6B924 = sp4.loadAddress;
+         fvh2sz = sp4.imageSize * 4;
+         fvh2la = sp4.loadAddress;
       }
       while (0);
       //21c45b28
       FAPI_BOOT_Close(r6);
       
-      Data_21B6B8F8 = sp0x1c;
+      videoDriverLoadFirmwareErrorCode = sp0x1c;
+#else
+      videoDriverLoadFirmwareErrorCode = videcDriverLoadFirmwares();
+#endif
       
-      if (/*sp0x1c*/Data_21B6B8F8 == 0)
+      if (/*sp0x1c*/videoDriverLoadFirmwareErrorCode == 0)
       {
-         Data_21b6b8f4 = 2;
+         videcDriverLoadFirmwaresState = 2;
          //->21c45894
       }
       else
@@ -5355,19 +5936,19 @@ FAPI_SYS_HandleT FAPI_VIDEC_Open(const FAPI_VIDEC_OpenParamsT* paramsPtr,
          //21c45b4c
          if (errorCodePtr != 0)
          {
-            *errorCodePtr = Data_21B6B8F8; //sp0x1c;
+            *errorCodePtr = videoDriverLoadFirmwareErrorCode; //sp0x1c;
          }
          //->21c45ab8
          return 0;
       }
-   }
+   } //if (videcDriverLoadFirmwaresState == 1)
    //21c45884
-   else if (Data_21B6B8F8 != 0)
+   /*else*/ if (videoDriverLoadFirmwareErrorCode != 0)
    {
       //->21c45b60
       if (errorCodePtr != 0)
       {
-         *errorCodePtr = Data_21B6B8F8;
+         *errorCodePtr = videoDriverLoadFirmwareErrorCode;
       }
       //->21c45ab8
       return 0;
@@ -5400,7 +5981,7 @@ FAPI_SYS_HandleT FAPI_VIDEC_Open(const FAPI_VIDEC_OpenParamsT* paramsPtr,
    if ((paramsPtr->decodeFrameBankSizeType == FAPI_VIDEC_UNKNOWN_FRAME_BANK_SIZE) ||
       (paramsPtr->decoderPlaybackMode == FAPI_VIDEC_UNKNOWN_PLAYBACK_MODE) ||
       (paramsPtr->decoderAfdState == FAPI_VIDEC_UNKNOWN_AFD_STATE) ||
-      (paramsPtr->Data_28 == -1))
+      (paramsPtr->decoderDelimiterType == FAPI_VIDEC_UNKNOWN_DELIMITER))
    {
       //21c45aa4
       res = -28102;
@@ -5414,7 +5995,11 @@ FAPI_SYS_HandleT FAPI_VIDEC_Open(const FAPI_VIDEC_OpenParamsT* paramsPtr,
    //21c458dc
    videc_lock(); //21c4305c
    //21c458e0
+#if 0
    r6 = videcAllocateHandle(paramsPtr);
+#else
+   r6 = allocateHandle(paramsPtr, &res);
+#endif
    //218ce538
    videc_unlock();
    //21c45ad0
@@ -5444,7 +6029,7 @@ FAPI_SYS_HandleT FAPI_VIDEC_Open(const FAPI_VIDEC_OpenParamsT* paramsPtr,
 
          r6->opParams = *paramsPtr;
          r6->coreID = FAPI_VIDEC_ID;
-         r6->decoderBufferSize = Data_21b6b934[r6->opParams.decoderType];
+         r6->decoderBufferSize = FAPI_VIDEC_MAX_VIDEO_STREAM_BUFFER_SIZE[r6->opParams.decoderType];
          r6->baseAddress = FAPI_VIDEC_START_ADDRESS_0;
 
          r6->Start = fapi_videc_0start; //21c4a058
@@ -5498,7 +6083,7 @@ FAPI_SYS_HandleT FAPI_VIDEC_Open(const FAPI_VIDEC_OpenParamsT* paramsPtr,
          r6->SetAfdState = fapi_videc_0setafdstate; //21c47c10
          r6->Func_272 = func_21c47c6c;
          //21c45f1c
-         res = func_2192d1d0(r6);
+         res = fapi_videc_0initialize(r6);
       }
       else
       {
@@ -5620,7 +6205,7 @@ FAPI_SYS_HandleT FAPI_VIDEC_Open(const FAPI_VIDEC_OpenParamsT* paramsPtr,
 
    videc_unlock();
 
-   FAPI_SYS_PRINT_DEBUG(3, "FAPI_VIDEC_Open: %i\n", res);
+//   FAPI_SYS_PRINT_DEBUG(3, "FAPI_VIDEC_Open: %i\n", res);
 
    return r6;
 }
@@ -7445,44 +8030,44 @@ int fapi_videc_write_pcpu_firmware(FAPI_VIDEC_VideoDecoderHandleT* a)
          FREG_VD_Write32(a->baseAddress + i, 0);
       }
 
-      if (Data_21B6B904 == 0)
+      if (fvm0la == 0)
       {
          res = FAPI_VIDEC_ERR_VIDEC_FIRMWARE_NOT_FOUND;
       }
       else
       {
-         for (j = 0, i = 0; i < Data_21B6B910; i+=4, j++)
+         for (j = 0, i = 0; i < fvm0sz; i+=4, j++)
          {
-            FREG_VD_Write32(Data_21B6B904 + i,
-                  Data_21c172b8[j]);
+            FREG_VD_Write32(fvm0la + i,
+                  fvm0d[j]);
          }
       }
 
-      if (Data_21B6B908 == 0)
+      if (fvm1la == 0)
       {
          res = FAPI_VIDEC_ERR_VIDEC_FIRMWARE_NOT_FOUND;
       }
 
       if (res == 0)
       {
-         for (j = 0, i = 0; i < Data_21B6B914; i += 4, j++)
+         for (j = 0, i = 0; i < fvm1sz; i += 4, j++)
          {
-            FREG_VD_Write32(Data_21B6B908 + i,
-                  Data_21c182b8[j]);
+            FREG_VD_Write32(fvm1la + i,
+                  fvm1d[j]);
          }
       }
 
-      if (Data_21B6B90C == 0)
+      if (fvm2la == 0)
       {
          res = FAPI_VIDEC_ERR_VIDEC_FIRMWARE_NOT_FOUND;
       }
 
       if (res == 0)
       {
-         for (j = 0, i = 0; i < Data_21B6B918; i += 4, j++)
+         for (j = 0, i = 0; i < fvm2sz; i += 4, j++)
          {
-            FREG_VD_Write32(Data_21B6B90C + i,
-                  Data_21c362b8[j]);
+            FREG_VD_Write32(fvm2la + i,
+                  fvm2d[j]);
          }
       }
       break;
@@ -7493,44 +8078,44 @@ int fapi_videc_write_pcpu_firmware(FAPI_VIDEC_VideoDecoderHandleT* a)
          FREG_VD_Write32(a->baseAddress + i, 0);
       }
 
-      if (Data_21B6B91C == 0)
+      if (fvh0la == 0)
       {
          res = FAPI_VIDEC_ERR_VIDEC_FIRMWARE_NOT_FOUND;
       }
       else
       {
-         for (j = 0, i = 0; i < Data_21B6B928; i += 4, j++)
+         for (j = 0, i = 0; i < fvh0sz; i += 4, j++)
          {
-            FREG_VD_Write32(Data_21B6B91C + i,
-                  Data_21c372b8[j]);
+            FREG_VD_Write32(fvh0la + i,
+                  fvh0d[j]);
          }
       }
 
-      if (Data_21B6B920 == 0)
+      if (fvh1la == 0)
       {
          res = FAPI_VIDEC_ERR_VIDEC_FIRMWARE_NOT_FOUND;
       }
 
       if (res == 0)
       {
-         for (j = 0, i = 0; i < Data_21B6B92C; i += 4, j++)
+         for (j = 0, i = 0; i < fvh1sz; i += 4, j++)
          {
-            FREG_VD_Write32(Data_21B6B920 + i,
-                  Data_21c382b8[j]);
+            FREG_VD_Write32(fvh1la + i,
+                  fvh1d[j]);
          }
       }
 
-      if (Data_21B6B924 == 0)
+      if (fvh2la == 0)
       {
          res = FAPI_VIDEC_ERR_VIDEC_FIRMWARE_NOT_FOUND;
       }
 
       if (res == 0)
       {
-         for (j = 0, i = 0; i < Data_21B6B930; i += 4, j++)
+         for (j = 0, i = 0; i < fvh2sz; i += 4, j++)
          {
-            FREG_VD_Write32(Data_21B6B924 + i,
-                  Data_21c562b8[j]);
+            FREG_VD_Write32(fvh2la + i,
+                  fvh2d[j]);
          }
       }
       break;
@@ -8359,7 +8944,7 @@ int32_t fapi_videc_0stop(FAPI_SYS_HandleT handle)
       h->isrDataPtr->vesInfo.decodedHeight = 0; //Data_248 = 0;
 
       h->isrDataPtr->audLastPts = 0; //Data_49480 = 0;
-      h->isrDataPtr->audIdx; //Data_49488 = 0;
+      h->isrDataPtr->audIdx = 0; //Data_49488 = 0;
       
       h->isrDataPtr->vcpbAddress = 0; //Data_49492 = 0;
       h->isrDataPtr->vcpbLength = 0; //Data_49496 = 0;
@@ -8974,7 +9559,7 @@ uint32_t checkHandle(FAPI_VIDEC_VideoDecoderHandleT* handlePtr)
       (handlePtr->baseAddress != 0) &&
       (handlePtr->opParams.decoderNumber != FAPI_VIDEC_UNKNOWN_DECODER_NUMBER) &&
       (handlePtr->opParams.decoderType != FAPI_VIDEC_UNKNOWN_DECODER) &&
-      (handlePtr->opParams.Data_28 != -1) &&
+      (handlePtr->opParams.decoderDelimiterType != FAPI_VIDEC_UNKNOWN_DELIMITER) &&
       (handlePtr->isrDataPtr != 0))
    {
       return 1;
@@ -8983,4 +9568,103 @@ uint32_t checkHandle(FAPI_VIDEC_VideoDecoderHandleT* handlePtr)
    return 0;
 }
 
+
+static int32_t videcDriverLoadFirmwares(void)
+{
+    int32_t err_code = FAPI_OK;
+    uint32_t version = 0;
+    uint32_t address = 0;
+    FAPI_SYS_HandleT handle = 0;
+    FAPI_BOOT_OpenParamsT params;
+    FAPI_BOOT_ImageHeaderT header;
+
+    params.version = FAPI_BOOT_VERSION;
+    // Get the firmwares from Boot driver.
+    handle = FAPI_BOOT_Open(&params, &err_code);
+
+    // Get the MPEG Firmwares.
+    if(err_code == FAPI_OK){
+        memset(&header, 0, sizeof(header));
+        version = RELEASE_VIDEC_MPEG_0_VERSION;
+        err_code = FAPI_BOOT_GetImageInfoByVersion(handle, version, &header);
+        if(err_code == FAPI_OK){
+            address = (uint32_t)(void*)fvm0d;
+            err_code = FAPI_BOOT_LoadImageByVersion(handle, version, address);
+            if(err_code == FAPI_OK){
+                fvm0sz = header.imageSize * sizeof(uint32_t);
+                fvm0la = header.loadAddress;
+            }
+        }
+    }
+    if(err_code == FAPI_OK){
+        memset(&header, 0, sizeof(header));
+        version = RELEASE_VIDEC_MPEG_1_VERSION;
+        err_code = FAPI_BOOT_GetImageInfoByVersion(handle, version, &header);
+        if(err_code == FAPI_OK){
+            address = (uint32_t)(void*)fvm1d;
+            err_code = FAPI_BOOT_LoadImageByVersion(handle, version, address);
+            if(err_code == FAPI_OK){
+                fvm1sz = header.imageSize * sizeof(uint32_t);
+                fvm1la = header.loadAddress;
+            }
+        }
+    }
+    if(err_code == FAPI_OK){
+        memset(&header, 0, sizeof(header));
+        version = RELEASE_VIDEC_MPEG_2_VERSION;
+        err_code = FAPI_BOOT_GetImageInfoByVersion(handle, version, &header);
+        if(err_code == FAPI_OK){
+            address = (uint32_t)(void*)fvm2d;
+            err_code = FAPI_BOOT_LoadImageByVersion(handle, version, address);
+            if(err_code == FAPI_OK){
+                fvm2sz = header.imageSize * sizeof(uint32_t);
+                fvm2la = header.loadAddress;
+            }
+        }
+    }
+
+    // Get the H264 Firmwares.
+    if(err_code == FAPI_OK){
+        memset(&header, 0, sizeof(header));
+        version = RELEASE_VIDEC_H264_0_VERSION;
+        err_code = FAPI_BOOT_GetImageInfoByVersion(handle, version, &header);
+        if(err_code == FAPI_OK){
+            address = (uint32_t)(void*)fvh0d;
+            err_code = FAPI_BOOT_LoadImageByVersion(handle, version, address);
+            if(err_code == FAPI_OK){
+                fvh0sz = header.imageSize * sizeof(uint32_t);
+                fvh0la = header.loadAddress;
+            }
+        }
+    }
+    if(err_code == FAPI_OK){
+        memset(&header, 0, sizeof(header));
+        version = RELEASE_VIDEC_H264_1_VERSION;
+        err_code = FAPI_BOOT_GetImageInfoByVersion(handle, version, &header);
+        if(err_code == FAPI_OK){
+            address = (uint32_t)(void*)fvh1d;
+            err_code = FAPI_BOOT_LoadImageByVersion(handle, version, address);
+            if(err_code == FAPI_OK){
+                fvh1sz = header.imageSize * sizeof(uint32_t);
+                fvh1la = header.loadAddress;
+            }
+        }
+    }
+    if(err_code == FAPI_OK){
+        memset(&header, 0, sizeof(header));
+        version = RELEASE_VIDEC_H264_2_VERSION;
+        err_code = FAPI_BOOT_GetImageInfoByVersion(handle, version, &header);
+        if(err_code == FAPI_OK){
+            address = (uint32_t)(void*)fvh2d;
+            err_code = FAPI_BOOT_LoadImageByVersion(handle, version, address);
+            if(err_code == FAPI_OK){
+                fvh2sz = header.imageSize * sizeof(uint32_t);
+                fvh2la = header.loadAddress;
+            }
+        }
+    }
+    // Close the boot driver.
+    (void)FAPI_BOOT_Close(handle);
+    return(err_code);
+}
 

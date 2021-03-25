@@ -142,7 +142,7 @@ static int Data_21efc178; //21efc178
 static int Data_21efc17c; //21efc17c
 static int fapi_tsd_initialized; //21f27fc4
 static uint32_t Data_21f27fc8[1000]; //21f27fc8 size todo???
-static FAPI_SYS_HandleT Data_21f28028; //21f28028
+static FAPI_SYS_HandleT tsdSyncHandle; //21f28028
 static struct
 {
    uint32_t Data_0; //0
@@ -388,7 +388,7 @@ void FAPI_TSD_Exit(void)
       FAPI_GPIO_Close(fapi_tsd_gpio[i].Data_40);
    }
 
-   FAPI_SYNC_Close(Data_21f28028);
+   FAPI_SYNC_Close(tsdSyncHandle);
 
    FAPI_GPREG_Close(fapi_tsd_gpreg);
 
@@ -1976,13 +1976,58 @@ int32_t FAPI_TSD_SetChannelPid(FAPI_SYS_HandleT handle,
 }
 
 
-/* 21c34978 - todo */
-int32_t func_21c34978(const uint32_t blockIndex,
+/* 21c34978 - complete */
+int32_t tsdSetTs(const uint32_t tsdSelect,
       uint32_t tsSelect, const uint32_t useStc)
 {
-   FAPI_SYS_PRINT_MSG("func_21c34978\n");
+    uint32_t register_setting = 0;
+    uint32_t register_mirror  = 0;
 
-   return 0;
+    /* check TS */
+    if((tsSelect != FAPI_TS_A) &&
+       (tsSelect != FAPI_TS_B) &&
+       (tsSelect != FAPI_TS_C) &&
+       (tsSelect != FAPI_TS_OUTPUT) &&
+       (tsSelect != FAPI_TS_DISABLE))
+        return(FAPI_TSD_ERR_BAD_PARAMETER);
+
+    /********************/
+    /* set MUX settings */
+    /********************/
+
+    /* get the current setting */
+    register_mirror = FREG_TSD_GetIoChannelSelect();
+
+    /* set TS bit mask */
+    if((tsSelect != FAPI_TS_OUTPUT) && (tsSelect != FAPI_TS_DISABLE))
+    {
+        /* disable current tsSelect */
+        register_mirror &= ~(uint32_t)(0x3UL << (tsdSelect * 2));
+        /* set current tsSelect */
+        register_setting = (tsSelect << (tsdSelect * 2));
+        tsdSetInRamCfg_DisableTsInput(tsdSelect, 0);
+    }
+    else if(tsSelect == FAPI_TS_DISABLE)
+    {
+        tsdSetInRamCfg_DisableTsInput(tsdSelect, 1);
+    }
+    else
+    {
+        /* disable current tsSelect */
+        register_mirror &= 0xFFFFFEFF;
+        /* set current tsSelect */
+        register_setting = ((tsdSelect >> 1) << 8);
+    }
+
+    /* enable STC */
+    if(useStc)
+    {
+        register_setting |= ((tsdSelect >> 1) << 12);
+    }
+
+    FREG_TSD_SetIoChannelSelect(register_mirror | register_setting);
+
+    return(FAPI_OK);
 }
 
 
@@ -2019,10 +2064,10 @@ int32_t FAPI_TSD_Configure(const uint32_t blockIndex, const uint32_t useStc,
    if (useStc) fp = 1; else fp = 0;
    //sp8 = 0;
 
-   if ((Data_21f28028 != 0) && useStc)
+   if ((tsdSyncHandle != 0) && useStc)
    {
       //21c34dbc
-      if (FAPI_SYNC_Close(Data_21f28028) != 0)
+      if (FAPI_SYNC_Close(tsdSyncHandle) != 0)
       {
          return FAPI_TSD_ERR_NO_RECONFIGURE; //-23103;
       }
@@ -2031,7 +2076,7 @@ int32_t FAPI_TSD_Configure(const uint32_t blockIndex, const uint32_t useStc,
    if (tsInputSettingsPtr != NULL)
    {
       //21c34b48
-      res = func_21c34978(blockIndex, tsInputSettingsPtr->tsSelect, useStc);
+      res = tsdSetTs(blockIndex, tsInputSettingsPtr->tsSelect, useStc);
       if (res != 0)
       {
          //->21c34af4
@@ -2146,7 +2191,7 @@ int32_t FAPI_TSD_Configure(const uint32_t blockIndex, const uint32_t useStc,
    if (tsOutputSettingsPtr != NULL)
    {
       //21c34c20
-      func_21c34978(blockIndex, 3, useStc);
+      tsdSetTs(blockIndex, 3, useStc);
 
       if (tsOutputSettingsPtr->prescaler == 0)
       {
@@ -2244,9 +2289,9 @@ int32_t FAPI_TSD_Configure(const uint32_t blockIndex, const uint32_t useStc,
       sp.version = FAPI_SYNC_VERSION;
       sp.blockIndex = Data_21f2805c[0];
       
-      Data_21f28028 = FAPI_SYNC_Open(&sp, &res);
+      tsdSyncHandle = FAPI_SYNC_Open(&sp, &res);
       
-      if (Data_21f28028 == 0)
+      if (tsdSyncHandle == 0)
       {
          return res;
       }

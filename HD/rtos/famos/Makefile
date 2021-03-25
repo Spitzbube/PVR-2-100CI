@@ -41,6 +41,7 @@ ifeq ($(TARGET),arm11-gcc)
 endif
   
   HEADERS += famos.h
+  HEADERS += rtos.h
   
   LIBRARY = libfamos
   

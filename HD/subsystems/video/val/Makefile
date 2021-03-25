@@ -41,11 +41,11 @@ default: build
 
 clean: clean-objects clean-library
 
-build: headers build-objects build-library
+build: build-objects build-library
 
 headers: install-headers
 
-install: build install-library
+install: install-library
 
 all: clean build install
 

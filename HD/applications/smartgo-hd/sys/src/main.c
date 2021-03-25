@@ -7,12 +7,10 @@
 #include "fapi_adapter.h"
 #endif
 #include "app_main.h"
-#if 0
 #include "device.h"
-#endif
 #include "event_queue.h"
 
-extern struct appData Data_21f7be58; //21f7be58
+extern struct appData sysConfig; //21f7be58
 
 
 int SYS_HandleEvent(int a, void* b);
@@ -24,13 +22,11 @@ void ApplicationThread(int a)
    int retVal;
    struct Event event;
    
-#if 0
    func_21b8961c(); //->device.c
-#endif
    
-   if (Data_21f7be58.init != 0)
+   if (sysConfig.init != 0)
    {
-      retVal = (Data_21f7be58.init)();
+      retVal = (sysConfig.init)();
       
       FAPI_SYS_PRINT_MSG("\n %s %d retVal=%x  ",
             "sys/src/main.c", 1641, retVal);
@@ -55,9 +51,9 @@ void ApplicationThread(int a)
       {
          if (0 != SYS_HandleEvent(event.header.tag, &event))
          {
-            if (Data_21f7be58.handleEvent != 0)
+            if (sysConfig.handleEvent != 0)
             {
-               (Data_21f7be58.handleEvent)(event.header.tag, &event);
+               (sysConfig.handleEvent)(event.header.tag, &event);
             }
          }
       }

@@ -5,7 +5,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
+#endif
 #include <fapi/sys_services.h>
+#if 0
 #include "famos.h"
 #include "bget.h"
 #include "drv_mmu_heap.h"
@@ -21,10 +23,11 @@ int fontFreeTypeAvailable;
 
 int Data_21e85e44; 
 
+#endif
 
 int Data_21ea13c8;
 
-
+#if 0
 
 int Data_21efb16c;
 int Data_21efb55c; 
@@ -114,19 +117,22 @@ void func_21b02a64(void)
 {
 }
 
+#endif
 
-void func_21b02a8c(void)
+/* 21b02a8c - todo */
+void MAIN_SetStartupDefaults(void)
 {
 }
 
+#if 0
 
 void func_21b02c2c(void)
 {
 }
 
+#endif
 
-
-void func_21b0763c(void)
+void MAIN_GetStartupOperationMode(void)
 {
 }
 
@@ -152,8 +158,6 @@ int func_21ca2d6c(int a)
    
    return 0;
 }
-
-#endif
 
 
 void func_21c0eee8(int a)
@@ -420,6 +424,7 @@ void func_21c76b00(void)
 {
 }
 
+#endif
 
 /* 21bc2464 - todo */
 void func_21bc2464(void)
@@ -434,6 +439,7 @@ void func_21bc6c8c(void)
    FAPI_SYS_PRINT_MSG("21bc6c8c\n");
 }
 
+#if 0
 
 /* atexit */
 int func_21cb5250(void (*a)(void))
@@ -443,6 +449,7 @@ int func_21cb5250(void (*a)(void))
    return __register_exitproc(0, a, 0, 0);
 }
 
+#endif
 
 
 /* 21b7e0a8 - todo */
@@ -502,6 +509,7 @@ void func_21b7a260(void)
    FAPI_SYS_PRINT_MSG("func_21b7a260\n");
 }
 
+#if 0
 
 /* 21b793b8 - todo */
 int func_21b793b8(void* a)
@@ -591,6 +599,7 @@ int FAPEXSAL_Release()
 }
 #endif
 
+#endif
 
 void fm_seek()
 {
@@ -603,6 +612,7 @@ void fm_tell()
    
 }
 
+#if 0
 
 void ft_strncmp()
 {
@@ -616,6 +626,7 @@ void func_21b88b2c(int a, int b)
    FAPI_SYS_PRINT_MSG("21b88b2c\n");
 }
 
+#endif
 
 /* 21bad20c - todo */
 int func_21bad20c(void* a)
@@ -755,15 +766,6 @@ int func_21b14c50(void)
 }
 
 
-/* 21b04b48 - todo */
-int func_21b04b48(void)
-{
-   printf("func_21b04b48\n");
-
-   return 0;
-}
-
-
 /* 21b8d98c - todo */
 void func_21b8d98c(int a, int b)
 {
@@ -779,6 +781,7 @@ int func_21b9b08c(void* a)
    return 0;
 }
 
+#if 0
 
 /* 21b04018 - todo */
 void app_main_power_down(int a)
@@ -788,6 +791,7 @@ void app_main_power_down(int a)
 
 }
 
+#endif
 
 /* 21ba4704 - todo */
 int MCU_Init(void)
@@ -812,13 +816,6 @@ void func_21b02c3c(void)
 }
 
 
-/* 21b12288 - todo */
-void func_21b12288(void (*a)(void), int b, int c)
-{
-   printf("func_21b12288\n");
-}
-
-
 /* 21b02df4 - todo */
 int func_21b02df4(int a, int b)
 {
@@ -829,14 +826,18 @@ int func_21b02df4(int a, int b)
 
 
 /* 21b02e64 - todo */
-int func_21b02e64(int a, unsigned* b)
+int MAIN_UserDataGet(int a, unsigned* b)
 {
-   printf("func_21b02e64\n");
+   FAPI_SYS_PRINT_MSG("MAIN_UserDataGet(a=%d)\n", a);
    
+   if (a == /*USERDAT_COLORSCHEME*/1)
+   {
+       *b = /*OSD_COLSCHEME_RED*/2;
+   }
+
    return 0;
 }
 
-#endif
 
 /* 21ca9b8c - todo */
 int func_21ca9b8c(void* a, char* b, char* c)
@@ -891,6 +892,7 @@ int func_218aaca8(int a, int b, void* c)
    return 0;
 }
 
+#endif
 
 /* 21b7c588 - todo */
 void func_21b7c588(int a, int b)
@@ -899,6 +901,7 @@ void func_21b7c588(int a, int b)
 
 }
 
+#if 0
 
 /* 21ba60bc - todo */
 void func_21ba60bc()
@@ -906,12 +909,14 @@ void func_21ba60bc()
    FAPI_SYS_PRINT_MSG("func_21ba60bc\n");
 }
 
+#endif
 
 void func_376790()
 {
    
 }
 
+#if 0
 
 void func_21923dec()
 {
@@ -925,6 +930,7 @@ void func_21b0d390()
    FAPI_SYS_PRINT_MSG("func_21b0d390\n");
 }
 
+#endif
 
 void func_3724e4(void)
 {
@@ -949,7 +955,6 @@ void func_2181be04()
    
 }
 
-
 void func_21ba2f64()
 {
    
@@ -973,4 +978,160 @@ void func_2182384c()
    
 }
 
-#endif
+
+void func_21b01d40()
+{
+
+}
+
+
+void func_21b0d188()
+{
+
+}
+
+
+int func_21b98138()
+{
+
+}
+
+
+void func_21b99d68()
+{
+
+}
+
+
+void func_21b0bfac()
+{
+
+}
+
+
+void func_21b0bb2c()
+{
+
+}
+
+
+void func_21b0d130()
+{
+
+}
+
+
+void func_21b23f74()
+{
+
+}
+
+
+void func_21b0316c(void)
+{
+
+}
+
+
+void func_21b3dbe8()
+{
+
+}
+
+
+int func_21b0f568()
+{
+
+}
+
+
+void func_21b12404()
+{
+
+}
+
+
+void func_21bb9ee8()
+{
+
+}
+
+
+void OSD_GetStr()
+{
+
+}
+
+
+void OSD_GetStrWidth()
+{
+
+}
+
+
+void MENU_WelcomeOnFocusSet()
+{
+
+}
+
+
+void MENU_CommonAddTitle()
+{
+
+}
+
+
+void FGS_LIST_SetMemberFocus()
+{
+
+}
+
+
+void MENU_CommonAddList()
+{
+
+}
+
+
+void MENU_WelcomeGetDescrItem()
+{
+
+}
+
+
+void MENU_WelcomeOnFocusChg()
+{
+
+}
+
+
+void MENU_WelcomeOnSelect()
+{
+
+}
+
+
+void FGS_ITEM_TXT_Open()
+{
+
+}
+
+
+void MENU_CommonAddHelpList()
+{
+
+}
+
+
+void MENU_WelcomeGetHelpDescrItem()
+{
+
+}
+
+
+void MENU_CommonAddMenuExitHelpLine()
+{
+
+}
+
+

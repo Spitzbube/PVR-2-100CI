@@ -25,6 +25,11 @@
 #include "fapex/abst_libvidec.h"
 #include "fapex/abst_libviout.h"
 
+#else
+
+#include "fapi/drv_videc.h"
+#include "fapi/drv_viscale.h"
+
 #endif
 
 //*****************************************************************************
@@ -439,7 +444,6 @@ typedef struct
     //172
 } VAL_OpenT;
 
-#if 0
 
 /*!
 *******************************************************************************
@@ -460,6 +464,8 @@ typedef struct
                                                         //!< status.
 } VAL_StatusT;
 
+
+#if 0
 
 typedef struct
 {
@@ -530,9 +536,9 @@ FAPI_SYS_HandleT VAL_GetViscaleHd       (VAL_DataT* dataPtr);
 VAL_OpenT*       VAL_Open               (VAL_DataT* dataPtr,
                                          const VAL_OpenParamsT* paramsPtr,
                                          int32_t* errCodePtr);
-#if 0
 int32_t          VAL_Close              (VAL_OpenT* openPtr);
 
+#if 0
 int32_t          VAL_Task               (VAL_OpenT* openPtr);
 int32_t          VAL_SetFrameAvailableCb(VAL_OpenT* openPtr,
                                          void (*frameAvlCb)(void* optData),
@@ -544,12 +550,16 @@ int32_t          VAL_SetParamChangeCb   (VAL_OpenT* openPtr,
                                          void* paramChangeCbArg);
 int32_t          VAL_Start              (VAL_OpenT* openPtr, uint32_t pid,
                                          VAL_PlayModeEnumT mode, uint32_t pcrFlag);
+#endif
 int32_t          VAL_Stop               (VAL_OpenT* openPtr, uint8_t freeze);
+#if 0
 int32_t          VAL_Freeze             (VAL_OpenT* openPtr, uint8_t freezeOn);
 int32_t          VAL_Reboot             (VAL_OpenT* openPtr,
                                          const VAL_DecoderTypeT* decoderPtr);
+#endif
 int32_t          VAL_GetStatus          (VAL_OpenT* openPtr,
                                          VAL_StatusT* statusPtr);
+#if 0
 int32_t          VAL_GetVideoFrameInfo  (VAL_OpenT* openPtr,
                                          FAPEX_VIDEC_DecFrameInfoStrT*
                                          videcInfoPtr);

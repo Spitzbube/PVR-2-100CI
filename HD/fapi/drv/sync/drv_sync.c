@@ -8,6 +8,12 @@
 #include <fapi/drv_tsd.h>
 #include <fapi/drv_sync.h>
 
+#define SYNC_LOCK   (void)FAPI_SYS_GET_SEMAPHORE( syncSemaphore, FAPI_SYS_SUSPEND )
+#define SYNC_UNLOCK FAPI_SYS_SET_SEMAPHORE( syncSemaphore, FAPI_SYS_NO_SUSPEND )
+
+#define SYNC_TOTAL_HANDLE_COUNT       1                    /* handle count of a block */
+#define SYNC_BLOCK_UNDEFINED          0xFFFFFFFF           /* SYNC block is undefined */
+#define SYNC_ERR_NO_HANDLE            0                    /* don't return handle */
 
 
 FAPI_SYS_DriverT FAPI_SYNC_Driver = //21efc030
@@ -26,20 +32,19 @@ FAPI_SYS_DriverT FAPI_SYNC_Driver = //21efc030
 
 int syncInitialized; //21f27ec4
 int Data_21efc054; //21efc054
-FAPI_SYS_SemaphoreT syncSemaphore; //21efc058
-int Data_21efc05c; //21efc05c
-int Data_21f27ed0; //21f27ed0
+FAPI_SYS_SemaphoreT syncSemaphore = 1; //21efc058
+int syncBlock = -1; //21efc05c
+int syncHandleCount; //21f27ed0
 int Data_21f27eb4; //21f27eb4
 int Data_21f27eb8; //21f27eb8
-uint32_t Data_21f27ebc; //21f27ebc
+uint32_t syncDeviceId; //21f27ebc
 
-struct fapi_sync_handle 
+typedef struct fapi_sync_handle
 {
-   int magic; //0
+   int id; //0
    int inUse; //4
-   int fill_8; //8
-   int fill_12; //12
-   int Data_16; //16
+   FAPI_SYNC_OpenParamsT openParams; //8 +8
+   int blockIndex; //16
    int Data_20; //20
    int Data_24; //24
    int Data_28; //28
@@ -49,18 +54,21 @@ struct fapi_sync_handle
    int Data_208; //208
    int Data_212; //212
    int Data_216; //216
-   int Data_220; //220
-   FAPI_SYS_HandleT Data_224; //224
-   FAPI_SYS_HandleT Data_228; //228
-   int Data_232; //232
+   int pid; //220
+   FAPI_SYS_HandleT tsdHandle; //224
+   FAPI_SYS_HandleT bmHandle; //228
+   int status; //232
    int Data_236; //236
    //240
-} syncHandleArray[1]; //21f27ed4
+} syncHandleT;
+
+syncHandleT syncHandleArray[1]; //21f27ed4
 
 
-void func_21c2fdf8(void);
-int fapi_sync_check_handle(struct fapi_sync_handle*);
-static void fapi_sync_clear_handle(struct fapi_sync_handle*);
+static void syncReset(void);
+static int syncCheckHandle(struct fapi_sync_handle*);
+static syncHandleT* syncAllocateHandle(const uint32_t blockIndex);
+static void syncReleaseHandle(struct fapi_sync_handle*);
 
 
 
@@ -78,10 +86,10 @@ int32_t FAPI_SYNC_Init(void)
    
    for (i = 0; i < 1; i++)
    {
-      syncHandleArray[i].magic = 0x73796e63;
-      syncHandleArray[i].Data_16 = -1;
-      syncHandleArray[i].Data_232 = 0;
-      syncHandleArray[i].Data_220 = -1;
+      syncHandleArray[i].id = 0x73796e63;
+      syncHandleArray[i].blockIndex = -1;
+      syncHandleArray[i].status = 0;
+      syncHandleArray[i].pid = -1;
    }
    
    syncSemaphore = FAPI_SYS_CREATE_SEMAPHORE(1);
@@ -91,7 +99,7 @@ int32_t FAPI_SYNC_Init(void)
       return -21009;
    }
    
-   Data_21f27ebc = FAPI_SYS_GetDeviceId();
+   syncDeviceId = FAPI_SYS_GetDeviceId();
    
    syncInitialized = 1;
    
@@ -128,12 +136,70 @@ void FAPI_SYNC_Exit(void)
 
 
 /* 21c311c0 - todo */
-FAPI_SYS_HandleT FAPI_SYNC_Open(const FAPI_SYNC_OpenParamsT* pParams,
+FAPI_SYS_HandleT FAPI_SYNC_Open(const FAPI_SYNC_OpenParamsT* paramsPtr,
                                  int32_t* errorCodePtr)
 {
-   FAPI_SYS_PRINT_MSG("FAPI_SYNC_Open: TODO!\n");
+    syncHandleT* sync_handle_ptr = NULL;
+    int32_t      error_code      = FAPI_OK;
 
-   return 1;
+    /* error if driver not initialized */
+    if(syncInitialized == 0)
+        error_code = FAPI_SYNC_ERR_NOT_INITIALIZED;
+    /* check paramters */
+    if(paramsPtr == NULL)
+    {
+        error_code = FAPI_SYNC_ERR_BAD_PARAMETER;
+        if ( errorCodePtr ) *errorCodePtr = error_code;
+        return(SYNC_ERR_NO_HANDLE);
+    }
+    /* check version */
+    if(!FAPI_SYS_CHECK_VERSION(paramsPtr->version, FAPI_SYNC_VERSION))
+        error_code = FAPI_SYNC_ERR_UNSUPPORTED_VERSION;
+    /* check block */
+    if((paramsPtr->blockIndex != FAPI_SYNC0) &&
+       (paramsPtr->blockIndex != FAPI_SYNC1))
+        error_code = FAPI_SYNC_ERR_BAD_PARAMETER;
+    /* check valid block */
+    if(((paramsPtr->blockIndex == FAPI_SYNC0) && ((syncBlock != FAPI_SYNC0) && (syncBlock != SYNC_BLOCK_UNDEFINED))) ||
+       ((paramsPtr->blockIndex == FAPI_SYNC1) && ((syncBlock != FAPI_SYNC1) && (syncBlock != SYNC_BLOCK_UNDEFINED))))
+        error_code = FAPI_SYNC_ERR_BAD_PARAMETER;
+
+    if ( error_code != FAPI_OK )
+    {
+        if ( errorCodePtr ) *errorCodePtr = error_code;
+        return(SYNC_ERR_NO_HANDLE);
+    }
+
+    /////////
+    SYNC_LOCK;
+    /////////
+
+    /* allocate handle */
+    sync_handle_ptr = syncAllocateHandle(paramsPtr->blockIndex);
+    if( syncCheckHandle( sync_handle_ptr ) )
+    {
+        if(syncBlock == SYNC_BLOCK_UNDEFINED)
+            syncBlock = paramsPtr->blockIndex;
+
+        /* copy open params to handle */
+        memcpy( &(sync_handle_ptr->openParams),
+                paramsPtr, sizeof(FAPI_SYNC_OpenParamsT) );
+
+        /* store first PCR in STC registers */
+        syncReset();
+    }
+    else
+    {
+        error_code = FAPI_SYNC_ERR_OUT_OF_MEMORY;
+    }
+
+
+    ////////////
+    SYNC_UNLOCK;
+    ////////////
+
+    if ( errorCodePtr ) *errorCodePtr = error_code;
+    return((FAPI_SYS_HandleT)sync_handle_ptr);
 }
 
 
@@ -146,13 +212,13 @@ int32_t FAPI_SYNC_Close(FAPI_SYS_HandleT handle)
    int i = 0;
    struct fapi_sync_handle* a = handle;
    
-   if (fapi_sync_check_handle(a))
+   if (syncCheckHandle(a))
    {
       FAPI_SYS_GET_SEMAPHORE(syncSemaphore, FAPI_SYS_SUSPEND);
       
-      if (syncHandleArray[i].Data_228 != 0)
+      if (syncHandleArray[i].bmHandle != 0)
       {
-         res = FAPI_BM_Close(syncHandleArray[i].Data_228);         
+         res = FAPI_BM_Close(syncHandleArray[i].bmHandle);
       }
       
       if (res != 0)
@@ -161,11 +227,11 @@ int32_t FAPI_SYNC_Close(FAPI_SYS_HandleT handle)
          return res;
       }      
       
-      syncHandleArray[i].Data_228 = 0;
+      syncHandleArray[i].bmHandle = 0;
    
-      if (syncHandleArray[i].Data_224 != 0)
+      if (syncHandleArray[i].tsdHandle != 0)
       {
-         res = FAPI_TSD_Close(syncHandleArray[i].Data_224);         
+         res = FAPI_TSD_Close(syncHandleArray[i].tsdHandle);
       }
       
       if (res != 0)
@@ -174,13 +240,13 @@ int32_t FAPI_SYNC_Close(FAPI_SYS_HandleT handle)
          return res;
       }
       
-      syncHandleArray[i].Data_224 = 0;
+      syncHandleArray[i].tsdHandle = 0;
       
-      fapi_sync_clear_handle(a);      
+      syncReleaseHandle(a);
 
-      if (Data_21f27ed0 == 0)
+      if (syncHandleCount == 0)
       {
-         Data_21efc05c = -1;
+         syncBlock = -1;
       }
       
       FAPI_SYS_SET_SEMAPHORE(syncSemaphore, FAPI_SYS_NO_SUSPEND);
@@ -201,7 +267,7 @@ int32_t func_21c2ffcc(uint32_t a)
    
    FAPI_SYS_PRINT_DEBUG(4, "func_21c2ffcc: a=%d\n", a);
    
-   if (Data_21f27ebc == FAPI_SYS_DEVICE_ID_MB86H60B)
+   if (syncDeviceId == FAPI_SYS_DEVICE_ID_MB86H60B)
    {
       if (a != 0)
       {
@@ -215,7 +281,7 @@ int32_t func_21c2ffcc(uint32_t a)
          
          Data_21f27eb8 = 1;
          
-         func_21c2fdf8();
+         syncReset();
       }
       else
       {
@@ -224,7 +290,7 @@ int32_t func_21c2ffcc(uint32_t a)
          
          Data_21f27eb8 = 0;
          
-         func_21c2fdf8();
+         syncReset();
       }
    }
    else
@@ -253,9 +319,9 @@ struct
 
 
 /* 21c2fdf8 - todo */
-void func_21c2fdf8(void)
+void syncReset(void)
 {
-//   FAPI_SYS_PRINT_MSG("func_21c2fdf8\n");
+//   FAPI_SYS_PRINT_MSG("syncReset\n");
    
    memset(&Data_21f27ef8, 0, 80);
    memset(&Data_21f27f48, 0, 80);
@@ -304,14 +370,14 @@ void func_21c2fdf8(void)
 
 
 /* 21c2f618 - complete */
-int fapi_sync_check_handle(struct fapi_sync_handle* a)
+int syncCheckHandle(struct fapi_sync_handle* a)
 {
    int res = 0;
    
    if ((syncInitialized != 0) &&
          (a != 0) &&
          (a->inUse != 0) &&
-         (a->magic == 0x73796e63))
+         (a->id == 0x73796e63))
    {
       res = 1;
    }
@@ -320,17 +386,49 @@ int fapi_sync_check_handle(struct fapi_sync_handle* a)
 }
 
 
-/* 214cdce0 - complete */
-void fapi_sync_clear_handle(struct fapi_sync_handle* a)
+static syncHandleT* syncAllocateHandle(const uint32_t blockIndex)
 {
-   Data_21f27ed0--;
+    syncHandleT* sync_handle_ptr = NULL;
+    uint32_t      index          = 0;
+
+    /* check if maximum handle count is reached */
+    if( (syncHandleCount) == SYNC_TOTAL_HANDLE_COUNT)
+    {
+        return(0);
+    }
+
+    for(index = 0; index < SYNC_TOTAL_HANDLE_COUNT; index++)
+    {
+        /* search for handle not in use */
+        if( !syncHandleArray[index].inUse )
+        {
+            /* set in use */
+            syncHandleArray[index].inUse = 1;
+            /* allocate block */
+            syncHandleArray[index].blockIndex = blockIndex;
+            /* increase block's handle count */
+            syncHandleCount++;
+            /* set handle pointer */
+            sync_handle_ptr = &(syncHandleArray[index]);
+            break;
+        }
+    }
+
+    return(sync_handle_ptr);
+}
+
+
+/* 214cdce0 - complete */
+void syncReleaseHandle(struct fapi_sync_handle* a)
+{
+   syncHandleCount--;
    
    memset(a, 0, sizeof(struct fapi_sync_handle));
    
-   a->magic = 0x73796e63;
-   a->Data_16 = -1;
-   a->Data_220 = -1;
-   a->Data_232 = 0;
+   a->id = 0x73796e63;
+   a->blockIndex = -1;
+   a->pid = -1;
+   a->status = 0;
 }
 
 

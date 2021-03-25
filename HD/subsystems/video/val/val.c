@@ -112,12 +112,14 @@ static int32_t VAL_IntGoDown       (VAL_DataT* dataPtr);
 #endif
 static int32_t VAL_IntOpen         (VAL_OpenT* openPtr,
                                     const VAL_OpenParamsT* paramsPtr);
-#if 0
 static int32_t VAL_IntClose        (VAL_OpenT* openPtr);
+#if 0
 static int32_t VAL_IntStart        (VAL_OpenT* openPtr, uint32_t pid,
                                     VAL_PlayModeEnumT mode,
                                     uint8_t checkDecoderType);
+#endif
 static int32_t VAL_IntStop         (VAL_OpenT* openPtr, uint8_t freeze);
+#if 0
 static int32_t VAL_IntReboot       (VAL_OpenT* openPtr,
                                     const VAL_DecoderTypeT* decoderPtr);
 #endif
@@ -143,11 +145,11 @@ static void    VAL_ViscaleParamChgCb(FAPI_VISCALE_ParamChangeInfoT* paramChangeP
                                     void* paramChangeOptData);
 
 static int32_t VAL_ChannelOpen  (VAL_OpenT* openPtr, const VAL_OpenParamsT* paramsPtr, int);
-#if 0
 static int32_t VAL_ChannelClose (VAL_OpenT* openPtr);
+#if 0
 static int32_t VAL_ChannelStart (VAL_OpenT* openPtr, uint16_t pid);
-static int32_t VAL_ChannelStop  (VAL_OpenT* openPtr);
 #endif
+static int32_t VAL_ChannelStop  (VAL_OpenT* openPtr);
 
 static int32_t VAL_VidecOpen       (VAL_OpenT* openPtr,
                                     const VAL_DecoderTypeT* decoderPtr,
@@ -160,7 +162,9 @@ static int32_t VAL_VidecStart      (VAL_OpenT* openPtr,
                                     int32_t mode,
                                     uint8_t feedViaTsd,
                                     uint8_t checkDecoderType);
+#endif
 static int32_t VAL_VidecStop       (VAL_OpenT* openPtr, uint8_t freeze);
+#if 0
 static void    VAL_VidecFrameAvlCb (void* optData);
 static void    VAL_VidecFrameDecCb (void* optData);
 static void    VAL_VidecFrameInfoCb(void* optData);
@@ -190,6 +194,8 @@ void func_21ca7b54(FAPI_VIDEC_VideoDecInfoStateT* videoDecInfoPtr,
 //*****************************************************************************
 //*****************************************************************************
 #endif
+
+void func_21ca9a94(VAL_DataT* dataPtr, int b, int c, int d);
 
 /*!
 *******************************************************************************
@@ -1018,7 +1024,6 @@ VAL_OpenT* VAL_Open (VAL_DataT* dataPtr, const VAL_OpenParamsT* paramsPtr,
     }
 }
 
-#if 0
 
 /*!
 *******************************************************************************
@@ -1068,6 +1073,8 @@ int32_t VAL_Close (VAL_OpenT* openPtr)
     return err_code;
 }
 
+#if 0
+
 /*!
 *******************************************************************************
 ** \brief   Start video decoding/presentation.
@@ -1110,6 +1117,8 @@ int32_t VAL_Start (VAL_OpenT* openPtr, uint32_t pid, VAL_PlayModeEnumT mode, uin
     return err_code;
 }
 
+#endif
+
 /*!
 *******************************************************************************
 ** \brief   Stop video decoding and output.
@@ -1144,6 +1153,8 @@ int32_t VAL_Stop (VAL_OpenT* openPtr, uint8_t freeze)
     
     return err_code;
 }
+
+#if 0
 
 /*!
 *******************************************************************************
@@ -1624,6 +1635,8 @@ int32_t VAL_IsFrameAvailable (VAL_OpenT* openPtr, uint8_t* avlPtr)
     return err_code;
 }
 
+#endif
+
 /*!
 *******************************************************************************
 ** \brief   Return current VAL module status.
@@ -1665,6 +1678,8 @@ int32_t VAL_GetStatus (VAL_OpenT* openPtr, VAL_StatusT* statusPtr)
     
     return err_code;
 }
+
+#if 0
 
 /*!
 *******************************************************************************
@@ -2528,7 +2543,6 @@ static int32_t VAL_IntOpen (VAL_OpenT* openPtr/*r5*/,
     return err_code;
 }
 
-#if 0
 
 /*!
 *******************************************************************************
@@ -2552,6 +2566,8 @@ static int32_t VAL_IntClose (VAL_OpenT* openPtr)
 
     return FAPI_OK;
 }
+
+#if 0
 
 /*!
 *******************************************************************************
@@ -2685,6 +2701,8 @@ static int32_t VAL_IntStart (VAL_OpenT* openPtr, uint32_t pid,
     return err_code;
 }
 
+#endif
+
 /*!
 *******************************************************************************
 ** \brief   Internal function, stop video decoding and output.
@@ -2723,6 +2741,8 @@ static int32_t VAL_IntStop (VAL_OpenT* openPtr, uint8_t freeze)
     }
     return err_code;
 }
+
+#if 0
 
 /*!
 *******************************************************************************
@@ -3068,7 +3088,6 @@ static int32_t VAL_ChannelOpen (VAL_OpenT* openPtr,
     return err_code;
 }
 
-#if 0
 
 /*!
 *******************************************************************************
@@ -3110,6 +3129,8 @@ static int32_t VAL_ChannelClose (VAL_OpenT* openPtr)
 
     return err_code;
 }
+
+#if 0
 
 /*!
 *******************************************************************************
@@ -3215,6 +3236,8 @@ static int32_t VAL_ChannelStart (VAL_OpenT* openPtr, uint16_t pid)
     return err_code;
 }
 
+#endif
+
 /*!
 *******************************************************************************
 ** \brief   Internal function, stop video input data channel.
@@ -3276,7 +3299,6 @@ static int32_t VAL_ChannelStop (VAL_OpenT* openPtr)
     return err_code;
 }
 
-#endif
 
 /* ------------------------------------------------------------------------- */
 
@@ -4139,11 +4161,11 @@ static int32_t VAL_VidecOpen (VAL_OpenT* openPtr,
                 
         if (decoderPtr->system == 2)
         {
-           params.Data_28 = Data_16; //sp120
+           params.decoderDelimiterType = Data_16; //sp120
         }
         else
         {
-           params.Data_28 = 0;
+           params.decoderDelimiterType = FAPI_VIDEC_DELIMITER_AUD_HEADER; //0;
         }
 
         params.decoderPlaybackMode = FAPI_VIDEC_NORMAL_PLAYBACK_MODE; //1;
@@ -4535,6 +4557,8 @@ static int32_t VAL_VidecStart (VAL_OpenT* openPtr,
     return err_code;
 }
 
+#endif
+
 /*!
 *******************************************************************************
 ** \brief   Internal function, stop video decoder driver.
@@ -4604,6 +4628,8 @@ static int32_t VAL_VidecStop (VAL_OpenT* openPtr, uint8_t freeze)
     
     return err_code;
 }
+
+#if 0
 
 /*!
 *******************************************************************************

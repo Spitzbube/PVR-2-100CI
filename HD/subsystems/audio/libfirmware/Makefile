@@ -72,7 +72,7 @@ build: build-objects build-library
 
 headers: install-headers
 
-install: headers install-library
+install: install-library
 
 all: clean build install
 

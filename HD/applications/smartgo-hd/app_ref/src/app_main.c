@@ -12,9 +12,8 @@
 #endif
 #include "event_queue.h"
 #include "sys.h"
-#if 0
+#include "sys_time.h"
 #include "av_api.h"
-#endif
 #include "app_main.h"
 
 int Data_21e9b270[24920/4] =  //21e9b270
@@ -1579,14 +1578,14 @@ int Data_21e9b270[24920/4] =  //21e9b270
  0x37000da4, 0xcf8fc17c, 0x81000000, 0x01b70000,
 };
 
-#if 0
 
 extern Data_21ea13c8;
 
+int Data_21ebc3f0; //21ebc3f0
 
 struct Struct_21f02400* appDat; //21f02400
 
-
+#if 0
 extern void func_21b01e38(void);
 extern void func_21b01e3c(void); 
 extern void func_21b0275c(void);
@@ -1594,16 +1593,22 @@ extern void func_21b027e0(void);
 extern void func_21b027e8(void);
 extern void func_21b028b0(void);
 extern void func_21b02a64(void);
-extern void func_21b02a8c(void);
+#endif
+extern void MAIN_SetStartupDefaults(void);
+#if 0
 extern void func_21b02c2c(void);
 #endif
 static void app_main_handle_event(int, void*);
 static int app_main_init(void);
+extern void MAIN_GetStartupOperationMode(void);
 #if 0
-extern void func_21b0763c(void);
 void app_main_handle_input_event(void*);
 
 #endif
+
+/*FSTATIC*/ void MENU_StartupTimerExpired (void* arg);
+int32_t MAIN_MenuTimerLaunch (uint16_t timeInSeconds, void (*handler)(void* arg), void* arg);
+/*FSTATIC*/ void MAIN_MenuTimerExpired (void);
 
 
 /* 21b07664 - todo */
@@ -1625,15 +1630,11 @@ int main()
    fp160.bData_20 = 3;
    fp160.bData_21 = 0;
    fp160.Data_24 = 0;
-#if 0
    fp160.Data_28 = 512; //0x200
    fp160.Data_32 = 256; //0x100
-#endif
    fp160.bootScreen = &Data_21e9b270;
    fp160.bootScreenSize = 24920; //0x6158;
-#if 0
    fp160.Data_44 = &Data_21ea13c8;
-#endif
    fp160.Data_48 = 110632;
    fp160.bData_64 = 27; //0x1B
    fp160.Data_68 = 0;
@@ -1650,8 +1651,8 @@ int main()
    fp160.wData_94 = 1;
    fp160.wData_96 = 8;
 
+   fp160.setStartupDefaults = MAIN_SetStartupDefaults;
 #if 0
-   fp160.Func_112 = func_21b02a8c;
    fp160.Func_116 = func_21b01e38;
    fp160.Func_120 = func_21b02a64;
    fp160.Func_124 = func_21b028b0;
@@ -1660,19 +1661,18 @@ int main()
 #endif
    fp160.init = app_main_init;
    fp160.handleEvent = app_main_handle_event;
+   fp160.appGetStartupOperationMode = MAIN_GetStartupOperationMode;
 #if 0
-   fp160.Func_156 = func_21b0763c;
    fp160.Func_136 = func_21b027e0;
    fp160.Func_140 = func_21b01e3c;
    fp160.Func_144 = func_21b0275c;
 #endif
 
-   func_21b91298(&fp160);
+   SYS_Start(&fp160);
 
    return 0;
 }
 
-#if 0
 
 /* 21b04560 - todo */
 void func_21b04560(void)
@@ -1687,7 +1687,31 @@ void func_21b04550(void)
    printf("21b04550\n");
 }
 
-#endif
+
+/* 21b04b48 - todo */
+int MENU_Init(void)
+{
+    int res = 0;
+
+    FAPI_SYS_PRINT_MSG("MENU_Init: TODO\n");
+
+    do
+    {
+        //TODO...
+
+        res = MENU_WelcomeInit();
+        if (res != 0)
+        {
+            break;
+        }
+
+        //TODO....
+    }
+    while (0);
+
+    return res;
+}
+
 
 /* 21b07388 - complete */
 int app_main_init(void)
@@ -1697,7 +1721,6 @@ int app_main_init(void)
 //   Struct_2e1ed0 fp16;
    int flash_size = 0;
    
-#if 0
    appDat = SYS_MemoryAllocate(sizeof(struct Struct_21f02400));
    if (appDat == 0)
    {
@@ -1723,11 +1746,11 @@ int app_main_init(void)
       
       memset(appDat, 0, sizeof(struct Struct_21f02400));
       
-      appDat->Data_54740 = func_21b8e50c();
+      appDat->Data_54740 = SYS_GetConfig();
 
-      appDat->Data_55408 = 0;
-      appDat->Data_55412 = 0;
-      appDat->Data_55416 = 0;
+      appDat->osdUpdateCb = 0;
+      appDat->menuTimerHandler = 0;
+      appDat->menuTimerArg = 0;
       appDat->Data_55420 = 0;
 
       res = settings_get_tv_out_system(&appDat->Data_55400,
@@ -1746,7 +1769,7 @@ int app_main_init(void)
 
       appDat->Data_55984 = func_21b9f7c0();
 
-      res = func_21ba1a6c(&appDat->Data_55944, 512, 0);
+      res = STR_BufOpen(&appDat->Data_55944, 512, 0); //->stringop.c
 
       if (res != 0)
       {
@@ -1754,7 +1777,7 @@ int app_main_init(void)
          goto end;
       }
       //21b0750c
-      res = func_21ba1a6c(&appDat->Data_55964, 512, 0);
+      res = STR_BufOpen(&appDat->Data_55964, 512, 0);
 
       if (res != 0)
       {
@@ -1768,16 +1791,11 @@ int app_main_init(void)
 
       appDat->Data_55896 = -1;
 
-      struct
-      {
-         void (*Data_0)(void); //0
-         void (*Data_4)(void); //4
+      MENUSTACK_INIT_S sp12;
+      sp12.lastMenuClosed = func_21b04560;
+      sp12.firstMenuToOpen = func_21b04550;
 
-      } sp12;
-      sp12.Data_0 = func_21b04560;
-      sp12.Data_4 = func_21b04550;
-
-      res = func_21b12638(&sp12, appDat);
+      res = MENUSTACK_Init(&sp12);
 
       if (res != 0)
       {
@@ -1884,7 +1902,7 @@ int app_main_init(void)
          goto end;
       }
       //21b07598
-      res = func_21b04b48();
+      res = MENU_Init();
       if (res != 0)
       {
          goto end;
@@ -1965,11 +1983,93 @@ end:
    res = MCU_Init();
    
    FAPI_SYS_PRINT_MSG("MCU_Init: %s\n", res? "Fail": "OK");
-#else
-   FAPI_SYS_PRINT_MSG("app_main_init\n");
-#endif
    
    return res;   
+}
+
+
+/* 21b061cc - todo */
+void func_21b061cc(void* a)
+{
+
+}
+
+
+/* 21b06330 - complete */
+void MAIN_HandleEvtTimerExpired(void* pEvt)
+{
+    const SYS_EVT_TIMER_S* pEvtTimer = pEvt;
+
+    switch ( pEvtTimer->type )
+    {
+        case TIMER_SINGLE:
+            //21b06340
+            switch ( pEvtTimer->num )
+            {
+                case 0/*OSD_TIMER_MENU*/: //0
+                    MAIN_MenuTimerExpired();
+                    break;
+
+                case 1/*OSD_TIMER_ICON*/: //1
+                    func_21b0d188(&appDat->Data_24408); //(void)MAIN_ProhibitedHide(&(appDat->prohib));
+                    break;
+
+                case 2/*OSD_TIMER_SERVSELECT*/: //2
+                    func_21b0d130(&appDat->Data_26876); //MENU_InfoServSelectTimerExpired();
+                    break;
+
+                #if 1//def APPL_DISEQC12_ENABLED
+                case 3/*OSD_TIMER_MOTOR_MSG*/: //3
+#if 0
+                    MAIN_MotorMsgHide();
+#else
+                    Data_21ebc3f0 = 1;
+
+                    if (func_21b98138() == 1)
+                    {
+                        func_21b99d68();
+                    }
+#endif
+                    break;
+                #endif
+
+                case 4:
+                    //21b06414
+                    func_21b23f74();
+                    break;
+
+                default:
+                    break;
+            }
+            break;
+
+        case TIMER_PERIODIC:
+            //21b0636c
+            switch ( pEvtTimer->num )
+            {
+                case 0/*OSD_PERIODTIMER_SIGNAL*/: //0
+                    //21b063a0
+#if 0
+                    (void)MAIN_SignalBoxUpdate(&(appDat->sigBox));
+#else
+                    func_21b0bfac(&appDat->Data_19272);
+                    func_21b0bb2c();
+#endif
+                    break;
+
+                case 1/*OSD_PERIODTIMER_GENERAL*/: //1
+                    //21b06380
+                    if ( appDat->osdUpdateCb != NULL ) appDat->osdUpdateCb();
+                    break;
+
+                default:
+                    break;
+            }
+            break;
+
+        default:
+            break;
+    }
 }
 
 
@@ -1978,6 +2078,17 @@ void app_main_handle_event(int a, void* r4)
 {
    switch (a)
    {
+       case 10: //EVT_TIME_UPDATE
+           //21b072d8
+           func_21b061cc(r4); //MAIN_HandleEvtTimeUpdate
+           break;
+
+       case 15: //EVT_TIMER_EXPIRED
+           //21b07294
+           MAIN_HandleEvtTimerExpired(r4);
+           //->21b070d4
+           break;
+
 #if 0
       case 23:
          //21b07238 - Input event
@@ -2561,11 +2672,201 @@ int32_t MAIN_TvStandardOutputUpdateForce(int r5, int r4)
    return r3;
 }
 
+#endif
 
-/* 21b04440 - todo */
-void func_21b04440(void)
+
+/* 21b043b4 - todo */
+void MENU_StartupLeave(void)
 {
-   printf("func_21b04440\n");
+    FAPI_SYS_PRINT_MSG("MENU_StartupLeave: TODO\n");
+}
+
+
+/* 21b036b8 - todo */
+int32_t MENU_StartupSetFocus(FAPI_SYS_HandleT h, fbool_t hasFocus)
+{
+    FAPI_SYS_PRINT_MSG("MENU_StartupSetFocus: TODO\n");
+}
+
+
+/* 21b04440 - complete */
+/*fbool_t*/int MENU_StartupEntry(FAPI_SYS_HandleT h, /*fbool_t*/int test)
+{
+#if 0
+   printf("MENU_StartupEntry\n");
+#endif
+
+   FGS_MEMBER_S        member;
+
+   if ( test == 1/*FTRUE*/ )
+   {
+       return 1; //FTRUE;
+   }
+
+/*3621*/DBG_Assert(appDat->pStartupMem == NULL);
+
+   memset(&member, 0, sizeof(FGS_MEMBER_S));
+
+   member.h         = NULL;
+   member.pos       = &(appDat->rootPos); // position is all zeros!
+   member.id        = (int32_t)/*MENUID_STARTUP*/1;
+   member.isVisible = FFALSE;
+   member.inFront   = FFALSE;
+   member.setFocus  = MENU_StartupSetFocus;
+   member.refresh   = NULL;
+
+   if ( FGS_AddMember(&member, &(appDat->pStartupMem)) != FAPI_OK )
+   {
+       return 0; //FFALSE;
+   }
+
+   (void)MENUSTACK_FocusForce ((int32_t)/*MENUID_STARTUP*/1);
+
+   MENUSTACK_SetCleanup (MENU_StartupLeave, NULL);
+
+   (void)MAIN_MenuTimerLaunch(/*MAIN_STARTUP_DELAY*/2, MENU_StartupTimerExpired, NULL);
+
+   return 1; //FTRUE;
+}
+
+
+/* 21b03b68 - todo */
+void MENU_RootSetFocus()
+{
+    FAPI_SYS_PRINT_MSG("MENU_RootSetFocus: TODO\n");
+}
+
+
+/* 21b041ac - todo */
+void MENU_RootLeave()
+{
+    FAPI_SYS_PRINT_MSG("MENU_RootLeave: TODO\n");
+}
+
+
+/* 21b041dc - complete */
+int MENU_RootEntry(FAPI_SYS_HandleT h, int test)
+{
+//    FAPI_SYS_PRINT_MSG("MENU_RootEntry: TODO\n");
+
+    FGS_MEMBER_S        member;
+
+    if ( test == FTRUE ) return FTRUE;
+
+    memset(&member, 0, sizeof(FGS_MEMBER_S));
+
+    member.h         = NULL;
+    member.pos       = &(appDat->rootPos); // position is all zeros!
+    member.id        = (int32_t)/*MENUID_ROOT*/0;
+    member.isVisible = FFALSE;
+    member.inFront   = FFALSE;
+    member.setFocus  = MENU_RootSetFocus;
+    member.refresh   = NULL;
+
+    if ( FGS_AddMember(&member, &(appDat->pRootMem)) != FAPI_OK )
+    {
+        return FFALSE;
+    }
+
+    (void)MENUSTACK_FocusClaim ((int32_t)/*MENUID_ROOT*/0);
+    MENUSTACK_SetCleanup (MENU_RootLeave, NULL);
+
+    return FTRUE;
+}
+
+
+/* 21b04280 - complete */
+/*FSTATIC*/ void MENU_StartupTimerExpired (void* arg)
+{
+    extern void MENU_WelcomeEntry();
+
+    uint32_t              resetToFactSettings = 0;
+#if 0
+    MENU_INFOBAR_PARAMS_S infoParams;
+#endif
+
+    int r4;
+
+    if ( appDat->pStartupMem == NULL ) return;
+
+    (void)MENUSTACK_Switch(MENU_RootEntry, NULL, 0); /* start in root menu*/
+
+#if 0 //TODO
+    if (func_21ba3e64() == 1)
+    {
+        //21b04374
+        func_21b0316c();
+    }
+#endif
+    //21b042c4
+    AV_PowerupScreenHide();
+
+#if 0 //TODO
+    if (func_21ba3e64() == 0)
+    {
+        //21b042d4
+        MENUSTACK_Up(MENU_WelcomeEntry, 0);
+        return;
+    }
+#endif
+    //21b042e8
+    r4 = func_21b0f568();
+
+#if 0 //TODO
+    if ((MAIN_UserDataGet(2, &resetToFactSettings) == 0) && (r4 == 0))
+    {
+        //21b0430c
+        FAPI_SYS_PRINT_MSG("\n %s %d ", "app_ref/src/app_main.c", 3720);
+        //21b0432c
+        if (resetToFactSettings == 0)
+        {
+            //21b04338
+            func_21bb9ee8();
+        }
+        else
+        {
+            //21b0437c
+            MENUSTACK_Up(MENU_WelcomeEntry, 0);
+            func_21bb9ee8();
+        }
+    }
+    else
+#endif
+    {
+        //21b04340
+        FAPI_SYS_PRINT_MSG("\n %s %d ", "app_ref/src/app_main.c", 3735);
+
+        MENUSTACK_Up(MENU_WelcomeEntry, 0);
+        func_21bb9ee8();
+    }
+
+#if 0 //Orig
+    /* set static keys: apply for all menues  */
+    MAIN_AddStaticKeys();
+
+    /* --------------------------------------------------------------------- */
+
+    (void)AV_PowerupScreenHide(); /* Hide boot screen */
+
+    /* attempt to start last active service */
+    if ( MAIN_StartInitialService() != FAPI_OK )
+    {
+        if ( (MAIN_UserDataGet (USERDAT_FACTORYFLAG, &resetToFactSettings)
+              == FAPI_OK) &&
+             (resetToFactSettings != 0) )
+        {
+            (void)MENUSTACK_Up (MENU_WelcomeEntry, NULL);
+        }
+        else
+        {
+            infoParams.permanent   = FTRUE;
+            infoParams.numberInput = -1;
+
+            /* all lists seem to be empty: show infobar */
+            (void)MENUSTACK_Up (MENU_InfobarEntry, (FAPI_SYS_HandleT)(&infoParams));
+        }
+    }
+#endif
 }
 
 
@@ -2574,6 +2875,7 @@ int MAIN_PowerUp(void* a)
 {
    char i;
    Struct_349d90 sp;
+
 #if 0
    int fill;
    int r16;
@@ -2610,7 +2912,7 @@ int MAIN_PowerUp(void* a)
    
    func_21ba6838();
    
-   func_21b04560();
+   func_21b04560(); //MAIN_LastMenuClosed
    
    appDat->bData_55888 = 0;
    appDat->bData_55889 = 0;
@@ -2692,9 +2994,9 @@ int MAIN_PowerUp(void* a)
       }
    } //for (i = 0; i < appDat->Data_54740->bData_0; i++)
 
-   func_21b02c3c();
+   func_21b02c3c(); //MAIN_SetupGuidedMode
    
-   func_21b12288(func_21b04440, 0, 0);
+   MENUSTACK_Switch(MENU_StartupEntry, 0, 0);
       
 #if 0
    func_2dbfd4();   
@@ -2750,4 +3052,37 @@ int MAIN_PowerUp(void* a)
    return 1;
 }
 
-#endif
+
+/* 21b02fb4 - complete */
+int32_t MAIN_MenuTimerLaunch (uint16_t timeInSeconds, void (*handler)(void* arg),
+                           void* arg)
+{
+    if (timeInSeconds == 0)
+    {
+        TIME_SingleTimerLaunch(0, 1);
+    }
+    else
+    {
+        TIME_SingleTimerLaunch(/*OSD_TIMER_MENU*/0, (timeInSeconds * 10) & 0xFFFE);
+    }
+
+    appDat->menuTimerHandler       = handler;
+    appDat->menuTimerArg           = arg;
+
+    return FAPI_OK;
+}
+
+
+/* 21b01d40 - complete */
+/*FSTATIC*/ void MAIN_MenuTimerExpired (void)
+{
+    if ( appDat->menuTimerHandler != NULL )
+    {
+        appDat->menuTimerHandler(appDat->menuTimerArg);
+
+        appDat->menuTimerHandler = NULL;
+        appDat->menuTimerArg     = NULL;
+    }
+}
+
+

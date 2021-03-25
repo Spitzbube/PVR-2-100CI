@@ -759,6 +759,14 @@ typedef enum {
    Enum_120_1, //1
 } Enum_120;
 
+typedef enum {
+    /*!   Unknown delimiter.*/
+    FAPI_VIDEC_UNKNOWN_DELIMITER = (int32_t)-1,
+    /*!   Delimiter is an AUD.*/
+    FAPI_VIDEC_DELIMITER_AUD_HEADER,
+    /*!   Delimiter is a PES Header.*/
+    FAPI_VIDEC_DELIMITER_PES_HEADER
+}FAPI_VIDEC_DelimiterEnumT;
 
 
 //*****************************************************************************
@@ -792,7 +800,7 @@ typedef struct {
     FAPI_VIDEC_PlaybackEnvironmentEnumT  decoderPlaybackEnvironment; //20
     //! Option to enable or disable AFD application.
     FAPI_VIDEC_AfdStateEnumT             decoderAfdState; //24
-    Enum_120                             Data_28; //28
+    FAPI_VIDEC_DelimiterEnumT            decoderDelimiterType; //28
     
 }FAPI_VIDEC_OpenParamsT;
 /*!

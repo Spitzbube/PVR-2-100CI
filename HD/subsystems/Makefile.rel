@@ -47,8 +47,11 @@ ifeq ($(release-software-subsystem-lcd_drv), y)
   DIRECTORIES += lcd_drv
 endif
 
+  DIRECTORIES += fs
   DIRECTORIES += video
   DIRECTORIES += audio
+  DIRECTORIES += paint
+  DIRECTORIES += compression
 
 ################################################################################
 # include library specific targets ( if available )

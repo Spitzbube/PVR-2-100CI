@@ -2,12 +2,10 @@
 
 #include <fapi/sys_services.h>
 
-#if 0
 
 #include "famos.h"
 #include <rtos/rtos.h>
 
-#endif
 
 /* V49: 21c786cc - complete */
 void RTOS_InitServices(void)
@@ -82,15 +80,12 @@ void* rtos_mailbox_create(unsigned a)
 }
 
 
-#if 0
-
 /* 21c78678 - complete */
 void RTOS_DestroyMailbox(void* a)
 {
    famos_mailbox_destroy(a);
 }
 
-#endif
 
 /* 21c78674 - complete */
 int rtos_mailbox_receive(void* a, int* b, int c)
@@ -134,8 +129,6 @@ int rtos_release_semaphore(void* a, int b)
 }
 
 
-#if 0
-
 /* 21d01608 - complete */
 RTOS_MailqueueT RTOS_CreateMailqueue( uint32_t queueElements,
                                       uint32_t elementBytes )
@@ -168,9 +161,6 @@ uint32_t RTOS_SetMailqueue(RTOS_MailqueueT mailqueueHandle,
 }
 
 
-#endif
-
-
 /* 21c786b4 - complete */
 void rtos_restore_flags(int a)
 {
@@ -191,7 +181,6 @@ void rtos_start(void)
    famos_start();
 }
 
-#if 0
 
 /* 21c786c0 - complete */
 char* rtos_get_version(void)
@@ -199,7 +188,6 @@ char* rtos_get_version(void)
    return famos_get_version();
 }
 
-#endif
 
 /* 21c786c4 - complete */
 void rtos_halt(int a)
