@@ -92,6 +92,8 @@ static int32_t  FGS_LNAVI_Close   (FAPI_SYS_HandleT h);
 static int32_t  FGS_LNAVI_Show    (FAPI_SYS_HandleT h);
 static int32_t  FGS_LNAVI_Hide    (FAPI_SYS_HandleT h);
 
+
+/* 21baea48 - complete */
 int32_t FGS_LNAVI_Init (FGS_LNAVI_INIT_S* pInitParams)
 {
     if ( pInitParams == NULL )
@@ -99,7 +101,7 @@ int32_t FGS_LNAVI_Init (FGS_LNAVI_INIT_S* pInitParams)
         return SMARTGO_FGS_ERR_BAD_PARAMETER;
     }
 
-    fgsLnaviGlobal = FGS_Malloc(sizeof(FGS_LNAVI_INIT_S));
+    fgsLnaviGlobal = /*FGS_Malloc*/SYS_MemoryAllocate(sizeof(FGS_LNAVI_INIT_S));
     if ( fgsLnaviGlobal == NULL )
     {
         return SMARTGO_FGS_ERR_OUT_OF_MEMORY;
@@ -112,6 +114,8 @@ int32_t FGS_LNAVI_Init (FGS_LNAVI_INIT_S* pInitParams)
     return FAPI_OK;
 }
 
+
+/* 21baea9c - complete */
 int32_t FGS_LNAVI_Open (FGS_LNAVI_OPEN_S* pData, int32_t id, FAPI_SYS_HandleT parent,
                      FAPI_SYS_HandleT* ph)
 {
@@ -134,7 +138,7 @@ int32_t FGS_LNAVI_Open (FGS_LNAVI_OPEN_S* pData, int32_t id, FAPI_SYS_HandleT pa
     }
     else
     {
-        inst = FGS_Malloc(sizeof(FGS_LNAVI_INST_S));
+        inst = /*FGS_Malloc*/SYS_MemoryAllocate(sizeof(FGS_LNAVI_INST_S));
         if ( inst == NULL )
         {
             return SMARTGO_FGS_ERR_OUT_OF_MEMORY;
@@ -186,7 +190,7 @@ int32_t FGS_LNAVI_Open (FGS_LNAVI_OPEN_S* pData, int32_t id, FAPI_SYS_HandleT pa
         default:
             if ( inst->memAllocated == FTRUE )
             {
-                FGS_Free(inst);
+                /*FGS_Free*/SYS_MemoryFree(inst);
             }
             return SMARTGO_FGS_ERR_BAD_PARAMETER;
     }
@@ -253,12 +257,14 @@ int32_t FGS_LNAVI_Open (FGS_LNAVI_OPEN_S* pData, int32_t id, FAPI_SYS_HandleT pa
     if ( (retVal             != FAPI_OK) &&
          (inst->memAllocated == FTRUE) )
     {
-        FGS_Free(inst);
+        /*FGS_Free*/SYS_MemoryFree(inst);
     }
 
     return retVal;
 }
 
+
+/* 21bae9ec - complete */
 static int32_t FGS_LNAVI_Close (FAPI_SYS_HandleT h)
 {
     FGS_LNAVI_INST_S* inst = (FGS_LNAVI_INST_S*)h;
@@ -273,13 +279,14 @@ static int32_t FGS_LNAVI_Close (FAPI_SYS_HandleT h)
 
     if ( inst->memAllocated == FTRUE )
     {
-        FGS_Free(inst);
+        /*FGS_Free*/SYS_MemoryFree(inst);
     }
 
     return FAPI_OK;
 }
 
 
+/* 21bad3bc - complete */
 static int32_t FGS_LNAVI_Show (FAPI_SYS_HandleT h)
 {
     FGS_LNAVI_INST_S*  inst = (FGS_LNAVI_INST_S*)h;
@@ -289,6 +296,8 @@ static int32_t FGS_LNAVI_Show (FAPI_SYS_HandleT h)
     return FAPI_OK;
 }
 
+
+/* 21bad3d8 - complete */
 static int32_t FGS_LNAVI_Hide (FAPI_SYS_HandleT h)
 {
     //FGS_LNAVI_INST_S*  inst = (FGS_LNAVI_INST_S*)h;
@@ -298,6 +307,8 @@ static int32_t FGS_LNAVI_Hide (FAPI_SYS_HandleT h)
     return FAPI_OK;
 }
 
+
+/* 21bad3e0 - complete */
 fbool_t FGS_LNAVI_Up (FAPI_SYS_HandleT h)
 {
     FGS_LNAVI_INST_S*  inst = (FGS_LNAVI_INST_S*)h;
@@ -319,6 +330,8 @@ fbool_t FGS_LNAVI_Up (FAPI_SYS_HandleT h)
     return FTRUE;
 }
 
+
+/* 21bad44c - complete */
 fbool_t FGS_LNAVI_Down (FAPI_SYS_HandleT h)
 {
     FGS_LNAVI_INST_S*  inst = (FGS_LNAVI_INST_S*)h;
@@ -340,6 +353,8 @@ fbool_t FGS_LNAVI_Down (FAPI_SYS_HandleT h)
     return FTRUE;
 }
 
+
+/* 21bad4b8 - complete */
 fbool_t FGS_LNAVI_PageUp (FAPI_SYS_HandleT h)
 {
     FGS_LNAVI_INST_S*  inst = (FGS_LNAVI_INST_S*)h;
@@ -361,6 +376,7 @@ fbool_t FGS_LNAVI_PageUp (FAPI_SYS_HandleT h)
     return FTRUE;
 }
 
+/* 21bad524 - complete */
 fbool_t FGS_LNAVI_PageDown (FAPI_SYS_HandleT h)
 {
     FGS_LNAVI_INST_S*  inst = (FGS_LNAVI_INST_S*)h;
@@ -382,6 +398,8 @@ fbool_t FGS_LNAVI_PageDown (FAPI_SYS_HandleT h)
     return FTRUE;
 }
 
+
+/* 21bae96c - todo */
 int32_t FGS_LNAVI_SetParams (FAPI_SYS_HandleT h, const FGS_LNAVI_PARAMS_S* params)
 {
     FGS_LNAVI_INST_S* inst = (FGS_LNAVI_INST_S*)h;
@@ -408,6 +426,8 @@ int32_t FGS_LNAVI_SetParams (FAPI_SYS_HandleT h, const FGS_LNAVI_PARAMS_S* param
     return FAPI_OK;
 }
 
+
+/* 21bad590 - complete */
 int32_t FGS_LNAVI_GetParams (FAPI_SYS_HandleT h, FGS_LNAVI_PARAMS_S* params)
 {
     FGS_LNAVI_INST_S* inst = (FGS_LNAVI_INST_S*)h;
@@ -430,6 +450,7 @@ int32_t  FGS_LNAVI_SetRefreshMode (FAPI_SYS_HandleT h, fbool_t autoRefresh)
 
 /* ------------------------------------------------------------------------- */
 
+/* 21bae81c - complete */
 static int32_t FGS_LNAVI_SetFocus (FAPI_SYS_HandleT h, fbool_t hasFocus)
 {
     FGS_LNAVI_INST_S* inst   = (FGS_LNAVI_INST_S*)h;
@@ -467,7 +488,6 @@ static int32_t FGS_LNAVI_SetFocus (FAPI_SYS_HandleT h, fbool_t hasFocus)
             FGS_SetKeyHandler   (FGS_KEY_LEFT,   FGS_LNAVI_PageDown, h, FFALSE);
             FGS_SetKeyHandler   (FGS_KEY_RIGHT,  FGS_LNAVI_PageUp,   h, FFALSE);
         }
-
     }
     else
     {
@@ -477,6 +497,8 @@ static int32_t FGS_LNAVI_SetFocus (FAPI_SYS_HandleT h, fbool_t hasFocus)
     return FAPI_OK;
 }
 
+
+/* 21bad5d8 - complete */
 static fbool_t FGS_LNAVI_Select (FAPI_SYS_HandleT h)
 {
     FGS_LNAVI_INST_S*  inst = (FGS_LNAVI_INST_S*)h;
@@ -497,6 +519,8 @@ static fbool_t FGS_LNAVI_Select (FAPI_SYS_HandleT h)
     }
 }
 
+
+/* 21bad624 - complete */
 static void FGS_LNAVI_IntSetParams (FGS_LNAVI_INST_S* inst,
                                     const FGS_LNAVI_PARAMS_S* params)
 {

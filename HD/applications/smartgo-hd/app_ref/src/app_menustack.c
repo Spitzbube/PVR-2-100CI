@@ -182,7 +182,7 @@ fbool_t MENUSTACK_Up (MENUSTACK_ENTRY newEntry, FAPI_SYS_HandleT arg)
 **
 *******************************************************************************
 */
-/* 21b12288 - todo */
+/* 21b12288 - complete */
 fbool_t MENUSTACK_Switch (MENUSTACK_ENTRY newEntry, FAPI_SYS_HandleT arg,
                           int16_t targetLevel)
 {
@@ -257,7 +257,6 @@ fbool_t MENUSTACK_Switch (MENUSTACK_ENTRY newEntry, FAPI_SYS_HandleT arg,
     return retVal;
 }
 
-#if 0
 
 /*!
 *******************************************************************************
@@ -272,6 +271,7 @@ fbool_t MENUSTACK_Switch (MENUSTACK_ENTRY newEntry, FAPI_SYS_HandleT arg,
 **
 *******************************************************************************
 */
+/* 21b121ac - complete */
 fbool_t MENUSTACK_Back (FAPI_SYS_HandleT h)
 {
     MENUSTACK_INST_S* inst = &(appDat->menuStack);
@@ -324,7 +324,6 @@ fbool_t MENUSTACK_Back (FAPI_SYS_HandleT h)
     return retVal;
 }
 
-#endif
 
 /*!
 *******************************************************************************
@@ -445,7 +444,6 @@ fbool_t MENUSTACK_GetData (uint32_t* data)
     }
 }
 
-#if 0
 
 /*!
 *******************************************************************************
@@ -456,6 +454,7 @@ fbool_t MENUSTACK_GetData (uint32_t* data)
 **
 *******************************************************************************
 */
+/* 21b11d84 - complete */
 void MENUSTACK_SetData (uint32_t data)
 {
     MENUSTACK_INST_S* inst = &(appDat->menuStack);
@@ -463,6 +462,8 @@ void MENUSTACK_SetData (uint32_t data)
     inst->menuStack[inst->menuStackLvl].data      = data;
     inst->menuStack[inst->menuStackLvl].dataValid = FTRUE;
 }
+
+#if 0
 
 /*!
 *******************************************************************************
@@ -558,7 +559,6 @@ int32_t MENUSTACK_FocusClaim (int32_t id)
     return FAPI_OK;
 }
 
-#if 0
 
 /*!
 *******************************************************************************
@@ -572,10 +572,31 @@ int32_t MENUSTACK_FocusClaim (int32_t id)
 **
 *******************************************************************************
 */
+/* 21b1277c - complete */
 int32_t MENUSTACK_FocusRelease (int32_t id)
 {
     MENUSTACK_INST_S* inst = &(appDat->menuStack);
 
+    if ((inst->Data_600 > -1) && (inst->Data_504[inst->Data_600] == id))
+    {
+        inst->Data_504[inst->Data_600] = -1;
+        inst->Data_600--;
+
+        if (inst->Data_600 > -1)
+        {
+            FGS_SetMemberFocus(inst->Data_504[inst->Data_600]);
+        }
+        else
+        {
+            FGS_SetMemberFocus(inst->focusClaimId);
+        }
+    }
+    else if (id == inst->focusClaimId)
+    {
+        inst->focusClaimId = -1;
+    }
+
+#if 0
     if ( id == inst->focusForceId )
     {
         inst->focusForceId = -1;
@@ -586,11 +607,11 @@ int32_t MENUSTACK_FocusRelease (int32_t id)
     {
         inst->focusClaimId = -1;
     }
+#endif
 
     return FAPI_OK;
 }
 
-#endif
 
 /*!
 *******************************************************************************
@@ -658,7 +679,6 @@ int32_t MENUSTACK_FocusForce (int32_t id)
     return retVal;
 }
 
-#if 0
 
 /*!
 *******************************************************************************
@@ -672,6 +692,7 @@ int32_t MENUSTACK_FocusForce (int32_t id)
 **
 *******************************************************************************
 */
+/* 21b11eb0 - complete */
 int32_t MENUSTACK_AddExt (MENUSTACK_CLEANUP newCleanup, FAPI_SYS_HandleT arg)
 {
     MENUSTACK_INST_S* inst = &(appDat->menuStack);
@@ -711,6 +732,7 @@ int32_t MENUSTACK_AddExt (MENUSTACK_CLEANUP newCleanup, FAPI_SYS_HandleT arg)
 **
 *******************************************************************************
 */
+/* 21b11f84 - complete */
 int32_t MENUSTACK_RemoveExt (int32_t index)
 {
     MENUSTACK_INST_S* inst = &(appDat->menuStack);
@@ -733,6 +755,8 @@ int32_t MENUSTACK_RemoveExt (int32_t index)
 
     return FAPI_OK;
 }
+
+#if 0
 
 /*!
 *******************************************************************************
@@ -819,7 +843,7 @@ fbool_t MENUSTACK_CloseAllExt (fbool_t force)
 **
 *******************************************************************************
 */
-/* 21b11f4c - todo */
+/* 21b11f4c - complete */
 /*FSTATIC*/ void MENUSTACK_LastClosed (MENUSTACK_INST_S* inst)
 {
     if ( inst->pars.lastMenuClosed == NULL ) return;

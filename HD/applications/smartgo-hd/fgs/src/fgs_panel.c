@@ -59,7 +59,7 @@ static FGS_PANEL_INIT_S*   fgsPanelGlobal    = NULL; //21f02fdc
 /*---------------------------------------------------------------------------*/
 
 
-static FGS_PANEL_MEMBER_S* FGS_PANEL_SearchMember (FGS_PANEL_INST_S* inst,
+/*static*/ FGS_PANEL_MEMBER_S* FGS_PANEL_SearchMember (FGS_PANEL_INST_S* inst,
                                                    int32_t id);
 
 
@@ -185,8 +185,8 @@ int32_t FGS_PANEL_Close (FAPI_SYS_HandleT h)
     return FAPI_OK;
 }
 
-#if 0
 
+/* 21baf14c - complete */
 int32_t FGS_PANEL_AddMember (FAPI_SYS_HandleT h, FGS_PANEL_MEMBER_S* pMember,
                           FGS_PANEL_MEMBER_S** pId)
 {
@@ -230,7 +230,6 @@ int32_t FGS_PANEL_AddMember (FAPI_SYS_HandleT h, FGS_PANEL_MEMBER_S* pMember,
     return FAPI_OK;
 }
 
-#endif
 
 /* 21baf3d8 - complete */
 int32_t FGS_PANEL_Show (FAPI_SYS_HandleT h, fbool_t force)
@@ -524,7 +523,9 @@ int32_t FGS_PANEL_GetMemberAbsPos (FAPI_SYS_HandleT h, int32_t id, FGS_LOC_S* ab
     return FAPI_OK;
 }
 
+#endif
 
+/* 21baf0d0 - complete */
 int32_t FGS_PANEL_RefreshMember (FAPI_SYS_HandleT h, int32_t id)
 {
     FGS_PANEL_INST_S*   inst = (FGS_PANEL_INST_S*)h;
@@ -548,6 +549,8 @@ int32_t FGS_PANEL_RefreshMember (FAPI_SYS_HandleT h, int32_t id)
     return FAPI_OK;
 }
 
+#if 0
+
 int32_t FGS_PANEL_GetPosition (FAPI_SYS_HandleT h, FGS_POS_S* pos)
 {
     FGS_PANEL_INST_S*   inst = (FGS_PANEL_INST_S*)h;
@@ -558,7 +561,10 @@ int32_t FGS_PANEL_GetPosition (FAPI_SYS_HandleT h, FGS_POS_S* pos)
     return FAPI_OK;
 }
 
-static FGS_PANEL_MEMBER_S* FGS_PANEL_SearchMember (FGS_PANEL_INST_S* inst,
+#endif
+
+/* 21baf000 - complete */
+/*static*/ FGS_PANEL_MEMBER_S* FGS_PANEL_SearchMember (FGS_PANEL_INST_S* inst,
                                                    int32_t id)
 {
     uint16_t            cnt = 0;
@@ -578,7 +584,6 @@ static FGS_PANEL_MEMBER_S* FGS_PANEL_SearchMember (FGS_PANEL_INST_S* inst,
     return NULL;
 }
 
-#endif
 
 /******************************************************************************/
 /*lint -restore */

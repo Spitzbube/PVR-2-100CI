@@ -55,54 +55,56 @@ typedef struct
 {
     FGS_POS_S            pos;             //!< list position
     fbool_t              isHidden; //12
-    uint32_t             bkgrType;        //!< background type
-    fbool_t              topDownOriented; //!< list orientation: 1: TOP/DOWN,
+    uint32_t             bkgrType; /*16*/       //!< background type
+    fbool_t              topDownOriented; /*20*/ //!< list orientation: 1: TOP/DOWN,
                                           //!<                   0: LEFT/RIGHT
-    fbool_t              wraparound;      //!< wraparound mode:  0: suppressed
-    fbool_t              autoRefresh;     //!< auto refresh status
+    fbool_t              wraparound; /*24*/     //!< wraparound mode:  0: suppressed
+    fbool_t              autoRefresh; /*28*/    //!< auto refresh status
     
-    FGS_GETITEM_CB       getDescrItem;    //!< optional
-    FAPI_SYS_HandleT     getDescrItemArg; //!< optional
-    FGS_GETITEM_CB       getItem;         //!< optional
-    FAPI_SYS_HandleT     getItemArg;      //!< optional
+    int fill[2];
+
+    FGS_GETITEM_CB       getDescrItem; /*40*/   //!< optional
+    FAPI_SYS_HandleT     getDescrItemArg; /*44*/ //!< optional
+    FGS_GETITEM_CB       getItem; /*48*/        //!< optional
+    FAPI_SYS_HandleT     getItemArg; /*52*/     //!< optional
     
-    FGS_FOCUSSET_CB      onFocusSet;    //!< focus-set/remove-callback (opt.)
-    FAPI_SYS_HandleT     onFocusSetArg; //!< optional argument for onFocusSet
-    FGS_LIST_FOCUSCHG_CB onFocusChg;    //!< focus-change-callback (optional)
-    FAPI_SYS_HandleT     onFocusChgArg;
-    FGS_LIST_SELECT_CB   onSelect;      //!< select-callback (optional)
-    FAPI_SYS_HandleT     onSelectArg;
-    FGS_LIST_VALCHG_CB   onValChg;      //!< value-change-callback (optional)
-    FAPI_SYS_HandleT     onValChgArg;
+    FGS_FOCUSSET_CB      onFocusSet; /*56*/   //!< focus-set/remove-callback (opt.)
+    FAPI_SYS_HandleT     onFocusSetArg; /*60*/ //!< optional argument for onFocusSet
+    FGS_LIST_FOCUSCHG_CB onFocusChg; /*64*/   //!< focus-change-callback (optional)
+    FAPI_SYS_HandleT     onFocusChgArg; /*68*/
+    FGS_LIST_SELECT_CB   onSelect; /*72*/     //!< select-callback (optional)
+    FAPI_SYS_HandleT     onSelectArg; /*76*/
+    FGS_LIST_VALCHG_CB   onValChg; /*80*/     //!< value-change-callback (optional)
+    FAPI_SYS_HandleT     onValChgArg; /*84*/
     
-    void*                pInst;         //!< optional facility to pass a memory 
+    void*                pInst; /*88*/        //!< optional facility to pass a memory
                                         //!< buffer for instance data
-    
+    //92
 } FGS_LIST_OPEN_S;
 
 typedef struct
 {
     /* written by parent */
-    FGS_LOC_S           abspos;    //!< absolute member position (written by parent)
-    fbool_t             posChg;    //!< notifies a change in positioning
-    FGS_LIST_OPEN_S*    pParent;   //!< pointer to parent instance's data
-    FGS_PANEL_INST_S*   pPanel;    //!< pointer to corresponding panel instance
-    fbool_t             isEnabled; //!< enabled/disabled status
+    FGS_LOC_S           abspos; /*0*/   //!< absolute member position (written by parent)
+    fbool_t             posChg; /*4*/   //!< notifies a change in positioning
+    FGS_LIST_OPEN_S*    pParent; /*8*/  //!< pointer to parent instance's data
+    FGS_PANEL_INST_S*   pPanel; /*12*/   //!< pointer to corresponding panel instance
+    fbool_t             isEnabled; /*16*/ //!< enabled/disabled status
     
     /* written by member */
-    FAPI_SYS_HandleT    h;           //!< pointer to member instance
-    FGS_POS_S*          pos;         //!< member's position and size in parent item
-    int32_t             id;          //!< member ID
-    fbool_t             isVisible;   //!< visibility status
-    fbool_t             hasFocus;    //!< focus status
-    fbool_t             isActivated; //!< activation status
+    FAPI_SYS_HandleT    h; /*20*/          //!< pointer to member instance
+    FGS_POS_S*          pos; /*24*/        //!< member's position and size in parent item
+    int32_t             id; /*28*/         //!< member ID
+    fbool_t             isVisible; /*32*/   //!< visibility status
+    fbool_t             hasFocus; /*36*/   //!< focus status
+    fbool_t             isActivated; /*40*/ //!< activation status
     
-    FGS_POS_S           descrPos;      //!< item description position in member area
-    FGS_POS_S           valuePos;      //!< member value position in member area
+    FGS_POS_S           descrPos; /*44*/     //!< item description position in member area
+    FGS_POS_S           valuePos; /*56*/     //!< member value position in member area
     
-    int32_t             (*setFocus)    (FAPI_SYS_HandleT h, fbool_t hasFocus);    // mandatory
-    int32_t             (*draw)        (FAPI_SYS_HandleT h);                    // mandatory
-    int32_t             (*close)       (FAPI_SYS_HandleT h);                    // optional
+    int32_t             (*setFocus) /*68*/   (FAPI_SYS_HandleT h, fbool_t hasFocus);    // mandatory
+    int32_t             (*draw) /*72*/       (FAPI_SYS_HandleT h);                    // mandatory
+    int32_t             (*close) /*76*/      (FAPI_SYS_HandleT h);                    // optional
     
     int32_t             (*activate)    (FAPI_SYS_HandleT h);                    // optional
     int32_t             (*deactivate)  (FAPI_SYS_HandleT h, fbool_t keepChanges); // optional
@@ -119,15 +121,15 @@ typedef struct
 
 typedef struct
 {
-    fbool_t             memAllocated;
-    FGS_LIST_OPEN_S     data;
-    FGS_PANEL_MEMBER_S* pMem;            //!< pointer to own member structure
-    FGS_PANEL_INST_S*   pPanel;          //!< pointer to parent panel
+    fbool_t             memAllocated; //0
+    FGS_LIST_OPEN_S     data; //4
+    FGS_PANEL_MEMBER_S* pMem; /*96*/           //!< pointer to own member structure
+    FGS_PANEL_INST_S*   pPanel; /*100*/         //!< pointer to parent panel
     
-    uint8_t             numMembers;
-    FGS_LIST_MEMBER_S   member[FGS_LIST_MEMBERS_MAX];
-    int32_t             focusIdx;
-    
+    uint8_t             numMembers; //104
+    FGS_LIST_MEMBER_S   member[FGS_LIST_MEMBERS_MAX]; //108
+    int32_t             focusIdx; //6108
+    //6112
 } FGS_LIST_INST_S;
 
 /*---------------------------------------------------------------------------*/

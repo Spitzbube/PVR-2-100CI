@@ -50,12 +50,12 @@ typedef struct
 {
     FGS_POS_S           pos;            //!< Box position.
     fbool_t             isHidden;       //!< Hidden-status.
-    uint32_t            bkgrType;       //!< User-specific type information.
+    uint32_t            bkgrType; /*16*/       //!< User-specific type information.
     FGS_ITEM_S          item[FGS_BOX_IDX_MAX]; // deprecated, to be removed
-    FGS_GETITEM_CB      getItem;
-    FAPI_SYS_HandleT    getItemArg;
-    void*               pInst;
-    
+    FGS_GETITEM_CB      getItem; /*92*/
+    FAPI_SYS_HandleT    getItemArg; /*96*/
+    void*               pInst; //100
+    //104
 } FGS_BOX_OPEN_S;
 
 typedef struct

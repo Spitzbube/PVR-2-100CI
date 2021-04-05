@@ -34,7 +34,7 @@ typedef enum
 {
     FGS_LNAVI_TYPE_FIXEDPOS = 0, //!< Wraparound list, focussed item always on 
                                  //!< fixed position.
-    FGS_LNAVI_TYPE_SCROLL,       //!< Scroll list.
+    FGS_LNAVI_TYPE_SCROLL, /*1*/      //!< Scroll list.
     FGS_LNAVI_TYPE_TXTVIEW,      //!< Scroll viewer for multiline text.
     
 } FGS_LNAVI_TYPE_E;
@@ -65,45 +65,49 @@ typedef struct
 
 typedef struct
 {
-    uint16_t                numItems;         //!< Number of list items.
-    uint16_t                index;            //!< Focussed list index.
-    uint16_t                posInVis;         //!< Position of focussed list index 
+    uint16_t                numItems;  /*0*/       //!< Number of list items.
+    uint16_t                index;     /*2*/       //!< Focussed list index.
+    uint16_t                posInVis;  /*4*/       //!< Position of focussed list index
                                               //!< in visible area.
+    //6
 } FGS_LNAVI_PARAMS_S;
 
 typedef struct
 {
     FGS_POS_S               pos;              //!< List position.
-    fbool_t                 isHidden;
-    uint32_t                bkgrType;         //!< Background type.
+    fbool_t                 isHidden; /*12*/
+    uint32_t                bkgrType; /*16*/        //!< Background type.
     
-    FGS_LNAVI_TYPE_E        type;             //!< List type.
-    uint16_t                rowHeight;        //!< Row height in pixels.
-    uint16_t                scrollbarWidth;   //!< Width of scrollbar in pixels 
+    FGS_LNAVI_TYPE_E        type; /*20*/            //!< List type.
+    uint16_t                rowHeight; /*24*/       //!< Row height in pixels.
+    uint16_t                scrollbarWidth; /*26*/  //!< Width of scrollbar in pixels
                                               //!< (0: no scrollbar).
-    uint16_t                scrollHdlHeight;  //!< Height of scrollbar handle in
+    uint16_t                scrollHdlHeight; /*28*/ //!< Height of scrollbar handle in
                                               //!< pixels (0: automatic calculation).
-    uint16_t                numVisLines;      //!< Number of visible lines.
-    uint8_t                 numColumns;       //!< Number of columns per line.
-    FGS_LNAVI_PARAMS_S      params;           //!< Dynamic parameters.
-    uint16_t                colStart[FGS_LNAVI_COL_MAX];
-    uint16_t                colWidth[FGS_LNAVI_COL_MAX];
-    fbool_t                 topDownOrient;    // 1 if list is printed in
+    uint16_t                numVisLines; /*30*/     //!< Number of visible lines.
+    uint8_t                 numColumns; /*32*/      //!< Number of columns per line.
+    FGS_LNAVI_PARAMS_S      params;  /*36*/         //!< Dynamic parameters.
+    uint16_t                colStart[FGS_LNAVI_COL_MAX]; //44
+    uint16_t                colWidth[FGS_LNAVI_COL_MAX]; //64
+    fbool_t                 topDownOrient; /*84*/   // 1 if list is printed in
                                               // ascending order from top line.
-    fbool_t                 wraparound;       //!< 1 for wraparound mode.
+    fbool_t                 wraparound; /*88*/      //!< 1 for wraparound mode.
     
-    FGS_GETITEM_CB          getItem;       //!< Callback for acquiring line items.
-    FAPI_SYS_HandleT        getItemArg;    //!< Optional callback argument.
+    int Data_92; //92
+    int Data_96; //96
+
+    FGS_GETITEM_CB          getItem; /*100*/      //!< Callback for acquiring line items.
+    FAPI_SYS_HandleT        getItemArg; /*104*/   //!< Optional callback argument.
     FGS_FOCUSSET_CB         onFocusSet;    //!< Focus-set/remove-callback (opt.).
     FAPI_SYS_HandleT        onFocusSetArg; //!< Optional argument for onFocusSet.
     FGS_LNAVI_FOCUSCHG_CB   onFocusChg;    //!< Focus-change callback (optional).
     FAPI_SYS_HandleT        onFocusChgArg; //!< Optional argument for onFocusChg.
-    FGS_LNAVI_SELECT_CB     onSelect;      //!< Select-callback (opt.).
+    FGS_LNAVI_SELECT_CB     onSelect; /*124*/     //!< Select-callback (opt.).
     FAPI_SYS_HandleT        onSelectArg;   //!< Optional argument for onSelect.
     
-    void*                   pInst;         //!< Optional facility to pass a memory 
+    void*                   pInst; /*132*/        //!< Optional facility to pass a memory
                                          //!< buffer for instance data.
-    
+    //136
 } FGS_LNAVI_OPEN_S;
 
 struct fgs_lnavi_inst_s

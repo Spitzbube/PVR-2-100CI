@@ -64,7 +64,12 @@ void ApplicationThread(int a)
 /* 21b8fa28 - todo */
 int SYS_HandleEvent(int a, void* b)
 {
-   FAPI_SYS_PRINT_MSG("SYS_HandleEvent() a=%d\n", a);
+#if 1
+    if (a != 10)
+    {
+        FAPI_SYS_PRINT_MSG("SYS_HandleEvent() a=%d\n", a);
+    }
+#endif
    
    switch (a)
    {

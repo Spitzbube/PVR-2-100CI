@@ -111,7 +111,7 @@ typedef enum
 {
    FGS_KEYTYPE_PRESSED = 0,
    FGS_KEYTYPE_RELEASED,
-   FGS_KEYTYPE_REPEATED,
+   FGS_KEYTYPE_REPEATED, //2
 
 } FGS_KEYTYPE_E;
 
@@ -214,19 +214,19 @@ typedef union
 
 typedef struct
 {
-    int16_t             x;                   //!< start X pos in parent item
-    int16_t             y;                   //!< start Y pos in parent item
-    uint16_t            width;               //!< item width
-    uint16_t            height;              //!< item height
-    uint8_t             alignment;           //!< hor./ver. alignment status (or'ed)
-
+    int16_t             x; /*0*/                  //!< start X pos in parent item
+    int16_t             y; /*2*/                  //!< start Y pos in parent item
+    uint16_t            width; /*4*/              //!< item width
+    uint16_t            height; /*6*/             //!< item height
+    uint8_t             alignment; /*8*/          //!< hor./ver. alignment status (or'ed)
+    //12
 } FGS_POS_S;
 
 typedef struct
 {
     int16_t             x;                   //!< start X position
     int16_t             y;                   //!< start Y position
-
+    //4
 } FGS_LOC_S;
 
 typedef struct
@@ -322,13 +322,13 @@ typedef struct
 
 typedef struct
 {
-    FGS_ITEM_TYPE_E     type;
-    uint8_t             align;         //!< alignment in target rectangle
+    FGS_ITEM_TYPE_E     type; //0
+    uint8_t             align; /*4*/        //!< alignment in target rectangle
 
     union
     {
         FGS_GENERIC_S   gnr;
-        FGS_STRING_S    str;
+        FGS_STRING_S    str; //8
         FGS_ICON_S      icon;
         FGS_TIME_S      time;
         FGS_DATE_S      date;

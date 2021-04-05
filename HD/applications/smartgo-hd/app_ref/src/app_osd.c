@@ -12,12 +12,15 @@
 #include "app_scaler.h"
 #include "av.h"
 #include "osd.h"
-#include "stringop.h"
 #if 1
 #include "21ba8d28.h"
 #endif
 #include "fgs_panel.h"
+#include "fgs_list.h"
+#include "fgs_item_text.h"
+#include "fgs_item_select.h"
 #include "app_main.h"
+#include "stringop.h"
 #include "app_osd.h"
 
 
@@ -6554,6 +6557,20 @@ const uint32_t Data_21ebd604[7152/4] = //21ebd604
         OSDHANDLER_BitBlitFill(a, xPos, yPos, 1, 1, color)
 
 
+FSTATIC int32_t OSD_SetFont(SCALER_FONT_E fontId);
+/*FSTATIC*/ void OSD_DrawCorner(int32_t pnlId, uint16_t x, uint16_t x2, uint16_t y,
+                       uint16_t y2, uint16_t cornerpos);
+/*FSTATIC*/ uint32_t    OSD_ConvertString               (SYS_CHARSET targetCs,
+                                                     SYS_STRING_S inputStr,
+                                                     int32_t numChars,
+                                                     SYS_STRING_S* outputStr);
+uint32_t OSD_GetStrWidth (SYS_STRING_S string, int32_t numChars, uint8_t font);
+uint32_t OSD_GetSchemeColor(unsigned int/*OSD_SCHEMECOL_E*/ id);
+void OSDINT_DrawFilledRectangle(uint16_t a, uint16_t b,
+                   uint16_t c, uint16_t d, uint32_t colour);
+
+
+
 int app_osd_initialized = 0; //21f02418
 
 uint32_t app_osd_fontFileSize[2] = //21f7a12c fontFileSize
@@ -6572,24 +6589,280 @@ uint32_t* app_osd_fontDataPtr[2] = //21f7a160 fontDataPtr
 };
 
 
+char Data_21ebf1f4[] = {//10 10 00 00 01 00 00 00
+        SYS_CHARSET_ISO_10646,
+        SYS_CHARSET_ISO_10646,
+        SYS_CHARSET_UNDEFINED,
+        SYS_CHARSET_UNDEFINED,
+
+}; //21ebf1f4
+
+
 /* 21b08204 - todo */
 void func_21b08204(void)
 {
    printf("21b08204\n");
 }
 
-
-/* 21b07fdc - todo */
-void func_21b07fdc(void)
+FSTATIC int32_t OSD_SetFont (SCALER_FONT_E fontId)
 {
-   printf("21b07fdc\n");
+    int32_t     retVal = FAPI_OK;
+    uint32_t    fontSize;
+    int32_t     resFont;
+
+//    if ( fontId != appDat->fontIdCurr )
+    {
+        for (;;)
+        {
+            void* r4 = appDat->/*fontHdl*/fontserverHandle;
+//            fontSize = SCALER_GetFontSize(fontId);
+            resFont  = SCALER_GetFont(fontId);
+
+//            if ( resFont != appDat->fontCurr )
+            {
+                retVal = FONTSERVER_SetFont(r4, resFont);
+                if ( retVal != FAPI_OK )
+                {
+                    break;
+                }
+
+//                appDat->fontCurr = resFont;
+            }
+
+            r4 = appDat->/*fontHdl*/fontserverHandle;
+
+            fontSize = SCALER_GetFontSize(fontId);
+//            if ( fontSize != appDat->fontSizeCurr )
+            {
+                retVal = FONTSERVER_SetSize(r4, fontSize);
+                if ( retVal != FAPI_OK )
+                {
+                    break;
+                }
+
+//                appDat->fontSizeCurr = fontSize;
+            }
+
+//            appDat->fontIdCurr = fontId;
+
+            break; /* end of for (;;) */
+        }
+    }
+
+    return retVal;
 }
 
 
-/* 21b07b14 - todo */
-void func_21b07b14(void)
+
+void OSD_DrawStringLtd (uint16_t x, uint16_t y, uint32_t c, uint8_t font,
+                        int32_t numChars, uint16_t maxWidth,
+                        int32_t strWidth, SYS_STRING_S string,
+                        fbool_t softCut)
 {
-   printf("21b07b14\n");
+    int32_t         NumPix;
+    SYS_STRING_S    targetStr = string;
+    SYS_STRING_S    endStr = OSD_GetStr(STR_GNR_STRINGCUT);
+    int32_t         endWidth = OSD_GetStrWidth (endStr, -1, font);
+    int32_t         endnumChars = UTILS_strlen(endStr.chr);
+    int r8 = SCALER_GetFontSize(font);
+    FONTSERVER_InformationT sp24; //sp24
+    int32_t         retVal  = FAPI_OK;
+
+//    (void) RTOS_GetSemaphore (appDat->displayMutex, RTOS_SUSPEND);
+
+    do
+    {
+#if 0
+        if(appDat->menuHasLayer == FFALSE)
+        {
+            break;
+        }
+#endif
+        if ( (targetStr.chr == NULL) ||
+             (targetStr.cs  == SYS_CHARSET_UNDEFINED) )
+        {
+            break;
+        }
+
+/*3027*/  DBG_Assert(font < (uint8_t)SCALER_FONT_NUMS);
+
+#if 0
+        if ( targetStr.cs != appDat->fontCs[font] )
+        {
+             numChars = OSD_ConvertString (appDat->fontCs[font], targetStr,
+                                           numChars, &targetStr);
+        }
+#else
+#if 0
+        FAPI_SYS_PRINT_MSG("OSD_DrawStringLtd: targetStr.cs=%d, Data_21ebf1f4[SCALER_GetFont(font)]=%d\n",
+                targetStr.cs, Data_21ebf1f4[SCALER_GetFont(font)]);
+#endif
+        if ( targetStr.cs != Data_21ebf1f4[SCALER_GetFont(font)]/*appDat->fontCs[font]*/ )
+        {
+            numChars = OSD_ConvertString (/*appDat->fontCs[font]*/Data_21ebf1f4[SCALER_GetFont(font)], targetStr,
+                                          numChars, &targetStr);
+        }
+        //21b07d84
+#endif
+
+        for (;;)
+        {
+#if 0
+            retVal = OSD_SetFont ((SCALER_FONT_E)font);
+#else
+            void* r4 = appDat->/*fontHdl*/fontserverHandle;
+            int32_t resFont  = SCALER_GetFont(font);
+
+#if 0
+            FAPI_SYS_PRINT_MSG("OSD_DrawStringLtd: resFont=%d\n", resFont);
+#endif
+            retVal = FONTSERVER_SetFont(r4, resFont);
+            if ( retVal != FAPI_OK )
+            {
+                break;
+            }
+
+            retVal = FONTSERVER_SetSize(appDat->/*fontHdl*/fontserverHandle, r8/*fontSize*/);
+            if ( retVal != FAPI_OK )
+            {
+                break;
+            }
+
+            retVal = FONTSERVER_SetColour(appDat->/*fontHdl*/fontserverHandle, c);
+            if ( retVal != FAPI_OK )
+            {
+                break;
+            }
+#endif
+
+            break; /* end of for (;;) */
+        }
+
+        if ( retVal != FAPI_OK )
+        {
+            FAPI_SYS_PRINT_MSG/*DEBUG(1,*/("[app_osd] error %d\n", retVal);
+            break;
+        }
+
+        NumPix = FONTSERVER_GetStringPixelWidth(
+                               appDat->/*fontHdl*/fontserverHandle,
+                               (uint8_t*)targetStr.chr, numChars,
+                               NULL);
+
+#if 0
+        FAPI_SYS_PRINT_MSG("OSD_DrawStringLtd: NumPix=%d\n", NumPix);
+#endif
+
+        if (FONTSERVER_GetFontInfo(appDat->/*fontHdl*/fontserverHandle, &sp24) != 0)
+        {
+#if 0
+            FAPI_SYS_PRINT_MSG("OSD_DrawStringLtd: FONTSERVER_GetFontInfo FAILED!\n", NumPix);
+#endif
+            break;
+        }
+
+        if ( NumPix > (int32_t) maxWidth )
+        {
+            //21b07e40
+            if((maxWidth < (uint32_t) endWidth) || (softCut == FFALSE))
+            {
+                /* print reduced string */
+
+                numChars = FONTSERVER_GetNumCharsFitByPixelWidth(
+                                    appDat->/*fontHdl*/fontserverHandle,
+                                    (uint8_t*)targetStr.chr,
+                                    maxWidth - endWidth,
+                                    NULL);
+
+#if 0
+                FAPI_SYS_PRINT_MSG("OSD_DrawStringLtd(1): numChars=%d\n", numChars);
+#endif
+                (void)FONTSERVER_PrintString(
+                                    appDat->/*fontHdl*/fontserverHandle,
+                                    (uint8_t*)targetStr.chr,
+                                    numChars,
+                                    x,
+                                    y + sp24.maxCharHeight/*appDat->fontInfo[font].maxCharHeight*/,
+                                    NULL);
+            }
+            else
+            {
+                //21b07ea4
+                /* print reduced string with ... added */
+
+                numChars = FONTSERVER_GetNumCharsFitByPixelWidth(
+                                    appDat->/*fontHdl*/fontserverHandle,
+                                    (uint8_t*)targetStr.chr,
+                                    maxWidth - endWidth,
+                                    NULL);
+
+                strWidth = OSD_GetStrWidth(targetStr, numChars, font);
+
+#if 0
+                FAPI_SYS_PRINT_MSG("OSD_DrawStringLtd(2): numChars=%d, strWidth=%d\n", numChars, strWidth);
+#endif
+
+                (void)FONTSERVER_PrintString(
+                                    appDat->/*fontHdl*/fontserverHandle,
+                                    (uint8_t*)targetStr.chr,
+                                    numChars,
+                                    x,
+                                    y + sp24.maxCharHeight/*appDat->fontInfo[font].maxCharHeight*/,
+                                    NULL);
+
+#if 0
+                if ( endStr.cs != appDat->fontCs[font] )
+                {
+                     endnumChars = OSD_ConvertString (appDat->fontCs[font], endStr,
+                                                      numChars, &endStr);
+                }
+#else
+                if ( endStr.cs != Data_21ebf1f4[SCALER_GetFont(font)]/*appDat->fontCs[font]*/ )
+                {
+                    endnumChars = OSD_ConvertString (/*appDat->fontCs[font]*/Data_21ebf1f4[SCALER_GetFont(font)], endStr,
+                                                  numChars, &endStr);
+                }
+#endif
+
+                (void)FONTSERVER_PrintString(
+                                    appDat->/*fontHdl*/fontserverHandle,
+                                    (uint8_t*)endStr.chr,
+                                    endnumChars,
+                                    x + strWidth,
+                                    y + sp24.maxCharHeight/*appDat->fontInfo[font].maxCharHeight*/,
+                                    NULL);
+            }
+        }
+        else
+        {
+            //21b07f88
+            (void)FONTSERVER_PrintString(
+                                    appDat->/*fontHdl*/fontserverHandle,
+                                    (uint8_t*)targetStr.chr,
+                                    numChars,
+                                    x,
+                                    y + sp24.maxCharHeight/*appDat->fontInfo[font].maxCharHeight*/,
+                                    NULL);
+        }
+    } while (0);
+
+//    (void) RTOS_SetSemaphore (appDat->displayMutex, RTOS_NO_SUSPEND);
+}
+
+
+/* 21b07fdc - complete */
+FSTATIC int32_t globPrintStr(uint16_t x, uint16_t y, uint32_t color, uint8_t font, int32_t numChars,
+                     uint16_t maxWidth, int32_t strWidth, SYS_STRING_S string,
+                     fbool_t softCut)
+{
+#if 0
+    FAPI_SYS_PRINT_MSG("globPrintStr: x=%d, y=%d, color=0x%x, font=0x%x\n", x, y, color, font);
+    FAPI_SYS_PRINT_MSG("globPrintStr: numChars=%d, maxWidth=%d, strWidth=%d\n", numChars, maxWidth, strWidth);
+    FAPI_SYS_PRINT_MSG("globPrintStr: string.cs=%d, string.chr='%s'\n", string.cs, string.chr);
+#endif
+    OSD_DrawStringLtd(x, y, color, font, numChars, maxWidth, strWidth, string, softCut);
+
+    return FAPI_OK;
 }
 
 
@@ -6630,15 +6903,102 @@ void func_21b0ba20(void)
 }
 
 
-/* 21b097e0 - todo */
-void func_21b097e0(void)
+/* 21b097e0 - complete */
+FSTATIC void naviDrawLineBkgr(FAPI_SYS_HandleT h, FGS_PANEL_INST_S * pnlHdl,
+                      uint16_t x, uint16_t y, uint16_t width, uint16_t height,
+                      uint16_t lineCnt, uint16_t listIndex)
 {
-   printf("21b097e0\n");
+    FGS_LNAVI_INST_S             *inst = (FGS_LNAVI_INST_S *) h;
+    uint32_t                      col;
+    uint16_t                      corners = OSD_CORNER_NONE;
+
+//    (void) RTOS_GetSemaphore (appDat->displayMutex, RTOS_SUSPEND);
+//    if( appDat->menuHasLayer == FTRUE)
+    {
+        /* ----- choose color -------------------------------------------------- */
+
+        switch (inst->data.type)
+        {
+            case FGS_LNAVI_TYPE_FIXEDPOS:
+            case FGS_LNAVI_TYPE_SCROLL:
+                switch (inst->data.bkgrType & /*OSD_TYPEMASK_BKGR*/0xff)
+                {
+                    default:
+                    case /*OSD_NAVIBKGR_NORMAL*/0:
+                        if((listIndex == inst->data.params.index) &&
+                           (inst->data.params.numItems > 0))
+                        {
+                            if(inst->pMem->hasFocus == FTRUE)
+                                col = OSD_GetSchemeColor(/*OSD_SCHEMECOL_MAIN_BKGR_HIGHL*/1);
+                            else
+                                col = 11; //OSD_COL_BACKGROUND_NON_FOCUS;
+                        }
+                        else
+                        {
+                            col = OSD_GetSchemeColor(OSD_SCHEMECOL_MAIN_BKGR);
+                        }
+                        break;
+
+                    case /*OSD_NAVIBKGR_HELP*/1:
+                        col = OSD_GetSchemeColor(OSD_SCHEMECOL_HELP_BKGR);
+                        break;
+
+                    case /*OSD_NAVIBKGR_NOSELECTION*/2:
+                        col = OSD_GetSchemeColor(OSD_SCHEMECOL_MAIN_BKGR);
+                        break;
+                }
+                break;
+
+            default:
+            case FGS_LNAVI_TYPE_TXTVIEW:
+                /* do not highlight focus line */
+                col = OSD_GetSchemeColor(OSD_SCHEMECOL_MAIN_BKGR);
+                break;
+        }
+
+        switch (inst->data.bkgrType & /*OSD_TYPEMASK_BKGR*/0xff)
+        {
+            case /*OSD_NAVIBKGR_HELP*/1:
+            case /*OSD_NAVIBKGR_NORMAL*/0:
+            case /*OSD_NAVIBKGR_NOSELECTION*/2:
+                OSDINT_DrawFilledRectangle(x, y, x + width - 1, y + height - 1, col);
+                break;
+
+            default:
+//                (void) RTOS_SetSemaphore (appDat->displayMutex, RTOS_NO_SUSPEND);
+                return;
+        }
+
+        /* first line: test for top corners */
+        if(lineCnt == 0)
+        {
+            corners |= inst->data.bkgrType &
+                (OSD_CORNER_TOP_LEFT | OSD_CORNER_TOP_RIGHT);
+        }
+
+        /* last line: test for bottom corners */
+        if((lineCnt + 1) == inst->data.numVisLines)
+        {
+            corners |= inst->data.bkgrType &
+                (OSD_CORNER_BOT_LEFT | OSD_CORNER_BOT_RIGHT);
+        }
+
+        if(corners != OSD_CORNER_NONE)
+        {
+            OSD_DrawCorner(pnlHdl->pMem->id,
+                           pnlHdl->pMem->abspos.x,
+                           pnlHdl->pMem->abspos.x + pnlHdl->data.pos.width - 1,
+                           pnlHdl->pMem->abspos.y,
+                           pnlHdl->pMem->abspos.y + pnlHdl->data.pos.height - 1,
+                           corners);
+        }
+    }
+//    (void) RTOS_SetSemaphore (appDat->displayMutex, RTOS_NO_SUSPEND);
 }
 
 
 /* 21b09674 - todo */
-void func_21b09674(void)
+void naviDrawScrollbar(void)
 {
    printf("21b09674\n");
 }
@@ -6798,17 +7158,86 @@ void func_21b0890c(void)
 }
 
 
-/* 21b0952c - todo */
-void func_21b0952c(void)
+/* 21b09320 - complete */
+void OSD_DrawListItemBackground(uint16_t x, uint16_t y,
+                                uint16_t width, uint16_t height,
+                                uint32_t type,
+                                FGS_LIST_MEMBER_S * pMem,
+                                FGS_PANEL_INST_S * pnlHdl)
 {
-   printf("21b0952c\n");
+    uint32_t col;
+    uint16_t corners = (uint16_t)(type & /*OSD_TYPEMASK_CORNERS*/0xf00);
+
+    switch (type & /*OSD_TYPEMASK_BKGR*/0xff)
+    {
+        case /*OSD_LSTITEM_BKGR_NORMAL*/0:
+            if((pMem->hasFocus == FTRUE) && (pMem->isEnabled == FTRUE))
+                col = OSD_GetSchemeColor(/*OSD_SCHEMECOL_MAIN_BKGR_HIGHL*/1);
+            else
+                col = OSD_GetSchemeColor(OSD_SCHEMECOL_MAIN_BKGR);
+
+            OSDINT_DrawFilledRectangle(x, y, x + width - 1, y + height - 1, col);
+            break;
+        case /*OSD_LSTITEM_BKGR_HELP*/1:
+            col = OSD_GetSchemeColor(OSD_SCHEMECOL_HELP_BKGR);
+
+            OSDINT_DrawFilledRectangle(x, y, x + width - 1, y + height - 1, col);
+            break;
+        case /*OSD_LSTITEM_BKGR_TITLE*/2:
+            if((pMem->hasFocus == FTRUE) && (pMem->isEnabled == FTRUE))
+                col = OSD_GetSchemeColor(OSD_SCHEMECOL_TITLE_BKGR);
+            else
+                col = OSD_GetSchemeColor(OSD_SCHEMECOL_TITLE_BKGR);
+
+            OSDINT_DrawFilledRectangle(x, y, x + width - 1, y + height - 1, col);
+            break;
+#if 0
+        case OSD_LSTITEM_BKGR_MAINMENU:
+            /* NOTE: this background type is handled separately in
+               itemTxtDrawBkgr() */
+#endif
+
+        default:
+            return;
+    }
+
+    if(corners != OSD_CORNER_NONE)
+    {
+        OSD_DrawCorner(pnlHdl->pMem->id,
+                       pnlHdl->pMem->abspos.x,
+                       pnlHdl->pMem->abspos.x + pnlHdl->data.pos.width - 1,
+                       pnlHdl->pMem->abspos.y,
+                       pnlHdl->pMem->abspos.y + pnlHdl->data.pos.height - 1,
+                       corners);
+    }
 }
 
 
-/* 21b094f0 - todo */
-void func_21b094f0(void)
+/* 21b0952c - complete */
+void itemTxtDrawBkgr(FAPI_SYS_HandleT h, FGS_PANEL_INST_S * pnlHdl,
+        const FGS_ITEM_S * item)
 {
-   printf("21b094f0\n");
+    FGS_ITEM_TXT_INST_S          *inst = (FGS_ITEM_TXT_INST_S *) h;
+
+    OSD_DrawListItemBackground(inst->pMem->abspos.x,
+                               inst->pMem->abspos.y,
+                               inst->data.pos.width,
+                               inst->data.pos.height,
+                               inst->data.bkgrType, inst->pMem, pnlHdl);
+}
+
+
+/* 21b094f0 - complete */
+FSTATIC void itemSelDrawBkgr(FAPI_SYS_HandleT h, FGS_PANEL_INST_S * pnlHdl,
+                     const FGS_ITEM_S * item)
+{
+    FGS_ITEM_SEL_INST_S          *inst = (FGS_ITEM_SEL_INST_S *) h;
+
+    OSD_DrawListItemBackground(inst->pMem->abspos.x,
+                               inst->pMem->abspos.y,
+                               inst->data.pos.width,
+                               inst->data.pos.height,
+                               inst->data.bkgrType, inst->pMem, pnlHdl);
 }
 
 
@@ -7523,10 +7952,65 @@ void func_21b0ba10(void)
 }
 
 
-/* 21b09568 - todo */
-void func_21b09568(void)
+/* 21b09568 - complete */
+FSTATIC void boxDrawBkgr(FAPI_SYS_HandleT h, FGS_PANEL_INST_S * pnlHdl)
 {
-   printf("21b09568\n");
+    FGS_BOX_INST_S* inst = (FGS_BOX_INST_S *) h;
+    fbool_t         drawBkgr = FTRUE;
+    uint32_t         col = 0;
+
+    OSD_GetSchemeColor(0);
+
+//    (void) RTOS_GetSemaphore (appDat->displayMutex, RTOS_SUSPEND);
+//    if( appDat->menuHasLayer == FTRUE)
+    {
+        switch (inst->data.bkgrType & /*OSD_TYPEMASK_BKGR*/0xff)
+        {
+            default:
+            case /*OSD_BOX_BKGR_NORMAL*/0:
+                col = OSD_GetSchemeColor(OSD_SCHEMECOL_MAIN_BKGR);
+                break;
+            case /*OSD_BOX_BKGR_HELP*/3:
+                col = OSD_GetSchemeColor(OSD_SCHEMECOL_HELP_BKGR);
+                break;
+            case /*OSD_BOX_BKGR_BLACK*/4:
+                col = 0; //OSD_GetSchemeColor(OSD_SCHEMECOL_BLACK_BKGR);
+                break;
+
+            case /*OSD_BOX_BKGR_POPUP*/2:
+            case /*OSD_BOX_BKGR_TITLE*/1:
+                col = OSD_GetSchemeColor(OSD_SCHEMECOL_TITLE_BKGR);
+                break;
+
+            case /*OSD_BOX_BKGR_NONE*/5:
+                drawBkgr = FFALSE;
+                break;
+
+            case /*OSD_BOX_BKGR_TRANSPARENT*/6:
+                col = 15; //OSD_COL_BLANK;
+                break;
+        }
+
+        if ( drawBkgr )
+        {
+            OSDINT_DrawFilledRectangle(inst->pMem->abspos.x,
+                                    inst->pMem->abspos.y,
+                                    inst->pMem->abspos.x + inst->data.pos.width - 1,
+                                    inst->pMem->abspos.y + inst->data.pos.height -
+                                    1, col);
+        }
+
+        if((inst->data.bkgrType & /*OSD_TYPEMASK_CORNERS*/0xf00) != OSD_CORNER_NONE)
+        {
+            OSD_DrawCorner(pnlHdl->pMem->id,
+                           pnlHdl->pMem->abspos.x,
+                           pnlHdl->pMem->abspos.x + pnlHdl->data.pos.width - 1,
+                           pnlHdl->pMem->abspos.y,
+                           pnlHdl->pMem->abspos.y + pnlHdl->data.pos.height - 1,
+                           (inst->data.bkgrType & /*OSD_TYPEMASK_CORNERS*/0xf00));
+        }
+    }
+//    (void) RTOS_SetSemaphore (appDat->displayMutex, RTOS_NO_SUSPEND);
 }
 
 
@@ -7608,7 +8092,7 @@ int func_21b099b8(int a)
       return -10000001;      
    }
    
-   res = func_21b02df4(0, a);
+   res = MAIN_UserDataSet(0, a);
    
    if (res == 0)
    {
@@ -7684,12 +8168,7 @@ int32_t app_osd_init(void)
 {
    int32_t r5 = 0;
    struct Struct_21ba8d28 sp12;
-   struct Struct_21baea48
-   {
-      void (*Func_0)(void); //0
-      void (*Func_4)(void); //4
-      unsigned short wData_8; //8
-   } sp52;
+   FGS_LNAVI_INIT_S lnaviParams; //sp52
    struct Struct_21ba9c34 
    {
       void (*Func_0)(void); //0
@@ -7701,16 +8180,8 @@ int32_t app_osd_init(void)
       void (*Func_0)(void); //0
       void (*Func_4)(void); //4
    } sp76;
-   struct Struct_21babda8
-   {
-      void (*Func_0)(void); //0
-      int fill_4; //4
-   } sp84;
-   struct Struct_21baba70
-   {
-      void (*Func_0)(void); //0
-      int fill_4; //4
-   } sp92;
+   FGS_ITEM_TXT_INIT_S itemTxtParams; //sp84
+   FGS_ITEM_SEL_INIT_S itemSelParams; //sp92
    struct Struct_21bab438
    {
       void (*Func_0)(void); //0
@@ -7724,20 +8195,10 @@ int32_t app_osd_init(void)
    FGS_PANEL_INIT_S panelParams; //sp116;
    int sp124;
    int sp128;
-   struct Struct_21ba90bc
-   {
-      void (*Func_0)(void); //0
-   } sp132;
-   struct Struct_21bad20c
-   {
-      void (*Func_0)(void); //0
-   } sp136;
+   FGS_BOX_INIT_S boxParams; //sp132
+   FGS_LIST_INIT_S listParams; //sp136
    
-   struct
-   {
-      unsigned Data_0; //0
-      unsigned Data_4; //4
-   } sp4;
+   SYS_STRING_S sp4; //sp4
    
    unsigned short r4, lr;
    
@@ -7749,14 +8210,14 @@ int32_t app_osd_init(void)
    }
       
    memset(&panelParams, 0, sizeof(FGS_PANEL_INIT_S));
-   memset(&sp136, 0, sizeof(struct Struct_21bad20c));
+   memset(&listParams, 0, sizeof(FGS_LIST_INIT_S));
    memset(&sp64, 0, sizeof(struct Struct_21ba9c34));
    memset(&sp108, 0, sizeof(struct Struct_21baa0d0));
    memset(&sp100, 0, sizeof(struct Struct_21bab438));
-   memset(&sp92, 0, sizeof(struct Struct_21baba70));
-   memset(&sp84, 0, sizeof(struct Struct_21babda8));
-   memset(&sp52, 0, sizeof(struct Struct_21baea48));
-   memset(&sp132, 0, sizeof(struct Struct_21ba90bc));
+   memset(&itemSelParams, 0, sizeof(FGS_ITEM_SEL_INIT_S));
+   memset(&itemTxtParams, 0, sizeof(FGS_ITEM_TXT_INIT_S));
+   memset(&lnaviParams, 0, sizeof(FGS_LNAVI_INIT_S));
+   memset(&boxParams, 0, sizeof(FGS_BOX_INIT_S));
    memset(&sp76, 0, sizeof(struct Struct_21bafd24));
    
    for (i = 0; i < /*OSD_COLSCHEME_NUMS*/4; ) //i++)
@@ -7885,8 +8346,8 @@ int32_t app_osd_init(void)
    sp12.bData_12 = 2;
    sp12.bData_13 = 1;
    sp12.funcs.Func_16 = func_21b08204;
-   sp12.funcs.Func_20 = func_21b07fdc;
-   sp12.funcs.Func_24 = func_21b07b14;
+   sp12.funcs.Func_20 = globPrintStr;
+   sp12.funcs.Func_24 = OSD_GetStrWidth;
    sp12.funcs.Func_28 = func_21b07950;
    sp12.funcs.Func_32 = func_21b0ba20;
    sp12.funcs.fill_36 = 0;
@@ -7894,7 +8355,7 @@ int32_t app_osd_init(void)
    panelParams.draw.draw = app_osd_draw_window;
    panelParams.draw.refresh = func_21b0ba10;
 
-   sp136.Func_0 = 0;
+   listParams.draw.drawBkgr = 0;
    
    sp64.Func_0 = func_21b0943c;
    sp64.fill_4 = 0;
@@ -7906,17 +8367,17 @@ int32_t app_osd_init(void)
    sp100.Func_0 = func_21b094b4; 
    sp100.fill_4 = 0;
 
-   sp92.Func_0 = func_21b094f0;
-   sp92.fill_4 = 0;
+   itemSelParams.gfx.drawBkgr = itemSelDrawBkgr;
+   itemSelParams.gfx.drawRest = 0;
 
-   sp84.Func_0 = func_21b0952c;
-   sp84.fill_4 = 0;
+   itemTxtParams.gfx.drawBkgr = itemTxtDrawBkgr;
+   itemTxtParams.gfx.drawRest = 0;
    
-   sp52.Func_0 = func_21b097e0;
-   sp52.Func_4 = func_21b09674;
-   sp52.wData_8 = 16;
+   lnaviParams.draw.drawLineBkgr = naviDrawLineBkgr;
+   lnaviParams.draw.drawScrollbar = naviDrawScrollbar;
+   lnaviParams.scrollHdlHeightMin = 16; //LNAVI_SCROLLHDL_HEIGHT_MIN;
 
-   sp132.Func_0 = func_21b09568;
+   boxParams.draw.drawBkgr = boxDrawBkgr;
    
    sp76.Func_0 = func_21b08954;
    sp76.Func_4 = func_21b0890c;
@@ -7937,8 +8398,7 @@ int32_t app_osd_init(void)
       break; //goto label_21b0a344;
    }
    //21b0a384
-   extern int32_t func_21bad20c(void* a);
-   r5 = func_21bad20c(&sp136);
+   r5 = FGS_LIST_Init(&listParams);
 
    if (r5 != 0)
    {
@@ -7973,8 +8433,7 @@ int32_t app_osd_init(void)
       break; //goto label_21b0a344;
    }
    //21b0a3c4
-   extern int32_t func_21baba70(void* a);
-   r5 = func_21baba70(&sp92);
+   r5 = FGS_ITEM_SEL_Init(&itemSelParams);
 
    if (r5 != 0)
    {
@@ -7982,8 +8441,7 @@ int32_t app_osd_init(void)
       break; //goto label_21b0a344;
    }
    //21b0a3d4
-   extern int32_t func_21babda8(void* a);
-   r5 = func_21babda8(&sp84);
+   r5 = FGS_ITEM_TXT_Init(&itemTxtParams);
 
    if (r5 != 0)
    {
@@ -7991,8 +8449,7 @@ int32_t app_osd_init(void)
       break; //goto label_21b0a344;
    }
    //21b0a3e4
-   extern int32_t func_21baea48(void* a);
-   r5 = func_21baea48(&sp52);
+   r5 = FGS_LNAVI_Init(&lnaviParams);
 
    if (r5 != 0)
    {
@@ -8000,8 +8457,7 @@ int32_t app_osd_init(void)
       break; //goto label_21b0a344;
    }
    //21b0a3f4
-   extern int32_t func_21ba90bc(void* a);
-   r5 = func_21ba90bc(&sp132);
+   r5 = FGS_BOX_Init(&boxParams);
 
    if (r5 != 0)
    {
@@ -8018,7 +8474,7 @@ int32_t app_osd_init(void)
       break; //goto label_21b0a344;
    }
    //21b0a414
-   r5 = STR_BufOpen(&appDat->Data_55904, 256, 0);
+   r5 = STR_BufOpen(&appDat->osdStringBuf, 256, 0);
 
    if (r5 != 0)
    {
@@ -8026,7 +8482,7 @@ int32_t app_osd_init(void)
       break; //goto label_21b0a344;
    }
    //21b0a438
-   r5 = STR_BufOpen(&appDat->Data_55924, 16, 0);
+   r5 = STR_BufOpen(&appDat->osdCutStrBuf, 16, 0);
 
    if (r5 != 0)
    {
@@ -8039,11 +8495,11 @@ int32_t app_osd_init(void)
    if (r5 == FAPI_OK)
    {
    //21b0a458
-   func_21b128d8(&sp4, 590);
+   //func_21b128d8(&sp4, 590);
+
+   sp4 = OSD_GetStr(STR_GNR_STRINGCUT/*590*/);
    
-   extern void func_21ba1998(int* a, int b, unsigned c, unsigned d, int e);
-   func_21ba1998(&appDat->Data_55924,
-         0, sp4.Data_0, sp4.Data_4, 16);
+   STR_BufAppend(&appDat->osdCutStrBuf, 0, sp4, 16/*OSD_TARGETCHARSET*/);
    
    app_osd_initialized = 1;
    
@@ -8377,6 +8833,70 @@ int32_t app_osd_start_layer(void)
 }
 
 
+/* 21b07b14 - complete */
+uint32_t OSD_GetStrWidth (SYS_STRING_S string, int32_t numChars, uint8_t font)
+{
+    SYS_STRING_S    targetStr = string;
+    int32_t         retVal    = FAPI_OK;
 
+    if ( (targetStr.chr == NULL)                  ||
+         (targetStr.cs  == SYS_CHARSET_UNDEFINED) ||
+         (numChars      == 0) )
+    {
+        return 0;
+    }
+
+/*3141*/    DBG_Assert(font < (uint8_t)SCALER_FONT_NUMS);
+
+    if ( numChars < 0 )
+    {
+        /* parse until string termination is reached */
+        numChars = UTILS_strlen(string.chr);
+    }
+
+    if ( targetStr.cs != Data_21ebf1f4[SCALER_GetFont(font)]/*appDat->fontCs[font]*/ )
+    {
+        numChars = OSD_ConvertString (/*appDat->fontCs[font]*/Data_21ebf1f4[SCALER_GetFont(font)], targetStr,
+                                      numChars, &targetStr);
+    }
+    //21b07b94
+    retVal = OSD_SetFont ((SCALER_FONT_E)font);
+    if ( retVal != FAPI_OK )
+    {
+        /*FAPI_SYS_PRINT_DEBUG(1, */FAPI_SYS_PRINT_MSG("[app_osd] error %d\n", retVal);
+        // TODO: improve error handling!
+    }
+
+    return retVal = FONTSERVER_GetStringPixelWidth(
+                           appDat->/*fontHdl*/fontserverHandle,
+                           (uint8_t *) targetStr.chr, numChars,
+                           NULL);
+}
+
+
+/* 21b078a4 - complete */
+/*FSTATIC*/ uint32_t OSD_ConvertString (SYS_CHARSET targetCs, SYS_STRING_S inputStr,
+                               int32_t numChars, SYS_STRING_S* outputStr)
+{
+    uint32_t outBytes;
+
+    if ( numChars < 0 )
+    {
+        outBytes = STR_BufAppend (&(appDat->osdStringBuf), 0,
+                                  inputStr, targetCs);
+    }
+    else
+    {
+        outBytes = STR_BufNAppend (&(appDat->osdStringBuf), 0,
+                                   inputStr, targetCs, numChars);
+    }
+
+    if ( outputStr != NULL )
+    {
+        *outputStr = appDat->osdStringBuf.string;
+    }
+
+    return outBytes;
+}
 
 

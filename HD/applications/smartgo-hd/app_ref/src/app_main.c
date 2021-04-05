@@ -1601,10 +1601,8 @@ extern void func_21b02c2c(void);
 static void app_main_handle_event(int, void*);
 static int app_main_init(void);
 extern void MAIN_GetStartupOperationMode(void);
-#if 0
-void app_main_handle_input_event(void*);
+void MAIN_HandleEvtKey(void*);
 
-#endif
 
 /*FSTATIC*/ void MENU_StartupTimerExpired (void* arg);
 int32_t MAIN_MenuTimerLaunch (uint16_t timeInSeconds, void (*handler)(void* arg), void* arg);
@@ -1638,7 +1636,7 @@ int main()
    fp160.Data_48 = 110632;
    fp160.bData_64 = 27; //0x1B
    fp160.Data_68 = 0;
-   fp160.bData_72 = 2;
+   fp160.altDefaultSiCharSet = SYS_CHARSET_ISO8859_1; //2;
    fp160.bData_76 = 1;
    fp160.bData_77 = -32;
    fp160.bData_80 = 1;
@@ -1698,6 +1696,15 @@ int MENU_Init(void)
     do
     {
         //TODO...
+
+        res = MENU_LanguageInit();
+        if (res != 0)
+        {
+            break;
+        }
+
+        //TODO....
+
 
         res = MENU_WelcomeInit();
         if (res != 0)
@@ -1767,9 +1774,9 @@ int app_main_init(void)
       appDat->Data_55476 = 11;
       appDat->Data_55480 = 0;
 
-      appDat->Data_55984 = func_21b9f7c0();
+      appDat->Data_55984 = STR_IntASCIIBuf();
 
-      res = STR_BufOpen(&appDat->Data_55944, 512, 0); //->stringop.c
+      res = STR_BufOpen(&appDat->Data_55944, 512, 0);
 
       if (res != 0)
       {
@@ -1803,7 +1810,7 @@ int app_main_init(void)
          goto end;
       }
       //21b07580
-      res = func_21b14c50();
+      res = OSD_LANG_Init();
 
       if (res != 0)
       {
@@ -2089,12 +2096,12 @@ void app_main_handle_event(int a, void* r4)
            //->21b070d4
            break;
 
-#if 0
       case 23:
          //21b07238 - Input event
-         app_main_handle_input_event(r4);
+         MAIN_HandleEvtKey(r4);
          break;
       
+#if 0
       case 14: 
          //21b072a0
          {
@@ -2192,25 +2199,24 @@ void app_main_handle_event(int a, void* r4)
    //21b070d4
 }
 
-#if 0
 
 /* 21b069b4 - complete */
-void app_main_handle_input_event(void* a)
+void MAIN_HandleEvtKey(void* a)
 {
    struct Event_23* r14 = a;
    
-   uint32_t r0 = 0;
-   uint32_t ip = 0;
+   FGS_KEY_E keyCode = FGS_KEY_NONE; //0;
+   FGS_KEYTYPE_E keyType = FGS_KEYTYPE_PRESSED; //0;
    int8_t r2 = -1;
    
    switch (r14->Data_12)
    {
       case 1:
-         ip = 0;
+         keyType = FGS_KEYTYPE_PRESSED; //0;
          break;
 
       case 3:
-         ip = 2;
+         keyType = FGS_KEYTYPE_REPEATED; //2;
          break;
          
       case 2:
@@ -2223,27 +2229,25 @@ void app_main_handle_input_event(void* a)
    appDat->Data_55420 = 0;
    //app_main->recordPowerOnForced = 0;
    
-   FAPI_SYS_PRINT_DEBUG(3, "app_main_handle_input_event: wData_8=%d\n", r14->wData_8);
+   FAPI_SYS_PRINT_DEBUG(3, "MAIN_HandleEvtKey: wData_8=%d\n", r14->wData_8);
    
-   extern int32_t osd_view_handle_key(uint32_t, uint32_t, int8_t);
-
    switch (r14->wData_8)
    {
       case 8:
          //21b06f80
-         r0 = 7;
+         keyCode = 7;
          //r2 = -1;
          //->21b06cc8
          break;
          
       case 13:
          //21b06f74
-         r0 = 6;
+         keyCode = 6;
          //r2 = -1;
          //->21b06cc8
          break;
 
-      case 48:
+      case 48: //FAPI_IR_KEY_0
       case 49:
       case 50:
       case 51:
@@ -2254,362 +2258,362 @@ void app_main_handle_input_event(void* a)
       case 56:
       case 57:
          //21b06f64
-         r0 = 5;
-         r2 = r14->wData_8 - 48;
+         keyCode = FGS_KEY_NUMBER; //5;
+         r2 = r14->wData_8 - 48/*FAPI_IR_KEY_0*/;
          //->21b06cc8
          break;
 
       case 128:
          //21b06f58
-         r0 = 14;
+         keyCode = 14;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 129:
          //21b06f4c
-         r0 = 15;
+         keyCode = FGS_KEY_EXIT; //15;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 130:
          //21b06f40
-         r0 = 16;
+         keyCode = 16;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 131:
          //21b06f34
-         r0 = 17;
+         keyCode = 17;
          //r2 = -1;
          break;
 
       case 132:
          //21b06f28
-         r0 = 18;
+         keyCode = FGS_KEY_MENU; //18;
          //r2 = -1;
          break;
 
       case 133:
          //21b06f1c
-         r0 = 19;
+         keyCode = 19;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 134:
          //21b06f10
-         r0 = 20;
+         keyCode = 20;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 135:
          //21b06f04
-         r0 = 21;
+         keyCode = 21;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 136:
          //21b06ef8
-         r0 = 8;
+         keyCode = 8;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 137:
          //21b06eec
-         r0 = 9;
+         keyCode = 9;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 138:
          //21b06ee0
-         r0 = 22;
+         keyCode = 22;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 140:
          //21b06ed4
-         r0 = 23;
+         keyCode = 23;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 141:
          //21b06ec8
-         r0 = 24;
+         keyCode = 24;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 142:
          //21b06ebc
-         r0 = 25;
+         keyCode = 25;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 144:
          //21b06eb0
-         r0 = 4;
+         keyCode = 4;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 145:
          //21b06ea4
-         r0 = 3;
+         keyCode = 3;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 146:
          //21b06e98
-         r0 = 1;
+         keyCode = 1;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 147:
          //21b06e8c
-         r0 = 2;
+         keyCode = 2;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 148:
          //21b06e80
-         r0 = 27;
+         keyCode = 27;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 149:
          //21b06e74
-         r0 = 26;
+         keyCode = 26;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 150:
          //21b06e68
-         r0 = 28;
+         keyCode = 28;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 151:
          //21b06e5c
-         r0 = 31;
+         keyCode = 31;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 152:
          //21b06e50
-         r0 = 30;
+         keyCode = 30;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 153:
          //21b06e44
-         r0 = 29;
+         keyCode = 29;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 154:
          //21b06e38
-         r0 = 10;
+         keyCode = 10;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 155:
          //21b06e2c
-         r0 = 11;
+         keyCode = 11;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 156:
          //21b06e20
-         r0 = 12;
+         keyCode = 12;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 157:
          //21b06e14
-         r0 = 13;
+         keyCode = 13;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 158:
          //21b06e08
-         r0 = 36;
+         keyCode = 36;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 159:
          //21b06dfc
-         r0 = 38;
+         keyCode = 38;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 161:
          //21b06df0
-         r0 = 51;
+         keyCode = 51;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 166:
          //21b06de4
-         r0 = 39;
+         keyCode = 39;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 167:
          //21b06dd8
-         r0 = 43;
+         keyCode = 43;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 168:
          //21b06dcc
-         r0 = 47;
+         keyCode = 47;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 169:
          //21b06dc0
-         r0 = 49;
+         keyCode = 49;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 170:
          //21b06db4
-         r0 = 60;
+         keyCode = 60;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 171:
          //21b06da8
-         r0 = 52;
+         keyCode = 52;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 172:
          //21b06d9c
-         r0 = 53;
+         keyCode = 53;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 173:
          //21b06d90
-         r0 = 54;
+         keyCode = 54;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 174:
          //21b06d84
-         r0 = 55;
+         keyCode = 55;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 175:
          //21b06d78
-         r0 = 32;
+         keyCode = 32;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 176:
          //21b06d6c
-         r0 = 56;
+         keyCode = 56;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 177:
          //21b06d60
-         r0 = 57;
+         keyCode = 57;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 178:
          //21b06d54
-         r0 = 58;
+         keyCode = 58;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 179:
          //21b06d48
-         r0 = 59;
+         keyCode = 59;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 180:
          //21b06d3c
-         r0 = 61;
+         keyCode = 61;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 181:
          //21b06d30
-         r0 = 62;
+         keyCode = 62;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 182:
          //21b06d24
-         r0 = 63;
+         keyCode = 63;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 183:
          //21b06d18
-         r0 = 64;
+         keyCode = 64;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 184:
          //21b06d0c
-         r0 = 65;
+         keyCode = 65;
          //r2 = -1;
          //->21b06cc8
          break;
 
       case 185:
          //21b06cc0
-         r0 = 66;
+         keyCode = 66;
          //r2 = -1;
          //->21b06cc8
          break;
@@ -2619,9 +2623,9 @@ void app_main_handle_input_event(void* a)
          break;
    }
 
-   if (r0 != 0)
+   if (keyCode != FGS_KEY_NONE)
    {
-      if (0 == osd_view_handle_key(r0, ip, r2))
+      if (0 == FGS_DispatchKey(keyCode, keyType, r2))
       {
          //21b06cd8
          func_21b0d390(&appDat->Data_24408);
@@ -2635,6 +2639,7 @@ void app_main_handle_input_event(void* a)
    func_21ba53c0(0xce01, 0);
 }
 
+#if 0
 
 /* 21b04f54 - todo */
 int32_t MAIN_TvStandardOutputUpdateForce(int r5, int r4)
@@ -2675,10 +2680,29 @@ int32_t MAIN_TvStandardOutputUpdateForce(int r5, int r4)
 #endif
 
 
-/* 21b043b4 - todo */
-void MENU_StartupLeave(void)
+/* 21b02f7c - complete */
+void MAIN_MenuTimerAbort(void)
 {
-    FAPI_SYS_PRINT_MSG("MENU_StartupLeave: TODO\n");
+    (void)TIME_SingleTimerAbort(/*OSD_TIMER_MENU*/0);
+
+    appDat->menuTimerHandler       = NULL;
+    appDat->menuTimerArg           = NULL;
+}
+
+
+/* 21b043b4 - complete */
+FSTATIC fbool_t MENU_StartupLeave (FAPI_SYS_HandleT h, fbool_t force)
+{
+/*3648*/DBG_Assert(appDat->pStartupMem != NULL);
+
+    MAIN_MenuTimerAbort();
+
+    (void)FGS_RemoveMember       (appDat->pStartupMem);
+    (void)MENUSTACK_FocusRelease ((int32_t)/*MENUID_STARTUP*/1);
+
+    appDat->pStartupMem = NULL;
+
+    return FTRUE;
 }
 
 
@@ -2730,17 +2754,141 @@ int32_t MENU_StartupSetFocus(FAPI_SYS_HandleT h, fbool_t hasFocus)
 }
 
 
-/* 21b03b68 - todo */
-void MENU_RootSetFocus()
+void MENU_RootKeyUp()
 {
-    FAPI_SYS_PRINT_MSG("MENU_RootSetFocus: TODO\n");
+    FAPI_SYS_PRINT_MSG("MENU_RootKeyUp: TODO\n");
 }
 
 
-/* 21b041ac - todo */
-void MENU_RootLeave()
+void MENU_RootKeyDown()
 {
-    FAPI_SYS_PRINT_MSG("MENU_RootLeave: TODO\n");
+    FAPI_SYS_PRINT_MSG("MENU_RootKeyDown: TODO\n");
+}
+
+
+void MENU_RootKeyLeft()
+{
+    FAPI_SYS_PRINT_MSG("MENU_RootKeyLeft: TODO\n");
+}
+
+
+MENU_RootKeyRight()
+{
+    FAPI_SYS_PRINT_MSG("MENU_RootKeyRight: TODO\n");
+}
+
+
+void MENU_RootKeys()
+{
+    FAPI_SYS_PRINT_MSG("MENU_RootKeys: TODO\n");
+}
+
+
+void MAIN_NumberKey()
+{
+    FAPI_SYS_PRINT_MSG("MAIN_NumberKey: TODO\n");
+}
+
+
+void MAIN_PowerDown()
+{
+    FAPI_SYS_PRINT_MSG("MAIN_PowerDown: TODO\n");
+
+}
+
+
+/* 21b03314 - todo */
+void MENU_PvrKeys()
+{
+    FAPI_SYS_PRINT_MSG("MENU_PvrKeys: TODO\n");
+
+}
+
+
+/* 21b0379c - todo */
+void MAIN_HandlePvrKeys (fbool_t hasFocus)
+{
+    if ( hasFocus )
+    {
+        FGS_SetAppKeyHandler (FGS_KEY_RECORD,  MENU_PvrKeys, NULL, FTRUE, FFALSE);
+        FGS_SetAppKeyHandler (FGS_KEY_PLAY,    MENU_PvrKeys, NULL, FTRUE, FFALSE);
+        FGS_SetAppKeyHandler (FGS_KEY_STOP,    MENU_PvrKeys, NULL, FTRUE, FFALSE);
+        FGS_SetAppKeyHandler (FGS_KEY_FF,      MENU_PvrKeys, NULL, FTRUE, FFALSE);
+        FGS_SetAppKeyHandler (FGS_KEY_REW,     MENU_PvrKeys, NULL, FTRUE, FFALSE);
+        FGS_SetAppKeyHandler (FGS_KEY_FFSLOW,  MENU_PvrKeys, NULL, FTRUE, FFALSE);
+        FGS_SetAppKeyHandler (FGS_KEY_REWSLOW, MENU_PvrKeys, NULL, FTRUE, FFALSE);
+        FGS_SetAppKeyHandler (FGS_KEY_PAUSE,   MENU_PvrKeys, NULL, FTRUE, FFALSE);
+        FGS_SetAppKeyHandler (FGS_KEY_F4,      MENU_PvrKeys, NULL, FTRUE, FFALSE);
+        FGS_SetAppKeyHandler (FGS_KEY_F3,      MENU_PvrKeys, NULL, FTRUE, FFALSE);
+    }
+    else
+    {
+        FGS_ClearAppKeyHandler (FGS_KEY_RECORD);
+        FGS_ClearAppKeyHandler (FGS_KEY_PLAY);
+        FGS_ClearAppKeyHandler (FGS_KEY_STOP);
+        FGS_ClearAppKeyHandler (FGS_KEY_FF);
+        FGS_ClearAppKeyHandler (FGS_KEY_REW);
+        FGS_ClearAppKeyHandler (FGS_KEY_FFSLOW);
+        FGS_ClearAppKeyHandler (FGS_KEY_REWSLOW);
+        FGS_ClearAppKeyHandler (FGS_KEY_PAUSE);
+        FGS_ClearAppKeyHandler (FGS_KEY_F4);
+        FGS_ClearAppKeyHandler (FGS_KEY_F3);
+    }
+}
+
+
+/* 21b03b68 - todo */
+int32_t MENU_RootSetFocus(FAPI_SYS_HandleT h, fbool_t hasFocus)
+{
+    MAIN_HandleZappingKeys (hasFocus);
+
+    if ( hasFocus )
+    {
+        FGS_SetAppKeyHandler   (FGS_KEY_UP,      MENU_RootKeyUp,    NULL, FFALSE, FFALSE);
+        FGS_SetAppKeyHandler   (FGS_KEY_DOWN,    MENU_RootKeyDown,  NULL, FFALSE, FFALSE);
+        FGS_SetAppKeyHandler   (FGS_KEY_LEFT,    MENU_RootKeyLeft,  NULL, FFALSE, FFALSE);
+        FGS_SetAppKeyHandler   (FGS_KEY_RIGHT,   MENU_RootKeyRight, NULL, FFALSE, FFALSE);
+        FGS_SetAppKeyHandler   (FGS_KEY_INFO,    MENU_RootKeys,     NULL, FTRUE,  FFALSE);
+        FGS_SetAppKeyHandler   (FGS_KEY_NAVI,    MENU_RootKeys,     NULL, FTRUE,  FFALSE);
+        FGS_SetAppKeyHandler   (FGS_KEY_MENU,    MENU_RootKeys,     NULL, FTRUE,  FFALSE);
+        FGS_SetAppKeyHandler   (FGS_KEY_OK,      MENU_RootKeys,     NULL, FTRUE,  FFALSE);
+        FGS_SetAppNumKeyHandler(FGS_KEY_NUMBER,  MAIN_NumberKey,    NULL, FTRUE,  FFALSE);
+        #ifdef APPL_PIP_ENABLED
+        FGS_SetAppKeyHandler   (FGS_KEY_BACK,    MAIN_KeyPIP,       NULL, FTRUE,  FFALSE);
+        #endif
+        FGS_SetAppKeyHandler   (FGS_KEY_EXIT,    MENU_RootKeys,     NULL, FTRUE,  FFALSE);
+
+        FGS_SetAppKeyHandler   (FGS_KEY_STANDBY, MAIN_PowerDown,    NULL, FTRUE,  FFALSE);
+        FGS_SetAppKeyHandler   (FGS_KEY_APPL,    MENU_RootKeys,    NULL, FTRUE,  FFALSE);
+    }
+    else
+    {
+        FGS_ClearAppKeyHandler (FGS_KEY_UP);
+        FGS_ClearAppKeyHandler (FGS_KEY_DOWN);
+        FGS_ClearAppKeyHandler (FGS_KEY_LEFT);
+        FGS_ClearAppKeyHandler (FGS_KEY_RIGHT);
+
+        FGS_ClearAppKeyHandler (FGS_KEY_INFO);
+        FGS_ClearAppKeyHandler (FGS_KEY_NAVI);
+        FGS_ClearAppKeyHandler (FGS_KEY_EXIT);
+        FGS_ClearAppKeyHandler (FGS_KEY_MENU);
+        FGS_ClearAppKeyHandler (FGS_KEY_OK);
+        FGS_ClearAppKeyHandler (FGS_KEY_NUMBER);
+        FGS_ClearAppKeyHandler (FGS_KEY_BACK);
+        FGS_ClearAppKeyHandler (FGS_KEY_EXIT);
+        FGS_ClearAppKeyHandler (FGS_KEY_APPL);
+    }
+
+    return FAPI_OK;
+}
+
+
+/* 21b041ac - complete */
+FSTATIC fbool_t MENU_RootLeave (FAPI_SYS_HandleT h, fbool_t force)
+{
+    (void)FGS_RemoveMember (appDat->pRootMem);
+    (void)MENUSTACK_FocusRelease ((int32_t)/*MENUID_ROOT*/0);
+    return FTRUE;
 }
 
 
@@ -2775,45 +2923,100 @@ int MENU_RootEntry(FAPI_SYS_HandleT h, int test)
 }
 
 
+/* 21b0f864 - todo */
+void MAIN_VolumeUp()
+{
+    FAPI_SYS_PRINT_MSG("MAIN_VolumeUp: TODO\n");
+
+}
+
+
+/* 21b0f7ac - todo */
+void MAIN_VolumeDown()
+{
+    FAPI_SYS_PRINT_MSG("MAIN_VolumeDown: TODO\n");
+
+}
+
+
+/* 21b0f74c - todo */
+void MAIN_VolumeMute()
+{
+    FAPI_SYS_PRINT_MSG("MAIN_VolumeMute: TODO\n");
+
+}
+
+
+/* 21b02410 - todo */
+void MAIN_ScreenShot()
+{
+    FAPI_SYS_PRINT_MSG("MAIN_ScreenShot: TODO\n");
+
+}
+
+
+/* 21b0316c - complete */
+void MAIN_AddStaticKeys(void)
+{
+    FGS_SetAppKeyHandler (FGS_KEY_VOL_UP,   MAIN_VolumeUp,   NULL, FFALSE, FFALSE);
+    FGS_SetAppKeyHandler (FGS_KEY_VOL_DOWN, MAIN_VolumeDown, NULL, FFALSE, FFALSE);
+    FGS_SetAppKeyHandler (FGS_KEY_MUTE,     MAIN_VolumeMute, NULL, FTRUE,  FFALSE);
+
+    #if 1//def APPL_SCRNSHOT_ENABLE
+    FGS_SetAppKeyHandler (FGS_KEY_F1,       MAIN_ScreenShot, NULL, FTRUE,  FFALSE);
+    #endif /* APPL_SCRNSHOT_ENABLE */
+}
+
+
+/* 21b03710 - complete */
+void MAIN_HandleExitKeys(fbool_t hasFocus)
+{
+    if ( hasFocus )
+    {
+        FGS_SetAppKeyHandler(FGS_KEY_MENU, MENUSTACK_Back, NULL, FTRUE, FFALSE);
+        FGS_SetAppKeyHandler(FGS_KEY_BACK, MENUSTACK_Back, NULL, FTRUE, FFALSE);
+        FGS_SetAppKeyHandler(FGS_KEY_EXIT, MENUSTACK_Exit, NULL, FTRUE, FFALSE);
+    }
+    else
+    {
+        FGS_ClearAppKeyHandler(FGS_KEY_MENU);
+        FGS_ClearAppKeyHandler(FGS_KEY_BACK);
+        FGS_ClearAppKeyHandler(FGS_KEY_EXIT);
+    }
+
+}
+
+
 /* 21b04280 - complete */
 /*FSTATIC*/ void MENU_StartupTimerExpired (void* arg)
 {
     extern void MENU_WelcomeEntry();
 
-    uint32_t              resetToFactSettings = 0;
-#if 0
-    MENU_INFOBAR_PARAMS_S infoParams;
-#endif
-
+    uint32_t resetToFactSettings = 0;
     int r4;
 
     if ( appDat->pStartupMem == NULL ) return;
 
     (void)MENUSTACK_Switch(MENU_RootEntry, NULL, 0); /* start in root menu*/
 
-#if 0 //TODO
     if (func_21ba3e64() == 1)
     {
         //21b04374
-        func_21b0316c();
+        MAIN_AddStaticKeys();
     }
-#endif
     //21b042c4
     AV_PowerupScreenHide();
 
-#if 0 //TODO
     if (func_21ba3e64() == 0)
     {
         //21b042d4
         MENUSTACK_Up(MENU_WelcomeEntry, 0);
         return;
     }
-#endif
     //21b042e8
-    r4 = func_21b0f568();
+    r4 = func_21b0f568(); //MAIN_StartInitialService?
 
-#if 0 //TODO
-    if ((MAIN_UserDataGet(2, &resetToFactSettings) == 0) && (r4 == 0))
+    if ((MAIN_UserDataGet(/*USERDAT_FACTORYFLAG?*/2, &resetToFactSettings) == 0) && (r4 == 0))
     {
         //21b0430c
         FAPI_SYS_PRINT_MSG("\n %s %d ", "app_ref/src/app_main.c", 3720);
@@ -2831,7 +3034,6 @@ int MENU_RootEntry(FAPI_SYS_HandleT h, int test)
         }
     }
     else
-#endif
     {
         //21b04340
         FAPI_SYS_PRINT_MSG("\n %s %d ", "app_ref/src/app_main.c", 3735);
@@ -2839,34 +3041,6 @@ int MENU_RootEntry(FAPI_SYS_HandleT h, int test)
         MENUSTACK_Up(MENU_WelcomeEntry, 0);
         func_21bb9ee8();
     }
-
-#if 0 //Orig
-    /* set static keys: apply for all menues  */
-    MAIN_AddStaticKeys();
-
-    /* --------------------------------------------------------------------- */
-
-    (void)AV_PowerupScreenHide(); /* Hide boot screen */
-
-    /* attempt to start last active service */
-    if ( MAIN_StartInitialService() != FAPI_OK )
-    {
-        if ( (MAIN_UserDataGet (USERDAT_FACTORYFLAG, &resetToFactSettings)
-              == FAPI_OK) &&
-             (resetToFactSettings != 0) )
-        {
-            (void)MENUSTACK_Up (MENU_WelcomeEntry, NULL);
-        }
-        else
-        {
-            infoParams.permanent   = FTRUE;
-            infoParams.numberInput = -1;
-
-            /* all lists seem to be empty: show infobar */
-            (void)MENUSTACK_Up (MENU_InfobarEntry, (FAPI_SYS_HandleT)(&infoParams));
-        }
-    }
-#endif
 }
 
 

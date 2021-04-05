@@ -14,6 +14,8 @@
 #define OSD_CORNER_ALL          0x0F00
 
 
+#define OSD_COL_TITLE_TEXT               13
+
 typedef enum
 {
     OSD_COLSCHEME_CURRENT = -1,

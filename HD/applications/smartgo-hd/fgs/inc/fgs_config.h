@@ -25,7 +25,7 @@
 
 #define FGS_PANEL_MEMBERS_MAX        50  //!< Max. number of panel members
 
-#define FGS_LIST_MEMBERS_MAX         25  //!< Max. number of list members
+#define FGS_LIST_MEMBERS_MAX         50 //25  //!< Max. number of list members
 
 #define FGS_ITEM_CHAR_MAX_CHARS      24  // includes termination
 

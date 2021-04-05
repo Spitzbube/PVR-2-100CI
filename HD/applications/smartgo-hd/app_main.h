@@ -1,10 +1,14 @@
 
 #include <fapi/sys_services.h>
 #include "smartgo_types.h"
+#include "sys_api.h"
 #include "stringop.h"
-#include "app_osd.h"
-#include "menustack.h"
 #include "fgs.h"
+#include "fgs_box.h"
+#include "fgs_navilist.h"
+#include "app_osd.h"
+#include "app_menu_items.h"
+#include "menustack.h"
 
 struct appData
 {
@@ -27,7 +31,7 @@ struct appData
    int fill_52[3]; //52
    char bData_64; //64
    int Data_68; //68
-   char bData_72; //72
+   char altDefaultSiCharSet; //72
    unsigned short fill_74; //74
    char bData_76; //76
    signed char bData_77; //77
@@ -62,11 +66,16 @@ struct appData
 
 struct Struct_21f02400
 {
-   int fill_0[3938]; //0
+   int fill_0[614]; //0
+   int Data_2456; //2456
+   int fill_2460[3055]; //2460
+   int Data_14680/*helpNaviInst*/; //14680
+   int fill_14684[267]; //14684
    FGS_POS_S rootPos; //15752
    FGS_MEMBER_S* pStartupMem; //15764
    FGS_MEMBER_S* pRootMem; //15768
-   int fill_15772[875]; //15772
+   int Data_15772/*selectLstInst*/; //15772
+   int fill_15776[874]; //15776
    int Data_19272; //19272
    int fill_19276[1283]; //19276
    int Data_24408; //24408
@@ -99,8 +108,8 @@ struct Struct_21f02400
    char bData_55892; //55892
    int Data_55896; //55896
    int Data_55900; //55900
-   struct Struct_21ba1a6c Data_55904; //55904
-   struct Struct_21ba1a6c Data_55924; //55924
+   struct Struct_21ba1a6c osdStringBuf; //55904
+   struct Struct_21ba1a6c osdCutStrBuf; //55924
    struct Struct_21ba1a6c Data_55944; //55944
    struct Struct_21ba1a6c Data_55964; //55964
    int Data_55984; //55984

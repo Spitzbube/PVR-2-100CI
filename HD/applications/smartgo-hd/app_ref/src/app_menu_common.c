@@ -56,8 +56,8 @@
 /* local functions                                                           */
 /*---------------------------------------------------------------------------*/
 
-#if 0
 
+/* 21b19be8 - complete */
 int32_t MENU_CommonAddTitle (int32_t id, FAPI_SYS_HandleT pnlHdl,
                              uint16_t pnlWidth,
                              uint16_t stackedFrameWidth, uint32_t strIdx,
@@ -79,19 +79,22 @@ int32_t MENU_CommonAddTitle (int32_t id, FAPI_SYS_HandleT pnlHdl,
                              SCALER_GetCurrVal(MAIN_RIGHT_PADDING) - stackedFrameWidth;
     boxPars.pos.height    = (2*SCALER_GetCurrVal(TITLE_TB_PADDING)) + SCALER_GetCurrVal(TITLE_LINE_HEIGHT);
     boxPars.pos.alignment = FGS_ALIGN_HOR_LEFT | FGS_ALIGN_VER_TOP;
-    boxPars.bkgrType      = OSD_BOX_BKGR_NONE;
+    boxPars.bkgrType      = 5/*OSD_BOX_BKGR_NONE*/;
     boxPars.getItem       = MENU_CommonGetItemTitle;
     boxPars.getItemArg    = (FAPI_SYS_HandleT)strIdx;
 
     return FGS_BOX_Open (&boxPars, id, pnlHdl, &titleHdl);
 }
 
+
+/* 21b1a038 - complete */
 void MENU_CommonGetItemTitle (FAPI_SYS_HandleT h, int32_t id, uint32_t index,
                               FGS_ITEMSTATE_E state, FGS_ITEM_S* item)
 {
     MENU_COMMON_ITEM_TITLESTR(item, (uint32_t)h);
 }
 
+#if 0
 int32_t MENU_CommonAddGenericTitle (int32_t id, FGS_GETITEM_CB getItem,
                                  FAPI_SYS_HandleT getItemArg, FAPI_SYS_HandleT pnlHdl,
                                  uint16_t pnlWidth, uint16_t stackedFrameWidth)
@@ -382,8 +385,8 @@ void MENU_CommonSetPanelPos (FGS_POS_S* pos)
 
 }
 
-#if 0
 
+/* 21b19e44 - complete */
 void MENU_CommonSelectListSelected (FAPI_SYS_HandleT listHdl, int32_t id, uint16_t index)
 {
     FGS_ITEM_SEL_PARAMS_S selParams;
@@ -398,6 +401,8 @@ void MENU_CommonSelectListSelected (FAPI_SYS_HandleT listHdl, int32_t id, uint16
     (void)FGS_LIST_SetMemberParams(listHdl, id, &selParams);
 }
 
+
+/* 21b19d34 - complete */
 FAPI_SYS_HandleT MENU_CommonAddHelpList (int32_t id, FAPI_SYS_HandleT pnlHdl,
                                   uint16_t stackedFrameWidth, uint16_t innerWidth,
                                   int16_t y, uint16_t width, uint16_t numLines,
@@ -417,7 +422,7 @@ FAPI_SYS_HandleT MENU_CommonAddHelpList (int32_t id, FAPI_SYS_HandleT pnlHdl,
     naviPars.rowHeight         = SCALER_GetCurrVal(LIST_LINE_HEIGHT) + SCALER_GetCurrVal(LIST_LINE_PADDING);
     naviPars.pos.height        = numLines * naviPars.rowHeight;
     naviPars.pos.alignment     = FGS_ALIGN_HOR_LEFT | FGS_ALIGN_VER_TOP;
-    naviPars.bkgrType          = OSD_NAVIBKGR_HELP;
+    naviPars.bkgrType          = 1; //OSD_NAVIBKGR_HELP;
     naviPars.type              = FGS_LNAVI_TYPE_SCROLL;
     naviPars.scrollbarWidth    = 0;
     naviPars.numVisLines       = numLines;
@@ -429,7 +434,7 @@ FAPI_SYS_HandleT MENU_CommonAddHelpList (int32_t id, FAPI_SYS_HandleT pnlHdl,
     naviPars.wraparound        = FTRUE;
     naviPars.getItem           = getItem;
     naviPars.getItemArg        = getItemArg;
-    naviPars.pInst             = &(appDat->helpNaviInst);
+    naviPars.pInst             = &(appDat->Data_14680); //helpNaviInst);
 
     if ( FGS_LNAVI_Open (&naviPars, id, pnlHdl, &naviHdl) != FAPI_OK )
     {
@@ -438,6 +443,8 @@ FAPI_SYS_HandleT MENU_CommonAddHelpList (int32_t id, FAPI_SYS_HandleT pnlHdl,
     else return naviHdl;
 }
 
+
+/* 21b19cb0 - complete */
 void MENU_CommonSetHelpDescrParams (FGS_ITEM_S* item, FGS_ITEMSTATE_E state,
                                     uint32_t strIdx)
 {
@@ -453,11 +460,13 @@ void MENU_CommonSetHelpDescrParams (FGS_ITEM_S* item, FGS_ITEMSTATE_E state,
         case FGS_DISABLED:
         case FGS_NONFOCUS: item->item.str.col = OSD_GetSchemeColor(OSD_SCHEMECOL_HELP_BKGR);
                            break;
-        case FGS_FOCUS:    item->item.str.col = appDat->txtAttr.colFocus;
+        case FGS_FOCUS:    item->item.str.col = appDat->/*txtAttr.colFocus*/Data_55468;
                            break;
     }
 }
 
+
+/* 21b19860 - complete */
 void MENU_CommonGetHelpItem (FAPI_SYS_HandleT h, int32_t id, uint32_t index,
                              FGS_ITEMSTATE_E state, FGS_ITEM_S* item)
 {
@@ -465,29 +474,41 @@ void MENU_CommonGetHelpItem (FAPI_SYS_HandleT h, int32_t id, uint32_t index,
 
     switch ( id )
     {
-        case ITEM_HELP_KEY_MENU:
-            strIdx = STR_KEY_MENU;
+        case /*ITEM_HELP_KEY_MENU*/67:
+            strIdx = STR_KEY_MENU; //607
+            item->item.str.chr = OSD_GetStr(strIdx);
             break;
 
-        case ITEM_HELP_KEY_EXIT:
-            strIdx = STR_KEY_EXIT;
+        case /*ITEM_HELP_KEY_EXIT*/68:
+            strIdx = STR_KEY_EXIT; //608
+            item->item.str.chr = OSD_GetStr(strIdx);
             break;
 
-        case ITEM_HELP_TEXT_BACK:
-            strIdx = STR_HELP_MENU_BACK;
+        case /*ITEM_HELP_TEXT_BACK*/69:
+            strIdx = STR_HELP_MENU_BACK; //879
+            item->item.str.chr = OSD_GetStr(strIdx);
             break;
 
-        case ITEM_HELP_TEXT_CLOSEMENU:
-            strIdx = STR_HELP_MENU_EXIT;
+        case /*ITEM_HELP_TEXT_CLOSEMENU*/70:
+            strIdx = STR_HELP_MENU_EXIT; //880
+            item->item.str.chr = OSD_GetStr(strIdx);
             break;
 
         default:
             return;
     }
 
-    MENU_COMMON_ITEM_HELPSTR(item, strIdx);
+    item->type                = FGS_ITEM_TYPE_STRING;
+    item->align               = FGS_ALIGN_HOR_LEFT
+                             | FGS_ALIGN_VER_CENTER;
+    item->item.str.font       = HELP_FONT;
+    item->item.str.lineHeight = 0;
+    item->item.str.col        = 13/*OSD_COL_HELP_TEXT*/;
+//    item->item.str.chr        = OSD_GetStr(b);
 }
 
+
+/* 21b199d0 - complete */
 int32_t MENU_CommonAddMenuExitHelpLine (int16_t xPos, int16_t yPos,
                                      uint16_t width, FAPI_SYS_HandleT pnlHdl)
 {
@@ -500,7 +521,7 @@ int32_t MENU_CommonAddMenuExitHelpLine (int16_t xPos, int16_t yPos,
     boxPars.pos.y            = yPos;
     boxPars.pos.height       = SCALER_GetCurrVal(HELP_LINE_HEIGHT);
     boxPars.pos.alignment    = FGS_ALIGN_HOR_LEFT | FGS_ALIGN_VER_BOTTOM;
-    boxPars.bkgrType         = OSD_BOX_BKGR_NONE;
+    boxPars.bkgrType         = 5; //OSD_BOX_BKGR_NONE;
 
     boxPars.getItem          = MENU_CommonGetHelpItem;
     boxPars.getItemArg       = NULL;
@@ -511,7 +532,7 @@ int32_t MENU_CommonAddMenuExitHelpLine (int16_t xPos, int16_t yPos,
         boxPars.pos.width  = SCALER_GetCurrVal(HELP_BOT_XOFF) -
                              SCALER_GetCurrVal(MAIN_TEXT_PAD_X);
 
-        retVal = FGS_BOX_Open (&boxPars, ITEM_HELP_KEY_MENU, pnlHdl, &itemHdl);
+        retVal = FGS_BOX_Open (&boxPars, /*ITEM_HELP_KEY_MENU*/67, pnlHdl, &itemHdl);
         if ( retVal != FAPI_OK )
         {
             break;
@@ -522,7 +543,7 @@ int32_t MENU_CommonAddMenuExitHelpLine (int16_t xPos, int16_t yPos,
         boxPars.pos.x     += SCALER_GetCurrVal(HELP_BOT_XOFF);
         boxPars.pos.width  = (width / 2) - SCALER_GetCurrVal(MAIN_TEXT_PAD_X) - SCALER_GetCurrVal(HELP_BOT_XOFF);
 
-        retVal = FGS_BOX_Open (&boxPars, ITEM_HELP_TEXT_BACK, pnlHdl, &itemHdl);
+        retVal = FGS_BOX_Open (&boxPars, /*ITEM_HELP_TEXT_BACK*/69, pnlHdl, &itemHdl);
         if ( retVal != FAPI_OK )
         {
             break;
@@ -533,7 +554,7 @@ int32_t MENU_CommonAddMenuExitHelpLine (int16_t xPos, int16_t yPos,
         boxPars.pos.x      = xPos + (width / 2);
         boxPars.pos.width  = SCALER_GetCurrVal(HELP_BOT_XOFF) - SCALER_GetCurrVal(MAIN_TEXT_PAD_X);
 
-        retVal = FGS_BOX_Open (&boxPars, ITEM_HELP_KEY_EXIT, pnlHdl, &itemHdl);
+        retVal = FGS_BOX_Open (&boxPars, /*ITEM_HELP_KEY_EXIT*/68, pnlHdl, &itemHdl);
         if ( retVal != FAPI_OK )
         {
             break;
@@ -544,7 +565,7 @@ int32_t MENU_CommonAddMenuExitHelpLine (int16_t xPos, int16_t yPos,
         boxPars.pos.x     += SCALER_GetCurrVal(HELP_BOT_XOFF);
         boxPars.pos.width  = (width / 2) - SCALER_GetCurrVal(HELP_BOT_XOFF);
 
-        retVal = FGS_BOX_Open (&boxPars, ITEM_HELP_TEXT_CLOSEMENU, pnlHdl, &itemHdl);
+        retVal = FGS_BOX_Open (&boxPars, /*ITEM_HELP_TEXT_CLOSEMENU*/70, pnlHdl, &itemHdl);
         if ( retVal != FAPI_OK )
         {
             break;
@@ -554,6 +575,8 @@ int32_t MENU_CommonAddMenuExitHelpLine (int16_t xPos, int16_t yPos,
 
     return retVal;
 }
+
+#if 0
 
 /*!
 ******************************************************************************

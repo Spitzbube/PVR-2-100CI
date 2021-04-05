@@ -95,6 +95,7 @@ FSTATIC void    MENU_WelcomeOnFocusChg      (FAPI_SYS_HandleT h,
                                              int32_t id);
 FSTATIC void    MENU_WelcomeOnFocusSet      (FAPI_SYS_HandleT h,
                                              fbool_t hasFocus);
+FSTATIC void func_21b3d480(void);
 
 /* 21b3dc70 - complete */
 int32_t MENU_WelcomeInit (void)
@@ -110,11 +111,14 @@ int32_t MENU_WelcomeInit (void)
 }
 
 
-/* 21b3dbe8 - todo */
+/* 21b3dbe8 - complete */
 fbool_t MENU_WelcomeEntry (FAPI_SYS_HandleT h, fbool_t test)
 {
     MENU_WELCOME_INST_S* inst = menuWelcomeDat;
     uint32_t                  lastFocusItem;
+
+    func_21bc22b0();
+    func_21bc2f14();
 
     if ( test == FTRUE ) return FTRUE;
 
@@ -125,12 +129,10 @@ fbool_t MENU_WelcomeEntry (FAPI_SYS_HandleT h, fbool_t test)
         lastFocusItem = 0;
     }
 
-#if 0 //TODO
     /* set list focus on first item */
     (void)FGS_LIST_SetMemberFocus  (inst->listHdl, lastFocusItem);
     (void)FGS_PANEL_SetMemberFocus (inst->pnlHdl, 1/*MENU_WELCOME_ID_LIST*/);
     (void)MENUSTACK_FocusClaim     ((int32_t)/*MENUID_WELCOME*/3);
-#endif
     (void)FGS_PANEL_Show           (inst->pnlHdl, FFALSE); /* turn visibility on */
 
     MENUSTACK_SetCleanup((MENUSTACK_CLEANUP)MENU_WelcomeLeave, (FAPI_SYS_HandleT)inst);
@@ -138,40 +140,46 @@ fbool_t MENU_WelcomeEntry (FAPI_SYS_HandleT h, fbool_t test)
     return FTRUE;
 }
 
-#if 0
 
+/* 21b3db78 - complete */
 FSTATIC void MENU_WelcomeOnFocusSet (FAPI_SYS_HandleT h, fbool_t hasFocus)
 {
-    DBG_Assert(((MENU_WELCOME_INST_S*)h)->pnlHdl != NULL);
+/*134*/    DBG_Assert(((MENU_WELCOME_INST_S*)h)->pnlHdl != NULL);
+
+    if (func_21ba3e64() != 1) //input.c
+    {
+        return;
+    }
 
     MAIN_HandleExitKeys(hasFocus);
 }
 
-#endif
 
 /* 21b3db2c - todo */
 FSTATIC fbool_t MENU_WelcomeLeave (FAPI_SYS_HandleT h, fbool_t force)
 {
     MENU_WELCOME_INST_S* inst = (MENU_WELCOME_INST_S*)h;
 
-#if 0 //TODO
     /* clear factory reset flag */
     if ( !force )
     {
-        (void)MAIN_UserDataSet(USERDAT_FACTORYFLAG, 0);
+        (void)MAIN_UserDataSet(/*USERDAT_FACTORYFLAG*/2, 0);
     }
 
     if ( inst->pnlHdl != NULL ) (void)FGS_PANEL_Close(inst->pnlHdl);
 
     (void)MENUSTACK_FocusRelease ((int32_t)/*MENUID_WELCOME*/3);
-#endif
 
     inst->pnlHdl = NULL;
+
+    func_21b7c96c();
+    func_21b0f568();
+
     return FTRUE;
 }
 
-#if 0
 
+/* 21b3daec - complete */
 FSTATIC void MENU_WelcomeOnFocusChg (FAPI_SYS_HandleT h, uint8_t index, int32_t id)
 {
     MENU_WELCOME_INST_S*   inst = (MENU_WELCOME_INST_S*)h;
@@ -186,20 +194,30 @@ FSTATIC void MENU_WelcomeOnFocusChg (FAPI_SYS_HandleT h, uint8_t index, int32_t 
 }
 
 
+/* 21b3da80 - complete */
 FSTATIC fbool_t MENU_WelcomeOnSelect (FAPI_SYS_HandleT h, int32_t itemId)
 {
+    fbool_t MENU_LanguageEntry(FAPI_SYS_HandleT h, fbool_t test);
+    fbool_t MENU_TimeEntry(FAPI_SYS_HandleT h, fbool_t test);
+    fbool_t MENU_AntProgEntry(FAPI_SYS_HandleT h, fbool_t test);
+
     MENUSTACK_ENTRY   newEntry;
-    FAPI_SYS_HandleT         arg = h;
+//    FAPI_SYS_HandleT         arg = h;
+
+    if (func_21ba3e64() == 0)
+    {
+        return FFALSE;
+    }
 
     switch ( itemId )
     {
-        case MENU_WELCOME_ID_ENTRY_LANGUAGE:
+        case MENU_WELCOME_ID_ENTRY_LANGUAGE: //0
             newEntry = MENU_LanguageEntry;
             break;
-        case MENU_WELCOME_ID_ENTRY_TIME:
+        case MENU_WELCOME_ID_ENTRY_TIME: //1
             newEntry = MENU_TimeEntry;
             break;
-        case MENU_WELCOME_ID_ENTRY_ANTENNA:
+        case MENU_WELCOME_ID_ENTRY_ANTENNA: //2
             newEntry = MENU_AntProgEntry;
             break;
         default:
@@ -209,35 +227,61 @@ FSTATIC fbool_t MENU_WelcomeOnSelect (FAPI_SYS_HandleT h, int32_t itemId)
     /* store last focus */
     MENUSTACK_SetData(itemId);
 
-    return MENUSTACK_Up(newEntry, arg);
+    return MENUSTACK_Up(newEntry, /*arg*/0);
 }
 
+
+/* 21b3d484 - complete */
 FSTATIC void MENU_WelcomeGetDescrItem (FAPI_SYS_HandleT h, int32_t id, uint32_t index,
                                     FGS_ITEMSTATE_E state, FGS_ITEM_S* item)
 {
     uint32_t    strIdx;
 
+    item->item.str.font       = MAIN_FONT;
+    item->align               = FGS_ALIGN_HOR_LEFT
+                             | FGS_ALIGN_VER_CENTER;
+    item->type                = FGS_ITEM_TYPE_STRING;
+    item->item.str.lineHeight = 0;
+
     switch ( id )
     {
         case MENU_WELCOME_ID_ENTRY_LANGUAGE:
-            strIdx = STR_ENTRY_SYSTEMSETUP_LANG;
+            strIdx = STR_ENTRY_SYSTEMSETUP_LANG; //82
             break;
 
         case MENU_WELCOME_ID_ENTRY_TIME:
-            strIdx = STR_ENTRY_SYSTEMSETUP_TIME;
+            strIdx = STR_ENTRY_SYSTEMSETUP_TIME; //83
             break;
 
         case MENU_WELCOME_ID_ENTRY_ANTENNA:
-            strIdx = STR_ENTRY_SYSTEMSETUP_ANTENNA;
+            strIdx = STR_ENTRY_SYSTEMSETUP_ANTENNA; //68
             break;
 
         default:
             return;
     }
 
-    MENU_COMMON_ITEM_MENUSTR(item, strIdx, state);
+    item->item.str.chr        = OSD_GetStr(strIdx);
+
+    switch ( state )
+    {
+        default:
+        case FGS_NONFOCUS:
+            item->item.str.col = appDat->Data_55472/*txtAttr.colNonFocus*/;
+            break;
+
+        case FGS_FOCUS:
+            item->item.str.col = appDat->Data_55468/*txtAttr.colFocus*/;
+            break;
+
+        case FGS_DISABLED:
+            item->item.str.col = appDat->Data_55476/*txtAttr.colDisabled*/;
+            break;
+    }
 }
 
+
+/* 21b3da64 - complete */
 FSTATIC void MENU_WelcomeGetHelpDescrItem (FAPI_SYS_HandleT h, int32_t id, uint32_t index,
                                            FGS_ITEMSTATE_E state,
                                            FGS_ITEM_S* item)
@@ -256,9 +300,8 @@ FSTATIC void MENU_WelcomeGetHelpDescrItem (FAPI_SYS_HandleT h, int32_t id, uint3
     MENU_CommonSetHelpDescrParams(item, state, strIdx);
 }
 
-#endif
 
-/* 21b3d564 - todo */
+/* 21b3d564 - complete */
 /*FSTATIC*/ fbool_t MENU_WelcomeBuild(FAPI_SYS_HandleT h)
 {
     MENU_WELCOME_INST_S*    inst = (MENU_WELCOME_INST_S*)h;
@@ -269,8 +312,8 @@ FSTATIC void MENU_WelcomeGetHelpDescrItem (FAPI_SYS_HandleT h, int32_t id, uint3
     FGS_LIST_OPEN_S         listPars; //sp40
     FAPI_SYS_HandleT        itemHdl;
     FGS_ITEM_TXT_OPEN_S     txtPars; //sp132
-    FGS_POS_S               itemPos;
-    FGS_POS_S               descrPos;
+    FGS_POS_S               itemPos; //sp216
+    FGS_POS_S               descrPos; //sp204
     int32_t                 retVal;
     uint16_t                helpWidth;
     uint16_t                stackedFrameWidth;
@@ -308,12 +351,11 @@ FSTATIC void MENU_WelcomeGetHelpDescrItem (FAPI_SYS_HandleT h, int32_t id, uint3
         retVal = FGS_PANEL_Open(&pnlPars, /*MENUID_WELCOME*/3, &(inst->pnlHdl));
         if ( retVal != FAPI_OK ) break;
 
-#if 0 //TODO
         /* ----- create textbox holding title ------------------------------ */
 
         retVal = MENU_CommonAddTitle (MENU_WELCOME_ID_TITLE,
                                       inst->pnlHdl, pnlPars.pos.width,
-                                      stackedFrameWidth, /*STR_TITLE_WELCOME*/33,
+                                      stackedFrameWidth, STR_TITLE_WELCOME,
                                       NULL, NULL);
         if ( retVal != FAPI_OK ) break;
 
@@ -321,33 +363,52 @@ FSTATIC void MENU_WelcomeGetHelpDescrItem (FAPI_SYS_HandleT h, int32_t id, uint3
 
 //        memset (&listPars, 0, sizeof(listPars));
 
-#if 1 //TODO
-        listPars.pos.x = SCALER_GetCurrVal(40);
-        listPars.pos.y = SCALER_GetCurrVal(41);
+        listPars.pos.x = SCALER_GetCurrVal(OUTER_FRAME_ALL) +
+                         stackedFrameWidth;
+        listPars.pos.y = SCALER_GetCurrVal(OUTER_FRAME_ALL) +
+                         SCALER_GetCurrVal(INNER_FRAME_WIDTH) +
+                         SCALER_GetCurrVal(MAIN_TOP_PADDING) +
+                         2 * SCALER_GetCurrVal(TITLE_TB_PADDING) +
+                         SCALER_GetCurrVal(TITLE_LINE_HEIGHT) +
+                         stackedFrameWidth;
         listPars.pos.width = SCALER_GetCurrVal(MAIN_WIDTH);
         listPars.pos.height = innerHeight;
         listPars.pos.alignment = 0;
-        listPars.isHidden = 0;
-        listPars.bkgrType = 1;
+//        listPars.isHidden = 0;
+        listPars.bkgrType = 0;
         listPars.topDownOriented = 1;
-#endif
+        listPars.wraparound = 1;
 
         listPars.getDescrItem    = MENU_WelcomeGetDescrItem;
         listPars.getDescrItemArg = (FAPI_SYS_HandleT)inst;
+        listPars.getItem = 0;
+        listPars.getItemArg = 0;
+        //onFocusSet
         listPars.onFocusChg      = MENU_WelcomeOnFocusChg;
         listPars.onFocusChgArg   = (FAPI_SYS_HandleT)inst;
         listPars.onSelect        = MENU_WelcomeOnSelect;
         listPars.onSelectArg     = (FAPI_SYS_HandleT)inst;
+        listPars.onValChg = func_21b3d480;
+        listPars.onValChgArg = (FAPI_SYS_HandleT)inst;
 
-        inst->listHdl = MENU_CommonAddList (&listPars, MENU_WELCOME_ID_LIST,
-                                            stackedFrameWidth, 0,
-                                            SCALER_GetCurrVal(MAIN_WIDTH),
-                                            innerHeight, inst->pnlHdl,
-                                            &itemPos, &descrPos, NULL, 100,
-                                            &retVal);
-        if ( inst->listHdl == NULL ) break;
+        listPars.pInst = &appDat->Data_2456;
+
+        retVal = FGS_LIST_Open (&listPars, MENU_WELCOME_ID_LIST, inst->pnlHdl, &inst->listHdl);
+        if ( retVal != FAPI_OK ) break;
 
         /* ----- menu lines -------------------------------------- */
+
+        itemPos.x = 0;
+        itemPos.y = 0;
+        itemPos.width = listPars.pos.width;
+        itemPos.height = SCALER_GetCurrVal(LIST_LINE_HEIGHT);
+        itemPos.alignment = 0;
+
+        descrPos.x = SCALER_GetCurrVal(MAIN_LEFT_PADDING);
+        descrPos.y = 0;
+        descrPos.width = listPars.pos.width - SCALER_GetCurrVal(MAIN_LEFT_PADDING) - SCALER_GetCurrVal(MAIN_RIGHT_PADDING);
+        descrPos.height = SCALER_GetCurrVal(LIST_LINE_HEIGHT);
+        descrPos.alignment = 0;
 
         txtPars.bkgrType           = 0; //OSD_LSTITEM_BKGR_NORMAL;
         txtPars.descrPos           = descrPos;
@@ -396,7 +457,7 @@ FSTATIC void MENU_WelcomeGetHelpDescrItem (FAPI_SYS_HandleT h, int32_t id, uint3
         retVal = MENU_CommonAddMenuExitHelpLine(stackedFrameWidth +
                                                 SCALER_GetCurrVal(OUTER_FRAME_ALL) +
                                                 SCALER_GetCurrVal(MAIN_LEFT_PADDING),
-                                                - (int32_t)SCALER_GetCurrVal(OUTER_FRAME_ALL) / 2 -
+                                                - /*(int32_t)*/SCALER_GetCurrVal(OUTER_FRAME_ALL) / 2 -
                                                 SCALER_GetCurrVal(HELP_TB_PADDING) -
                                                 SCALER_GetCurrVal(HELP_LINE_HEIGHT),
                                                 pnlPars.pos.width -
@@ -406,7 +467,6 @@ FSTATIC void MENU_WelcomeGetHelpDescrItem (FAPI_SYS_HandleT h, int32_t id, uint3
                                                 SCALER_GetCurrVal(MAIN_RIGHT_PADDING),
                                                 inst->pnlHdl);
         if ( retVal != FAPI_OK ) break;
-#endif
 
     } while ( 0 );
 
@@ -452,6 +512,12 @@ void MENU_WelcomeRefresh(void)
 }
 
 #endif
+
+/* 21b3d480 - complete */
+FSTATIC void func_21b3d480(void)
+{
+    /*empty*/
+}
 
 /******************************************************************************/
 /*lint -restore */

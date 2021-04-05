@@ -1699,3 +1699,16 @@ int SYS_GiveOsdLayer(int layer)
    return 0;
 }
 
+
+/* 21b8e600 - complete */
+uint32_t UTILS_strlen(const char_t *str)
+{
+    uint32_t                      cnt = 0;
+
+    while(*str++ >= ' ')
+        cnt++;
+
+    return cnt;
+}
+
+

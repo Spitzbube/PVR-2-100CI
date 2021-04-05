@@ -25,10 +25,13 @@ include $(TOPDIR)/env/make/Makefile.config
 SOURCES += sys.c
 SOURCES += app_ref/src/app_main.c
 SOURCES += app_ref/src/app_osd.c
+SOURCES += app_ref/src/app_lang.c
 SOURCES += app_ref/src/app_scaler.c
+SOURCES += app_ref/src/app_items.c
 SOURCES += app_ref/src/app_menustack.c
 SOURCES += app_ref/src/app_menu_common.c
 SOURCES += app_ref/src/app_menu_welcome.c
+SOURCES += app_ref/src/app_menu_language.c
 
 SOURCES += sys/src/av.c
 SOURCES += sys/src/av_int.c
@@ -41,6 +44,8 @@ SOURCES += sys/src/input.c
 SOURCES += sys/src/settings.c
 SOURCES += sys/src/stringop.c
 SOURCES += sys/src/time.c
+SOURCES += sys/src/vfd.c
+SOURCES += sys/src/mcu.c
 SOURCES += osd_window.c
 SOURCES += 21ba8d28.c
 SOURCES += 21b902b8.c
@@ -51,14 +56,14 @@ SOURCES += reg_bm.c    #obsolete
 
 
 SOURCES += fgs/src/fgs.c
-#  SOURCES += fgs/src/fgs_box.c
+SOURCES += fgs/src/fgs_box.c
 #  SOURCES += fgs/src/fgs_item_char.c
 #  SOURCES += fgs/src/fgs_item_check.c
 #  SOURCES += fgs/src/fgs_item_number.c
-#  SOURCES += fgs/src/fgs_item_select.c
-#  SOURCES += fgs/src/fgs_item_text.c
-#  SOURCES += fgs/src/fgs_list.c
-#  SOURCES += fgs/src/fgs_navilist.c
+SOURCES += fgs/src/fgs_item_select.c
+SOURCES += fgs/src/fgs_item_text.c
+SOURCES += fgs/src/fgs_list.c
+SOURCES += fgs/src/fgs_navilist.c
 SOURCES += fgs/src/fgs_panel.c
 #  SOURCES += fgs/src/fgs_pininput.c
 
@@ -84,11 +89,15 @@ HEADERS += inc/sys_api.h
 #HEADERS += app_ref/inc/app_osd.h 
 HEADERS += app_ref/inc/app_lang.h 
 HEADERS += app_ref/inc/app_scaler.h 
+HEADERS += app_ref/inc/app_menu_items.h 
 
 HEADERS += fgs/inc/fgs.h
 HEADERS += fgs/inc/fgs_config.h
 HEADERS += fgs/inc/fgs_keys.h
 
+HEADERS += app_ref/res/lng/lng.h
+
+-include app_ref/res/lng/Makefile.lng
 
 ################################################################################
 # define define user cc flags

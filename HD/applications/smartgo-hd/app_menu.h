@@ -27,8 +27,8 @@
 #include "fgs_item_text.h"
 #if 0
 #include "fgs_item_number.h"
-#include "fgs_item_select.h"
 #endif
+#include "fgs_item_select.h"
 #include "fgs_pininput.h"
 
 #include "app_main.h"
@@ -52,6 +52,8 @@
         (a)->item.icon.altBkgrCol = OSD_COL_BLANK;                  \
     } while ( 0 )
 
+#endif
+
 #define MENU_COMMON_ITEM_HELPSTR(a, b)                              \
     do {                                                            \
         (a)->type                = FGS_ITEM_TYPE_STRING;            \
@@ -59,46 +61,51 @@
                                  | FGS_ALIGN_VER_CENTER;            \
         (a)->item.str.font       = HELP_FONT;                       \
         (a)->item.str.lineHeight = 0;                               \
-        (a)->item.str.col        = OSD_COL_HELP_TEXT;               \
+        (a)->item.str.col        = 13/*OSD_COL_HELP_TEXT*/;               \
         (a)->item.str.chr        = OSD_GetStr(b);                   \
     } while ( 0 )
+
 
 #define MENU_COMMON_ITEM_MENUSTR(a, b, c)                           \
     do {                                                            \
         (a)->type                = FGS_ITEM_TYPE_STRING;            \
         (a)->align               = FGS_ALIGN_HOR_LEFT               \
                                  | FGS_ALIGN_VER_CENTER;            \
-        (a)->item.str.chr        = OSD_GetStr(b);                   \
         (a)->item.str.font       = MAIN_FONT;                       \
         (a)->item.str.lineHeight = 0;                               \
+        (a)->item.str.chr        = OSD_GetStr(b);                   \
                                                                     \
         switch ( c )                                                \
         {                                                           \
             default:                                                \
             case FGS_NONFOCUS:                                      \
-                (a)->item.str.col = appDat->txtAttr.colNonFocus;    \
+                (a)->item.str.col = appDat->Data_55468/*txtAttr.colNonFocus*/;    \
                 break;                                              \
                                                                     \
             case FGS_FOCUS:                                         \
-                (a)->item.str.col = appDat->txtAttr.colFocus;       \
+                (a)->item.str.col = appDat->Data_55472/*txtAttr.colFocus*/;       \
                 break;                                              \
                                                                     \
             case FGS_DISABLED:                                      \
-                (a)->item.str.col = appDat->txtAttr.colDisabled;    \
+                (a)->item.str.col = appDat->Data_55476/*txtAttr.colDisabled*/;    \
                 break;                                              \
         }                                                           \
     } while ( 0 )
+
 
 #define MENU_COMMON_ITEM_TITLESTR(a, b)                             \
     do {                                                            \
         (a)->type                = FGS_ITEM_TYPE_STRING;            \
         (a)->align               = FGS_ALIGN_HOR_LEFT               \
                                  | FGS_ALIGN_VER_CENTER;            \
+        (a)->item.str.chr        = OSD_GetStr(b);                   \
+        func_21ba5b48((a)->item.str.chr.chr, 0, 0); /* vfd.c */     \
         (a)->item.str.font       = TITLE_FONT;                      \
         (a)->item.str.lineHeight = 0;                               \
         (a)->item.str.col        = OSD_COL_TITLE_TEXT;              \
-        (a)->item.str.chr        = OSD_GetStr(b);                   \
     } while ( 0 )
+
+#if 0
 
 /*---------------------------------------------------------------------------*/
 /* types, enums and structures                                               */
@@ -115,7 +122,7 @@ typedef enum
     MENUID_INFORMATION,
     MENUID_STRSEL,
     MENUID_SETUP,
-    MENUID_LANGUAGE,
+    MENUID_LANGUAGE = 8, //8
     MENUID_TIME,
     MENUID_ADVD,
     MENUID_OSD,
@@ -433,9 +440,11 @@ int32_t MENU_CommonAddGenericTitle  (int32_t id, FGS_GETITEM_CB getItem,
                                      FAPI_SYS_HandleT pnlHdl,
                                      uint16_t pnlWidth,
                                      uint16_t stackedFrameWidth);
+#endif
 void MENU_CommonGetItemTitle        (FAPI_SYS_HandleT h, int32_t id,
                                      uint32_t index, FGS_ITEMSTATE_E state,
                                      FGS_ITEM_S* item);
+#if 0
 FAPI_SYS_HandleT MENU_CommonAddList (FGS_LIST_OPEN_S* pListPars, int32_t id,
                                      uint16_t stackedFrameWidth,
                                      uint16_t offsetY,
@@ -446,6 +455,7 @@ FAPI_SYS_HandleT MENU_CommonAddList (FGS_LIST_OPEN_S* pListPars, int32_t id,
                                      FGS_POS_S* pValuePos,
                                      uint8_t descrPercentage,
                                      int32_t* pRetVal);
+#endif
 FAPI_SYS_HandleT MENU_CommonAddHelpList   (int32_t id, FAPI_SYS_HandleT pnlHdl,
                                      uint16_t stackedFrameWidth,
                                      uint16_t innerWidth, int16_t y,
@@ -454,7 +464,6 @@ FAPI_SYS_HandleT MENU_CommonAddHelpList   (int32_t id, FAPI_SYS_HandleT pnlHdl,
                                      FAPI_SYS_HandleT getItemArg);
 void MENU_CommonSetHelpDescrParams  (FGS_ITEM_S* item, FGS_ITEMSTATE_E state,
                                      uint32_t strIdx);
-#endif
 void MENU_CommonSetParamsTitleWHelp (FGS_PANEL_OPEN_S* pnlPars,
                                      uint16_t innerWidth, uint16_t innerHeight,
                                      uint16_t helpWidth, uint8_t  numHelpLines,
@@ -466,15 +475,19 @@ void MENU_CommonSetParamsTitleWBotHelp (FGS_PANEL_OPEN_S* pnlPars,
                                      uint8_t  numHelpLines,
                                      uint16_t* pStackedFrameWidth);
 void MENU_CommonSetPanelPos         (FGS_POS_S* pos);
+#endif
 void MENU_CommonSelectListSelected  (FAPI_SYS_HandleT listHdl, int32_t id,
                                      uint16_t index);
 
+#if 0
 void MENU_CommonGetHelpItem         (FAPI_SYS_HandleT h, int32_t id,
                                      uint32_t index, FGS_ITEMSTATE_E state,
                                      FGS_ITEM_S* item);
+#endif
 
 int32_t MENU_CommonAddMenuExitHelpLine(int16_t xPos, int16_t yPos,
                                     uint16_t width, FAPI_SYS_HandleT pnlHdl);
+#if 0
 void MENU_CommonAppendpath         (const char_t* newPath,
                                     const char_t* path, char_t* result,
                                     fbool_t separator,

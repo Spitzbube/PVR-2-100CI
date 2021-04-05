@@ -66,6 +66,7 @@ static FGS_BOX_DRAWIF_S*  boxDraw    = NULL;
 **          - #SMARTGO_FGS_ERR_OUT_OF_MEMORY
 **
 *************************************************************************/
+/* 21ba90bc - complete */
 int32_t FGS_BOX_Init (FGS_BOX_INIT_S* pInitParams)
 {
     if ( pInitParams == NULL )
@@ -73,7 +74,7 @@ int32_t FGS_BOX_Init (FGS_BOX_INIT_S* pInitParams)
         return SMARTGO_FGS_ERR_BAD_PARAMETER;
     }
 
-    boxGlobal = FGS_Malloc(sizeof(FGS_BOX_INIT_S));
+    boxGlobal = /*FGS_Malloc*/SYS_MemoryAllocate(sizeof(FGS_BOX_INIT_S));
     if ( boxGlobal == NULL )
     {
         return SMARTGO_FGS_ERR_OUT_OF_MEMORY;
@@ -103,6 +104,7 @@ int32_t FGS_BOX_Init (FGS_BOX_INIT_S* pInitParams)
 **          - FGS_PANEL_AddMember()
 **
 *************************************************************************/
+/* 21ba910c - complete */
 int32_t FGS_BOX_Open (FGS_BOX_OPEN_S* pData, int32_t id,
                       FAPI_SYS_HandleT parent,
                       FAPI_SYS_HandleT* ph)
@@ -124,7 +126,7 @@ int32_t FGS_BOX_Open (FGS_BOX_OPEN_S* pData, int32_t id,
     }
     else
     {
-        inst = FGS_Malloc(sizeof(FGS_BOX_INST_S));
+        inst = /*FGS_Malloc*/SYS_MemoryAllocate(sizeof(FGS_BOX_INST_S));
         if ( inst == NULL )
         {
             return SMARTGO_FGS_ERR_OUT_OF_MEMORY;
@@ -158,12 +160,13 @@ int32_t FGS_BOX_Open (FGS_BOX_OPEN_S* pData, int32_t id,
     if ( (retVal             != FAPI_OK) &&
          (inst->memAllocated == FTRUE) )
     {
-        FGS_Free(inst);
+        /*FGS_Free*/SYS_MemoryFree(inst);
     }
 
     return retVal;
 }
 
+#if 0
 
 /*!
 *************************************************************************
@@ -278,6 +281,8 @@ int32_t FGS_BOX_SetFocusItem (FAPI_SYS_HandleT h, FGS_ITEM_S* pItem)
     return FAPI_OK;
 }
 
+#endif
+
 
 /*---------------------------------------------------------------------------*/
 /* local functions                                                           */
@@ -298,6 +303,7 @@ int32_t FGS_BOX_SetFocusItem (FAPI_SYS_HandleT h, FGS_ITEM_S* pItem)
 **          - FGS BOX_Open()
 **
 *************************************************************************/
+/* 21ba908c - complete */
 static int32_t fgsBoxClose (FAPI_SYS_HandleT h)
 {
     FGS_BOX_INST_S*  inst = (FGS_BOX_INST_S*)h;
@@ -308,11 +314,12 @@ static int32_t fgsBoxClose (FAPI_SYS_HandleT h)
     }
     if ( inst->memAllocated == FTRUE )
     {
-        FGS_Free(inst);
+        /*FGS_Free*/SYS_MemoryFree(inst);
     }
 
     return FAPI_OK;
 }
+
 
 /*!
 *************************************************************************
@@ -327,6 +334,7 @@ static int32_t fgsBoxClose (FAPI_SYS_HandleT h)
 **          - FGS BOX_Open()
 **
 *************************************************************************/
+/* 21ba8f94 - complete */
 static int32_t fgsBoxShow (FAPI_SYS_HandleT h)
 {
     FGS_BOX_INST_S*   inst = (FGS_BOX_INST_S*)h;
@@ -379,6 +387,7 @@ static int32_t fgsBoxShow (FAPI_SYS_HandleT h)
     return FAPI_OK;
 }
 
+
 /*!
 *************************************************************************
 ** \brief   This function Hide a previously shown FGS Box item.
@@ -394,6 +403,7 @@ static int32_t fgsBoxShow (FAPI_SYS_HandleT h)
 **          - FGS BOX_Show()
 **
 *************************************************************************/
+/* 21ba8e20 - complete */
 static int32_t fgsBoxHide (FAPI_SYS_HandleT h)
 {
     //FGS_BOX_INST_S*   inst = (FGS_BOX_INST_S*)h;
@@ -401,6 +411,8 @@ static int32_t fgsBoxHide (FAPI_SYS_HandleT h)
     return FAPI_OK;
 }
 
+
+/* 21ba8e28 - complete */
 static int32_t fgsBoxSetFocus (FAPI_SYS_HandleT h, fbool_t hasFocus)
 {
     FGS_BOX_INST_S* inst   = (FGS_BOX_INST_S*)h;

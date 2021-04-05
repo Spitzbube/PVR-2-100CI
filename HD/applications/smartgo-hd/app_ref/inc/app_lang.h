@@ -29,12 +29,12 @@
 
 #include "sys_api.h"
 
-#if 0
 
 /*---------------------------------------------------------------------------*/
 /* constants and macros                                                      */
 /*---------------------------------------------------------------------------*/
-#define OSDLANG_MAX          10       // max. number of languages
+#define OSDLANG_MAX          8/*10*/       // max. number of languages
+#if 0
 #define OSDLANG_NAME_LEN     32       // max. length of language name string
 
 /*---------------------------------------------------------------------------*/
@@ -56,12 +56,15 @@ typedef struct
 } OSDLANG_FILEHDR;
 #endif
 
+#endif
+
 typedef struct
 {
     int32_t   idx;
     char_t*   str;
 
 } OSDLANG_ENTRY_S;
+
 
 typedef struct
 {
@@ -70,9 +73,8 @@ typedef struct
 
 } OSDLANG_LANG_S;
 
-#include "../res/lng/lng.h"
 
-#endif
+#include "lng.h"
 
 /*---------------------------------------------------------------------------*/
 /* function prototypes                                                       */
@@ -88,7 +90,9 @@ int32_t         OSD_LANG_Init                    (void);
 uint32_t        OSD_LANG_GetNumberOfLangs        (void);
 int32_t         OSD_LANG_GetLangInfo             (uint32_t langIdx, SYS_LANGCODE* id);
 uint32_t        OSD_LANG_GetLangCurr             (void);
+#endif
 int32_t         OSD_LANG_Select                  (uint32_t langIdx);
+#if 0
 SYS_STRING_S    OSD_LANG_GetLanguageString       (SYS_LANGCODE langCode);
 SYS_LANGCODE    OSD_LANG_GetKnownLangCodeByIndex (uint16_t index);
 uint16_t        OSD_LANG_GetKnownLangIndex       (SYS_LANGCODE langCode);

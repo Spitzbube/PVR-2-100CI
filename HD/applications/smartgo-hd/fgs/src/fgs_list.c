@@ -84,6 +84,8 @@ static int32_t  FGS_LIST_Close  (FAPI_SYS_HandleT h);
 static int32_t  FGS_LIST_Show   (FAPI_SYS_HandleT h);
 static int32_t  FGS_LIST_Hide   (FAPI_SYS_HandleT h);
 
+
+/* 21bad20c - complete */
 int32_t FGS_LIST_Init (FGS_LIST_INIT_S* pInitParams)
 {
     if ( pInitParams == NULL )
@@ -91,7 +93,7 @@ int32_t FGS_LIST_Init (FGS_LIST_INIT_S* pInitParams)
         return SMARTGO_FGS_ERR_BAD_PARAMETER;
     }
 
-    fgsListGlobal = FGS_Malloc(sizeof(FGS_LIST_INIT_S));
+    fgsListGlobal = /*FGS_Malloc*/SYS_MemoryAllocate(sizeof(FGS_LIST_INIT_S));
     if ( fgsListGlobal == NULL )
     {
         return SMARTGO_FGS_ERR_OUT_OF_MEMORY;
@@ -104,6 +106,8 @@ int32_t FGS_LIST_Init (FGS_LIST_INIT_S* pInitParams)
     return FAPI_OK;
 }
 
+
+/* 21bad25c - complete */
 int32_t FGS_LIST_Open (FGS_LIST_OPEN_S* pData, int32_t id,
                        FAPI_SYS_HandleT parent, FAPI_SYS_HandleT* ph)
 {
@@ -122,7 +126,7 @@ int32_t FGS_LIST_Open (FGS_LIST_OPEN_S* pData, int32_t id,
     }
     else
     {
-        inst = FGS_Malloc(sizeof(FGS_LIST_INST_S));
+        inst = /*FGS_Malloc*/SYS_MemoryAllocate(sizeof(FGS_LIST_INST_S));
         if ( inst == NULL )
         {
             return SMARTGO_FGS_ERR_OUT_OF_MEMORY;
@@ -161,12 +165,14 @@ int32_t FGS_LIST_Open (FGS_LIST_OPEN_S* pData, int32_t id,
     if ( (retVal             != FAPI_OK) &&
          (inst->memAllocated == FTRUE) )
     {
-        FGS_Free(inst);
+        /*FGS_Free*/SYS_MemoryFree(inst);
     }
 
     return retVal;
 }
 
+
+/* 21bad17c - complete */
 static int32_t FGS_LIST_Close (FAPI_SYS_HandleT h)
 {
     FGS_LIST_INST_S* inst = (FGS_LIST_INST_S*)h;
@@ -192,12 +198,14 @@ static int32_t FGS_LIST_Close (FAPI_SYS_HandleT h)
 
     if ( inst->memAllocated == FTRUE )
     {
-        FGS_Free(inst);
+        /*FGS_Free*/SYS_MemoryFree(inst);
     }
 
     return FAPI_OK;
 }
 
+
+/* 21babf18 - complete */
 int32_t FGS_LIST_AddMember (FAPI_SYS_HandleT h, FGS_LIST_MEMBER_S* pMember,
                          FGS_LIST_MEMBER_S** pId)
 {
@@ -243,6 +251,8 @@ int32_t FGS_LIST_AddMember (FAPI_SYS_HandleT h, FGS_LIST_MEMBER_S* pMember,
     return FAPI_OK;
 }
 
+
+/* 21bac0c4 - complete */
 static int32_t FGS_LIST_Show (FAPI_SYS_HandleT h)
 {
     FGS_LIST_INST_S*   inst = (FGS_LIST_INST_S*)h;
@@ -285,6 +295,8 @@ static int32_t FGS_LIST_Show (FAPI_SYS_HandleT h)
     return FAPI_OK;
 }
 
+
+/* 21bac2ac - complete */
 static int32_t FGS_LIST_Hide (FAPI_SYS_HandleT h)
 {
     FGS_LIST_INST_S*   inst = (FGS_LIST_INST_S*)h;
@@ -307,6 +319,8 @@ int32_t FGS_LIST_SetRefreshMode (FAPI_SYS_HandleT h, fbool_t autoRefresh)
     return FAPI_OK;
 }
 
+
+/* 21bac2f8 - complete */
 int32_t FGS_LIST_SetMemberFocus (FAPI_SYS_HandleT h, int32_t id)
 {
     FGS_LIST_INST_S*    inst = (FGS_LIST_INST_S*)h;
@@ -424,6 +438,8 @@ int32_t FGS_LIST_GetMemberFocusID (FAPI_SYS_HandleT h)
     else                      return inst->member[inst->focusIdx].id;
 }
 
+
+/* 21bac540 - complete */
 int32_t FGS_LIST_SetMemberParams (FAPI_SYS_HandleT h, int32_t id, const void* params)
 {
     FGS_LIST_INST_S*    inst = (FGS_LIST_INST_S*)h;
@@ -444,6 +460,8 @@ int32_t FGS_LIST_SetMemberParams (FAPI_SYS_HandleT h, int32_t id, const void* pa
     return retVal;
 }
 
+
+/* 21bac5dc - complete */
 int32_t FGS_LIST_GetMemberParams (FAPI_SYS_HandleT h, int32_t id, void* params)
 {
     FGS_LIST_INST_S*    inst = (FGS_LIST_INST_S*)h;
@@ -464,6 +482,8 @@ int32_t FGS_LIST_GetMemberParams (FAPI_SYS_HandleT h, int32_t id, void* params)
     return retVal;
 }
 
+
+/* 21bac678 - complete */
 int32_t FGS_LIST_GetMemberAbsPos (FAPI_SYS_HandleT h, int32_t id, FGS_LOC_S* loc)
 {
     FGS_LIST_INST_S*    inst   = (FGS_LIST_INST_S*)h;
@@ -565,6 +585,8 @@ fbool_t FGS_LIST_Up (FAPI_SYS_HandleT h)
     return retVal;
 }
 
+
+/* 21bacccc - complete */
 fbool_t FGS_LIST_Down (FAPI_SYS_HandleT h)
 {
     FGS_LIST_INST_S* inst   = (FGS_LIST_INST_S*)h;
@@ -739,6 +761,8 @@ fbool_t FGS_LIST_Back (FAPI_SYS_HandleT h)
     return FFALSE;
 }
 
+
+/* 21bad0c0 - complete */
 void FGS_LIST_DrawItemDescr (FGS_LIST_MEMBER_S* pMem)
 {
     FGS_ITEM_S      descrItem;
@@ -764,6 +788,7 @@ void FGS_LIST_DrawItemDescr (FGS_LIST_MEMBER_S* pMem)
                   pMem->descrPos.height);
 }
 
+/* 21bacf64 - complete */
 static int32_t FGS_LIST_SetFocus (FAPI_SYS_HandleT h, fbool_t hasFocus)
 {
     FGS_LIST_INST_S* inst   = (FGS_LIST_INST_S*)h;
@@ -811,6 +836,8 @@ static int32_t FGS_LIST_SetFocus (FAPI_SYS_HandleT h, fbool_t hasFocus)
     return FAPI_OK;
 }
 
+
+/* 21baca38 - complete */
 static fbool_t FGS_LIST_ItemDeactivate (FGS_LIST_INST_S* inst,
                                          fbool_t keepChanges)
 {
@@ -827,6 +854,8 @@ static fbool_t FGS_LIST_ItemDeactivate (FGS_LIST_INST_S* inst,
     return FFALSE;
 }
 
+
+/* 21bacb44 - complete */
 static fbool_t FGS_LIST_NextItem (FGS_LIST_INST_S* inst, fbool_t keepChanges)
 {
     int32_t nextIdx = -1;

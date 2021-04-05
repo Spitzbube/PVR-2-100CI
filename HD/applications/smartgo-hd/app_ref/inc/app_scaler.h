@@ -108,8 +108,10 @@ typedef enum
 {
 #if 0
     SCALER_VAL_NONE = -1,
+#endif
     OSD_POS_X = 0,
-    OSD_POS_Y,
+    OSD_POS_Y = 1, //1
+#if 0
     OSD_WIDTH,
     OSD_HEIGHT,
 
@@ -124,11 +126,11 @@ typedef enum
 
     MAIN_TOP_PADDING = 10, //10
     MAIN_BOT_PADDING = 11, //11
-    MAIN_LEFT_PADDING, //?
+    MAIN_LEFT_PADDING = 12, //12
 #if 0
     MAIN_CENTER_PADDING,
 #endif
-    MAIN_RIGHT_PADDING, //?
+    MAIN_RIGHT_PADDING = 14, //14
     MAIN_WIDTH = 15, //15
     MAIN_HOR_OFFSET = 16, //16
     MAIN_VER_OFFSET = 17, //17
@@ -137,8 +139,8 @@ typedef enum
     MAIN_PAD_Y,
     MAIN_ICON_WIDTH,
     MAIN_ICON_HEIGHT,
-    MAIN_TEXT_PAD_X,
 #endif
+    MAIN_TEXT_PAD_X = 22, //2
 
     HELP_LR_PADDING = 23, //23
     HELP_TB_PADDING = 24, //24
@@ -147,15 +149,13 @@ typedef enum
     HELP_LINE_WIDTH,
 #endif
     HELP_LINE_PADDING = 27, //27
-#if 0
-    HELP_BOT_XOFF,
-#endif
+    HELP_BOT_XOFF = 28, //28
 
     LIST_LINE_HEIGHT = 29, //29
     LIST_LINE_PADDING = 30, //30
 
+    SCROLLBAR_WIDTH = 31, //31
 #if 0
-    SCROLLBAR_WIDTH,
     SCROLLBAR_PADDING,
 
     PROGRESSBAR_WIDTH,
@@ -170,9 +170,9 @@ typedef enum
     OUTER_FRAME_PADDING = 39, //39
     OUTER_FRAME_ALL = 40, //40
     INNER_FRAME_WIDTH = 41, //41
-#if 0
     SUB_LIST_WIDTH,
 
+#if 0
     EDIT_REC_WIDTH,
     EDIT_REC_SYMBOL_WIDTH,
 

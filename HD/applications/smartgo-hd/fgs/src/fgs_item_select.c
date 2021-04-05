@@ -60,6 +60,8 @@ static FGS_ITEM_DRAWIF_S*     fgsSelDraw = NULL;
 /* local functions                                                           */
 /*---------------------------------------------------------------------------*/
 
+
+/* 21baba70 - todo */
 int32_t FGS_ITEM_SEL_Init (FGS_ITEM_SEL_INIT_S* pInitParams)
 {
     if ( pInitParams == NULL )
@@ -67,7 +69,7 @@ int32_t FGS_ITEM_SEL_Init (FGS_ITEM_SEL_INIT_S* pInitParams)
         return SMARTGO_FGS_ERR_BAD_PARAMETER;
     }
 
-    fgsItemSelGlobal = FGS_Malloc(sizeof(FGS_ITEM_SEL_INIT_S));
+    fgsItemSelGlobal = /*FGS_Malloc*/SYS_MemoryAllocate(sizeof(FGS_ITEM_SEL_INIT_S));
     if ( fgsItemSelGlobal == NULL )
     {
         return SMARTGO_FGS_ERR_OUT_OF_MEMORY;
@@ -80,6 +82,8 @@ int32_t FGS_ITEM_SEL_Init (FGS_ITEM_SEL_INIT_S* pInitParams)
     return FAPI_OK;
 }
 
+
+/* 21babac8 - complete */
 int32_t FGS_ITEM_SEL_Open (FGS_ITEM_SEL_OPEN_S* pData, int32_t id,
                         FAPI_SYS_HandleT parent, FAPI_SYS_HandleT* ph)
 {
@@ -100,7 +104,7 @@ int32_t FGS_ITEM_SEL_Open (FGS_ITEM_SEL_OPEN_S* pData, int32_t id,
         return retVal;
     }
 
-    inst = FGS_Malloc(sizeof(FGS_ITEM_SEL_INST_S));
+    inst = /*FGS_Malloc*/SYS_MemoryAllocate(sizeof(FGS_ITEM_SEL_INST_S));
     if ( inst == NULL )
     {
         return SMARTGO_FGS_ERR_OUT_OF_MEMORY;
@@ -135,7 +139,7 @@ int32_t FGS_ITEM_SEL_Open (FGS_ITEM_SEL_OPEN_S* pData, int32_t id,
 
     if ( retVal != FAPI_OK )
     {
-        FGS_Free(inst);
+        /*FGS_Free*/SYS_MemoryFree(inst);
     }
 
     return retVal;
@@ -147,7 +151,7 @@ static int32_t FGS_ITEM_SEL_Close (FAPI_SYS_HandleT h)
 
     if ( inst == NULL ) return SMARTGO_FGS_ERR_INVALID_HANDLE;
 
-    FGS_Free(inst);
+    /*FGS_Free*/SYS_MemoryFree(inst);
 
     return FAPI_OK;
 }
@@ -314,6 +318,8 @@ static void FGS_ITEM_SEL_ValChanged (FGS_ITEM_SEL_INST_S* inst)
     }
 }
 
+
+/* 21bab6d0 - complete */
 static int32_t FGS_ITEM_SEL_CheckParams (const FGS_ITEM_SEL_PARAMS_S* params)
 {
     if ( (params->numItems > 0) &&

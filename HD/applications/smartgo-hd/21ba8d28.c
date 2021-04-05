@@ -4,6 +4,7 @@
 
 #include <fapi/sys_services.h>
 #include "sys.h"
+#include "sys_api.h"
 #include "stringop.h"
 #include "21ba8d28.h"
 
@@ -517,7 +518,6 @@ int osd_view_remove/*FGS_RemoveMember*/(struct OsdView* a)
    return 0;
 }
 
-#endif
 
 /* 21ba654c - complete */
 int32_t osd_view_handle_key(uint32_t a, uint32_t b, int8_t c)
@@ -586,6 +586,8 @@ int32_t osd_view_handle_key(uint32_t a, uint32_t b, int8_t c)
    return r0;
 }
 
+
+#endif
 
 /* 21ba6694 - complete */
 /* v3.8: 3746e4 - complete */

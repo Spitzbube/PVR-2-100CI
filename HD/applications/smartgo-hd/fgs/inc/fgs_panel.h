@@ -47,12 +47,12 @@ typedef struct
     fbool_t             inFront; /*16*/    //!< Display order, 1: always in front
                                      //!< of other members.
     
-    FGS_FOCUSSET_CB     onFocusSet;    //!< focus-set/remove-callback (opt.)
-    FAPI_SYS_HandleT    onFocusSetArg; //!< optional argument for onFocusSet
+    FGS_FOCUSSET_CB     onFocusSet; /*20*/   //!< focus-set/remove-callback (opt.)
+    FAPI_SYS_HandleT    onFocusSetArg; /*24*/ //!< optional argument for onFocusSet
     
-    void*               pInst;         //!< optional facility to pass a memory 
+    void*               pInst; /*28*/        //!< optional facility to pass a memory
                                        //!< buffer for instance data
-    
+    //32
 } FGS_PANEL_OPEN_S;
 
 typedef struct
@@ -64,15 +64,15 @@ typedef struct
     fbool_t        hasFocus;    //!< focus status
     
     /* written by member */
-    FAPI_SYS_HandleT h;
-    FGS_POS_S*     pos;         //!< member's position and size in parent item
-    int32_t        id;          //!< member ID
-    fbool_t        isHidden;    //!< If FTRUE, panel member is hidden.
+    FAPI_SYS_HandleT h; /*16*/
+    FGS_POS_S*     pos; /*20*/        //!< member's position and size in parent item
+    int32_t        id; /*24*/         //!< member ID
+    fbool_t        isHidden; /*28*/   //!< If FTRUE, panel member is hidden.
     
-    int32_t        (*setFocus)    (FAPI_SYS_HandleT h, fbool_t hasFocus);   // optional
-    int32_t        (*show)        (FAPI_SYS_HandleT h);                   // mandatory
-    int32_t        (*hide)        (FAPI_SYS_HandleT h);                   // optional
-    int32_t        (*close)       (FAPI_SYS_HandleT h);                   // optional
+    int32_t        (*setFocus) /*32*/    (FAPI_SYS_HandleT h, fbool_t hasFocus);   // optional
+    int32_t        (*show) /*36*/       (FAPI_SYS_HandleT h);                   // mandatory
+    int32_t        (*hide) /*40*/       (FAPI_SYS_HandleT h);                   // optional
+    int32_t        (*close) /*44*/      (FAPI_SYS_HandleT h);                   // optional
     
 } FGS_PANEL_MEMBER_S;
 

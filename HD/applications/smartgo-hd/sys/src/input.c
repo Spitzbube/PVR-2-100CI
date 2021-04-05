@@ -19,17 +19,6 @@
 #include "input.h"
 
 
-
-
-
-
-/* 21ba3e64 - todo */
-void func_21ba3e64(void)
-{
-   printf("func_21ba3e64");
-}
-
-
 /* 21b90968 - todo */
 void func_21b90968(void)
 {
@@ -279,7 +268,7 @@ int input_uart(void)
             
          case 'm': //109:
             //21b8df40
-            r14 = 132;
+            r14 = 132; //menu?
             break;
             
          case 'n': //110:
@@ -289,7 +278,7 @@ int input_uart(void)
             
          case 'e': //101:
             //21b8df20
-            r14 = 129;
+            r14 = 129; //exit?
             break;
             
          case 't': //116:

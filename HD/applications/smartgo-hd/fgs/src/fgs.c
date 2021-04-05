@@ -113,7 +113,7 @@ static void    FGS_DrawString          (SYS_STRING_S  itemStr,
                                         int32_t       strWidth,
                                         int32_t       numBytes);
 
-static void    FGS_DrawMultiLineString (SYS_STRING_S  itemStr,
+/*static*/ void    FGS_DrawMultiLineString (SYS_STRING_S  itemStr,
                                         uint8_t       itemFont,
                                         uint8_t       itemAlign,
                                         uint32_t      itemCol,
@@ -762,10 +762,9 @@ int32_t FGS_GetMemberFocusID (void)
     return -1;
 }
 
-#if 0
-
 /* ------------------------------------------------------------------------- */
 
+/* 21ba654c - complete */
 fbool_t FGS_DispatchKey (FGS_KEY_E key, FGS_KEYTYPE_E type, int8_t numVal)
 {
     FGS_KEY_HANDLER_S*  pHdl     = NULL;
@@ -777,6 +776,8 @@ fbool_t FGS_DispatchKey (FGS_KEY_E key, FGS_KEYTYPE_E type, int8_t numVal)
     {
         return FFALSE;
     }
+
+    FAPI_SYS_PRINT_MSG("FGS_DispatchKey: key=%d, type=%d, numVal=%d\n", key, type, numVal);
 
     /* store key info to be queried by handlers */
     fgsInst->currKey    = key;
@@ -832,6 +833,8 @@ fbool_t FGS_DispatchKey (FGS_KEY_E key, FGS_KEYTYPE_E type, int8_t numVal)
     return retVal;
 }
 
+
+/* 21ba6694 - complete */
 void FGS_SetKeyHandler (FGS_KEY_E key,
                         FGS_KEY_CB callback,
                         FAPI_SYS_HandleT data,
@@ -842,6 +845,8 @@ void FGS_SetKeyHandler (FGS_KEY_E key,
     fgsInst->keyHdl[key].blockRep = blockRepeated;
 }
 
+
+/* 21ba66c0 - complete */
 void FGS_SetNumKeyHandler (FGS_KEY_E key, FGS_KEYNUM_CB callback,
                            FAPI_SYS_HandleT data, fbool_t blockRepeated)
 {
@@ -850,12 +855,16 @@ void FGS_SetNumKeyHandler (FGS_KEY_E key, FGS_KEYNUM_CB callback,
     fgsInst->keyHdl[key].blockRep = blockRepeated;
 }
 
+
+/* 21ba66ec - complete */
 void  FGS_ClearKeyHandler (FGS_KEY_E key)
 {
     fgsInst->keyHdl[key].cb.all = NULL;
 }
 
+
 /* clears all GUI handlers */
+/* 21ba6710 - complete */
 void FGS_ClearAllHandlers (void)
 {
     uint32_t cnt;
@@ -866,6 +875,8 @@ void FGS_ClearAllHandlers (void)
     }
 }
 
+
+/* 21ba6744 - todo */
 void FGS_SetAppKeyHandler (FGS_KEY_E key, FGS_KEY_CB callback,
                            FAPI_SYS_HandleT data, fbool_t blockRepeated,
                            fbool_t suppressGui)
@@ -876,6 +887,8 @@ void FGS_SetAppKeyHandler (FGS_KEY_E key, FGS_KEY_CB callback,
     fgsInst->keyHdl[key].appHdl.suppressGui = suppressGui;
 }
 
+
+/* 21ba6778 - todo */
 void FGS_SetAppNumKeyHandler (FGS_KEY_E key, FGS_KEYNUM_CB callback,
                               FAPI_SYS_HandleT data, fbool_t blockRepeated,
                               fbool_t suppressGui)
@@ -885,6 +898,8 @@ void FGS_SetAppNumKeyHandler (FGS_KEY_E key, FGS_KEYNUM_CB callback,
     fgsInst->keyHdl[key].appHdl.blockRep    = blockRepeated;
     fgsInst->keyHdl[key].appHdl.suppressGui = suppressGui;
 }
+
+#if 0
 
 FGS_APPKEY_HDL_S FGS_GetAppKeyHandler (FGS_KEY_E key)
 {
@@ -896,12 +911,17 @@ void FGS_WriteAppKeyHandler (FGS_KEY_E key, FGS_APPKEY_HDL_S* hdl)
     fgsInst->keyHdl[key].appHdl = *hdl;
 }
 
+#endif
+
+/* 21ba6810 - complete */
 void FGS_ClearAppKeyHandler (FGS_KEY_E key)
 {
     fgsInst->keyHdl[key].appHdl.cb.all      = NULL;
     fgsInst->keyHdl[key].appHdl.suppressGui = FFALSE;
 }
 
+
+/* 21ba6838 - complete */
 void FGS_ClearAllAppKeyHandlers (void)
 {
     uint32_t cnt;
@@ -912,6 +932,8 @@ void FGS_ClearAllAppKeyHandlers (void)
         fgsInst->keyHdl[cnt].appHdl.suppressGui = FFALSE;
     }
 }
+
+#if 0
 
 void FGS_GetAllAppKeyHandlers (FGS_APPKEY_HDL_S* pHdl)
 {
@@ -933,10 +955,16 @@ void FGS_WriteAllAppKeyHandlers (FGS_APPKEY_HDL_S* pHdl)
     }
 }
 
+#endif
+
+
+/* 21ba6908 - complete */
 FGS_KEY_E FGS_GetCurrentKeyCode (void)
 {
     return fgsInst->currKey;
 }
+
+#if 0
 
 int8_t FGS_GetCurrentKeyVal (void)
 {
@@ -1033,11 +1061,11 @@ FGS_AREA_S FGS_GetOverlapArea (FGS_LOC_S* abspos1,
     return overlap;
 }
 
-#if 0
 
 /*
 pMember: FGS member that contains position parameters abspos, width and height
 */
+/* 21ba6958 - complete */
 fbool_t FGS_GetOverlapStatus (FGS_MEMBER_S* pMember, const FGS_LOC_S* abspos,
                             uint16_t width, uint16_t height)
 {
@@ -1114,6 +1142,7 @@ fbool_t FGS_GetOverlapStatus (FGS_MEMBER_S* pMember, const FGS_LOC_S* abspos,
 
 /* ------------------------------------------------------------------------- */
 
+/* 21ba6a64 - complete */
 void FGS_GetPosString (SYS_STRING_S string, int32_t numBytes, uint8_t font, uint8_t align,
                        uint16_t x, uint16_t y, uint16_t width, uint16_t height, int32_t stringWidth,
                        uint16_t* strX, uint16_t* strY, uint16_t* strWidth, uint16_t* strHeight)
@@ -1173,6 +1202,8 @@ void FGS_GetPosString (SYS_STRING_S string, int32_t numBytes, uint8_t font, uint
     (*strY) += offsetY;
 }
 
+#if 0
+
 void FGS_GetPosIcon (const uint32_t* addr, uint8_t align,
                      uint16_t x, uint16_t y, uint16_t width, uint16_t height,
                      uint16_t* iconX, uint16_t* iconY)
@@ -1221,6 +1252,9 @@ void FGS_GetPosIcon (const uint32_t* addr, uint8_t align,
     }
 }
 
+#endif
+
+/* 21ba86d8 - todo */
 int32_t FGS_DrawItem (const FGS_ITEM_S* item, uint16_t x, uint16_t y, uint16_t width, uint16_t height)
 {
     int32_t      retVal = FAPI_OK;
@@ -1242,6 +1276,7 @@ int32_t FGS_DrawItem (const FGS_ITEM_S* item, uint16_t x, uint16_t y, uint16_t w
 
     switch ( item->type )
     {
+#if 0
         case FGS_ITEM_TYPE_GENERIC:
             if ( item->item.gnr.cb != NULL )
             {
@@ -1249,6 +1284,7 @@ int32_t FGS_DrawItem (const FGS_ITEM_S* item, uint16_t x, uint16_t y, uint16_t w
                                    x, y, width, height);
             }
             break;
+#endif
 
         case FGS_ITEM_TYPE_STRING:
 
@@ -1265,10 +1301,14 @@ int32_t FGS_DrawItem (const FGS_ITEM_S* item, uint16_t x, uint16_t y, uint16_t w
             }
 
             drawStr  = FTRUE;
+
+            FAPI_SYS_PRINT_MSG("FGS_DrawItem(STRING): itemStr='%s'\n", itemStr.chr);
+
             break;
 
         /* ----------------------------------------------------------------- */
 
+#if 0
         case FGS_ITEM_TYPE_ICON:
             if ( (item->item.icon.addr != NULL) &&
                  (fgsDraw->drawBitmap  != NULL) )
@@ -1494,8 +1534,10 @@ int32_t FGS_DrawItem (const FGS_ITEM_S* item, uint16_t x, uint16_t y, uint16_t w
             itemStr  = fgsInst->strBuf.string;
             drawStr  = FTRUE;
             break;
+#endif
 
         default:
+            FAPI_SYS_PRINT_MSG("FGS_DrawItem: item->type=0x%x TODO\n", item->type);
             retVal = SMARTGO_FGS_ERR_BAD_PARAMETER;
             break;
     }
@@ -1519,6 +1561,8 @@ int32_t FGS_DrawItem (const FGS_ITEM_S* item, uint16_t x, uint16_t y, uint16_t w
 
     return retVal;
 }
+
+#if 0
 
 /*!
 *******************************************************************************
@@ -1763,6 +1807,9 @@ uint16_t FGS_GetLinesFromString (SYS_STRING_S             string,
     return numLines;
 }
 
+#endif
+
+/* 21ba76a0 - complete */
 static void FGS_DrawString (SYS_STRING_S    itemStr,
                                   uint8_t  itemFont,
                                   uint8_t  itemAlign,
@@ -1796,7 +1843,8 @@ static void FGS_DrawString (SYS_STRING_S    itemStr,
                              itemWidth, strWidth, itemStr, FTRUE);
 }
 
-static void FGS_DrawMultiLineString (SYS_STRING_S string, uint8_t font,
+/* 21ba7780 - complete */
+/*static*/ void FGS_DrawMultiLineString (SYS_STRING_S string, uint8_t font,
                                      uint8_t itemAlign, uint32_t itemCol, uint8_t lineHeight,
                                      uint16_t x, uint16_t y, uint16_t width, uint16_t height)
 {
@@ -2026,6 +2074,8 @@ static void FGS_DrawMultiLineString (SYS_STRING_S string, uint8_t font,
         }
     }
 }
+
+#if 0
 
 /* ------------------------------------------------------------------------- */
 

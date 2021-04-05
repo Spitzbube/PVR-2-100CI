@@ -37,10 +37,12 @@
 #include <fapi/board_ifc.h>
 
 #include <fe/fe.h>
+#endif
 
 #include "smartgo_types.h"
 
 #include "sys_languages.h"
+#if 0
 #include "config.h"
 
 #ifdef APPL_BOOTLDR_ENABLED
@@ -184,12 +186,11 @@
 /* Audio channel preference: stored in 1-bit data field */
 #define SYS_AUDIOCHAN_LEFT              0x00    //!< Left audio channel.
 #define SYS_AUDIOCHAN_RIGHT             0x01    //!< Right audio channel.
+#endif
 
 #define SYS_CHARSET_UNDEFINED   0x00    //!< Unknown character set.
 #define SYS_CHARSET_TABLE0      0x01    //!< ISO/IEC-6937 + Euro Symb.(Fig. A.1)
-#endif
 #define SYS_CHARSET_ISO8859_1   0x02    //!< ISO/IEC-8859-1
-#if 0
 #define SYS_CHARSET_ISO8859_2   0x03    //!< ISO/IEC-8859-2
 #define SYS_CHARSET_ISO8859_3   0x04    //!< ISO/IEC-8859-3
 #define SYS_CHARSET_ISO8859_4   0x05    //!< ISO/IEC-8859-4
@@ -209,7 +210,6 @@
                                         //!< (max. 3 bytes!)
                                         //!< (Basic Multilingual Plane)
 #define SYS_CHARSET_NUMS        0x12    //!< Number of available character sets.
-#endif
 
 #define SYS_CHARSET_ASCII       SYS_CHARSET_ISO8859_1
 
@@ -227,8 +227,8 @@
 #endif
 
 typedef uint8_t  SYS_SUSPENDSRC;         //!< Suspending source type.
-typedef uint16_t SYS_CHAR;               //!< Character type.
 #endif
+typedef uint16_t SYS_CHAR;               //!< Character type.
 typedef uint8_t  SYS_CHARSET;            //!< Character set type.
 #if 0
 typedef int16_t  SLIST_SERVIDX;          //!< Service index type.
@@ -2020,9 +2020,11 @@ int32_t             SETTINGS_SetServiceSwitchMode(fbool_t freeze);
 int32_t             SETTINGS_GetServiceSwitchMode(fbool_t* freeze);
 int32_t             SETTINGS_SetPowerUpMode     (SYS_PWRMODE_E reqMode);
 int32_t             SETTINGS_GetPowerUpMode     (SYS_PWRMODE_E* powerupMode);
+#endif
 int32_t             SETTINGS_OsdLangGet         (SYS_LANGCODE* lang);
 int32_t             SETTINGS_OsdLangSet         (SYS_LANGCODE  lang);
 
+#if 0
 int32_t             SETTINGS_AudioLangPrefSet   (uint8_t prefIdx,
                                                  SYS_LANGCODE lang);
 int32_t             SETTINGS_AudioLangPrefGet   (uint8_t prefIdx,
@@ -4025,10 +4027,14 @@ int32_t             SYS_WriteBootImage(SYS_DEVICE_E device);
 
 #endif /* APPL_BOOTLDR_ENABLED */
 
+#endif
+
 #define STR_CHAR_LINEBREAK      '\n'    //!< Used for both 8 and 16 bit
                                         //!< character sets.
 #define STR_CHAR_BLANK          ' '     //!< Used for both 8 and 16 bit
                                         //!< character sets.
+
+#if 0
 
 uint32_t         STR_Copy               (SYS_STRING_S src, char_t* dstBuf,
                                          SYS_CHARSET* dstCs, SYS_CHARSET reqCs,
@@ -4037,7 +4043,9 @@ uint32_t         STR_NCopy              (SYS_STRING_S src, char_t* dstBuf,
                                          SYS_CHARSET* dstCs, SYS_CHARSET reqCs,
                                          uint32_t maxBytes, uint32_t numBytes);
 SYS_STRING_S     STR_Build              (SYS_CHARSET set, const char_t* str);
+#endif
 SYS_STRING_S     STR_GetASCII           (const char_t* str);
+#if 0
 void             STR_Clear              (SYS_STRING_S* string);
 uint32_t         STR_Len                (SYS_STRING_S string);
 int32_t          STR_Cmp                (SYS_STRING_S str1, SYS_STRING_S str2);
@@ -4049,8 +4057,10 @@ void             STR_ReplaceLineBreaks  (SYS_STRING_S string,
                                          SYS_CHAR replaceChar,
                                          uint32_t bufSize);
 uint32_t         STR_GetLineEnd         (SYS_STRING_S string);
+#endif
 uint32_t         STR_CharGet            (SYS_STRING_S string,
                                          uint32_t byteOffset, SYS_CHAR* chr);
+#if 0
 uint32_t         STR_CharSet            (SYS_STRING_S string,
                                          uint32_t byteOffset, SYS_CHAR chr);
 uint32_t         STR_CharRemove         (SYS_STRING_S string,

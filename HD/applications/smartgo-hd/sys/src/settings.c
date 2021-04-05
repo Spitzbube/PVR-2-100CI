@@ -32,12 +32,12 @@ typedef struct Struct_21f02e30
    int Data_56; //56
    unsigned short wData_60; //60
    int Data_64; //64
-   int Data_68; //68
+   int osdLanguage; //68
    int Data_72; //72
    int Data_76; //76
-   int Data_80[2]; //80
-   int Data_88[2]; //88
-   int Data_96[2]; //96
+   int audLangPref[2]; //80
+   int uiLangPref[2]; //88
+   int subtLangPref[2]; //96
    int Data_104[2]; //104
    int Data_112[2]; //112
    int Data_120; //120
@@ -145,7 +145,7 @@ void SETTINGS_StartupDefaultsSet(void)
       startupDat->Data_56 = 0xffffff;
       startupDat->wData_60 = 5;
       startupDat->Data_64 = 0;
-      startupDat->Data_68 = 0x676572; //eng
+      startupDat->osdLanguage = LANG_ENGLISH; //0x676572;
       startupDat->Data_72 = 0;
       startupDat->Data_76 = 0;
       startupDat->Data_120 = 1;
@@ -161,17 +161,17 @@ void SETTINGS_StartupDefaultsSet(void)
 
       for (i = 0; i < 2; i++)
       {
-         startupDat->Data_80[i] = 0xffffff;
+         startupDat->audLangPref[i] = 0xffffff;
       }
 
       for (i = 0; i < 2; i++)
       {
-         startupDat->Data_88[i] = 0xffffff;
+         startupDat->uiLangPref[i] = 0xffffff;
       }
 
       for (i = 0; i < 2; i++)
       {
-         startupDat->Data_96[i] = 0xffffff;
+         startupDat->subtLangPref[i] = 0xffffff;
       }
 
       for (i = 0; i < 2; i++)
@@ -465,5 +465,153 @@ int SETTINGS_VideoOutputSet(int a)
 
    return res;
 }
+
+
+/* 21b98eb0 - complete */
+int32_t SETTINGS_OsdLangSet(SYS_LANGCODE lang)
+{
+    int res = 0;
+
+//    FAPI_SYS_PRINT_DEBUG(5, "SETTINGS_VideoOutputSet\n");
+
+    if (startupDat != 0)
+    {
+       rtos_request_semaphore(sysData->mutexId, -1);
+
+       if (startupDat->osdLanguage != lang)
+       {
+          startupDat->osdLanguage = lang;
+          startupDatDirty = 1;
+       }
+
+       rtos_release_semaphore(sysData->mutexId, 0);
+    }
+    else
+    {
+       res = -10000004;
+    }
+
+    return res;
+}
+
+
+/* 21b982f4 - complete */
+int32_t SETTINGS_OsdLangGet(SYS_LANGCODE * lang)
+{
+    if(startupDat == NULL)
+    {
+        return APPL_SMARTGO_ERR_NOT_INITIALIZED;
+    }
+
+    *lang = startupDat->osdLanguage;
+    return FAPI_OK;
+}
+
+
+/* 21b99428 - complete */
+int32_t SETTINGS_UILangPrefSet(uint8_t prefIdx, SYS_LANGCODE lang)
+{
+    fbool_t valueChanged = FFALSE;
+    int32_t retVal;
+
+    if(startupDat == NULL)
+    {
+        return APPL_SMARTGO_ERR_NOT_INITIALIZED;
+    }
+    if(prefIdx >= /*SETTINGS_UILANGPREF_MAX*/2)
+    {
+        return APPL_SMARTGO_ERR_BAD_PARAMETER;
+    }
+    (void)rtos_request_semaphore(sysData->mutexId, RTOS_SUSPEND);
+
+    if ( startupDat->uiLangPref[prefIdx] != lang )
+    {
+        startupDat->uiLangPref[prefIdx] = lang;
+        startupDatDirty                 = FTRUE;
+        valueChanged                    = FTRUE;
+    }
+
+    (void)rtos_release_semaphore(sysData->mutexId, RTOS_NO_SUSPEND);
+
+    if(valueChanged)
+    {
+        /* Ensure database consistency with user interface preference. */
+        retVal = EIT_ClearDatabase();
+        if(retVal != FAPI_OK)
+        {
+            /* ignore return value because while initialisation the data base
+             * is return APPL_SMARTGO_ERR_NOT_INITIALIZED!
+             */
+        }
+    }
+
+    return FAPI_OK;
+}
+
+
+/* 21b98e28 - complete */
+int32_t SETTINGS_AudioLangPrefSet(uint8_t prefIdx, SYS_LANGCODE lang)
+{
+    if(startupDat == NULL)
+        return APPL_SMARTGO_ERR_NOT_INITIALIZED;
+    if(prefIdx >= /*SETTINGS_AUDIOLANGPREF_MAX*/2)
+        return APPL_SMARTGO_ERR_BAD_PARAMETER;
+
+    (void)rtos_request_semaphore(sysData->mutexId, RTOS_SUSPEND);
+
+    startupDat->audLangPref[prefIdx] = lang;
+    startupDatDirty                  = FTRUE;
+
+    (void)rtos_release_semaphore(sysData->mutexId, RTOS_NO_SUSPEND);
+    return FAPI_OK;
+}
+
+
+/* 21b98358 - complete */
+int32_t SETTINGS_AudioLangPrefGet(uint8_t prefIdx, SYS_LANGCODE * lang)
+{
+    if(startupDat == NULL)
+        return APPL_SMARTGO_ERR_NOT_INITIALIZED;
+    if(prefIdx >= /*SETTINGS_AUDIOLANGPREF_MAX*/2)
+        return APPL_SMARTGO_ERR_BAD_PARAMETER;
+
+    *lang = startupDat->audLangPref[prefIdx];
+    return FAPI_OK;
+}
+
+
+/* 21b9839c - complete */
+int32_t SETTINGS_SubtLangPrefGet(uint8_t prefIdx, SYS_LANGCODE * lang)
+{
+    if(startupDat == NULL)
+        return APPL_SMARTGO_ERR_NOT_INITIALIZED;
+    if(prefIdx >= /*SETTINGS_SUBTLANGPREF_MAX*/2)
+        return APPL_SMARTGO_ERR_BAD_PARAMETER;
+
+    *lang = startupDat->subtLangPref[prefIdx];
+    return FAPI_OK;
+}
+
+
+/* 21b98da0 - complete */
+int32_t SETTINGS_SubtLangPrefSet(uint8_t prefIdx, SYS_LANGCODE lang)
+{
+    if(startupDat == NULL)
+        return APPL_SMARTGO_ERR_NOT_INITIALIZED;
+    if(prefIdx >= /*SETTINGS_SUBTLANGPREF_MAX*/2)
+        return APPL_SMARTGO_ERR_BAD_PARAMETER;
+
+    (void)rtos_request_semaphore(sysData->mutexId, RTOS_SUSPEND);
+
+    startupDat->subtLangPref[prefIdx] = lang;
+    startupDatDirty                   = FTRUE;
+
+    (void)rtos_release_semaphore(sysData->mutexId, RTOS_NO_SUSPEND);
+    return FAPI_OK;
+}
+
+
+
+
 
 

@@ -628,13 +628,6 @@ void func_21b88b2c(int a, int b)
 
 #endif
 
-/* 21bad20c - todo */
-int func_21bad20c(void* a)
-{
-   printf("func_21bad20c\n");
-   
-   return 0;
-}
 
 
 /* 21ba9c34 - todo */
@@ -673,53 +666,12 @@ int func_21baba70(void* a)
 }
 
 
-/* 21babda8 - todo */
-int func_21babda8(void* a)
-{
-   printf("func_21babda8\n");
-   
-   return 0;
-}
-
-
-/* 21baea48 - todo */
-int func_21baea48(void* a)
-{
-   printf("func_21baea48\n");
-   
-   return 0;
-}
-
-
-/* 21ba90bc - todo */
-int func_21ba90bc(void* a)
-{
-   printf("func_21ba90bc\n");
-   
-   return 0;
-}
-
-
 /* 21bafd24 - todo */
 int func_21bafd24(void* a)
 {
    printf("func_21bafd24\n");
    
    return 0;
-}
-
-
-/* 21b128d8 - todo */
-void func_21b128d8(void* a, int b)
-{
-   printf("func_21b128d8\n");
-}
-
-
-/* 21ba1998 - todo */
-void func_21ba1998(void* a, int b, int c, int d, int e)
-{
-   printf("func_21ba1998\n");
 }
 
 
@@ -732,37 +684,10 @@ int func_21cad4c0(void)
 }
 
 
-/* 21b9f7c0 - todo */
-int func_21b9f7c0(void)
-{
-   printf("func_21b9f7c0\n");
-
-   return 0;
-}
-
-
 /* 21bb4d7c - todo */
 void func_21bb4d7c(void* a)
 {
    printf("func_21bb4d7c\n");
-}
-
-
-/* 21b12638 - todo */
-int func_21b12638(void* a, /*struct Struct_21f02400*/void* b)
-{
-   printf("func_21b12638\n");
-
-   return 0;
-}
-
-
-/* 21b14c50 - todo */
-int func_21b14c50(void)
-{
-   printf("func_21b14c50\n");
-
-   return 0;
 }
 
 
@@ -793,15 +718,6 @@ void app_main_power_down(int a)
 
 #endif
 
-/* 21ba4704 - todo */
-int MCU_Init(void)
-{
-   printf("MCU_Init\n");
-
-   return 0;
-}
-
-
 /* 21b8cdb4 - todo */
 void func_21b8cdb4(void* a)
 {
@@ -817,18 +733,20 @@ void func_21b02c3c(void)
 
 
 /* 21b02df4 - todo */
-int func_21b02df4(int a, int b)
+void MAIN_UserDataSet(int a, int b)
 {
-   printf("func_21b02df4\n");
-   
-   return 0;
+    FAPI_SYS_PRINT_MSG("MAIN_UserDataSet(a=%d, b=%d)\n", a, b);
 }
+
+
 
 
 /* 21b02e64 - todo */
 int MAIN_UserDataGet(int a, unsigned* b)
 {
+#if 0
    FAPI_SYS_PRINT_MSG("MAIN_UserDataGet(a=%d)\n", a);
+#endif
    
    if (a == /*USERDAT_COLORSCHEME*/1)
    {
@@ -923,6 +841,7 @@ void func_21923dec()
    FAPI_SYS_PRINT_MSG("func_21923dec\n");
 }
 
+#endif
 
 /* 21b0d390 - todo */
 void func_21b0d390()
@@ -930,7 +849,6 @@ void func_21b0d390()
    FAPI_SYS_PRINT_MSG("func_21b0d390\n");
 }
 
-#endif
 
 void func_3724e4(void)
 {
@@ -950,6 +868,7 @@ void func_371c00(void)
 }
 
 
+/* 2181be04 - todo */
 void func_2181be04()
 {
    
@@ -985,63 +904,61 @@ void func_21b01d40()
 }
 
 
+/* 21b0d188 - todo */
 void func_21b0d188()
 {
 
 }
 
 
+/* 21b98138 - todo */
 int func_21b98138()
 {
 
 }
 
 
+/* 21b99d68 - todo */
 void func_21b99d68()
 {
 
 }
 
 
+/* 21b0bfac - todo */
 void func_21b0bfac()
 {
 
 }
 
 
+/* 21b0bb2c - todo */
 void func_21b0bb2c()
 {
 
 }
 
 
+/* 21b0d130 - todo */
 void func_21b0d130()
 {
 
 }
 
 
+/* 21b23f74 - todo */
 void func_21b23f74()
 {
 
 }
 
 
-void func_21b0316c(void)
-{
-
-}
-
-
-void func_21b3dbe8()
-{
-
-}
-
-
+/* 21b0f568 - todo */
 int func_21b0f568()
 {
+    FAPI_SYS_PRINT_MSG("func_21b0f568: TODO\n");
 
+    return 1;
 }
 
 
@@ -1057,81 +974,66 @@ void func_21bb9ee8()
 }
 
 
-void OSD_GetStr()
+void SLIST_ListNameSet()
 {
 
 }
 
 
-void OSD_GetStrWidth()
+/* 21bc22b0 - todo */
+void func_21bc22b0()
 {
 
 }
 
 
-void MENU_WelcomeOnFocusSet()
+
+/* 21bc2f14 - todo */
+void func_21bc2f14()
 {
 
 }
 
 
-void MENU_CommonAddTitle()
+/* 21b37144 - todo */
+/*fbool_t*/ MENU_TimeEntry(/*FAPI_SYS_HandleT h, fbool_t test*/void)
 {
 
 }
 
 
-void FGS_LIST_SetMemberFocus()
+/* 21b3f0c4 - todo */
+/*fbool_t*/ MENU_AntProgEntry(/*FAPI_SYS_HandleT h, fbool_t test*/)
 {
 
 }
 
 
-void MENU_CommonAddList()
+/* 21b7c96c - todo */
+void func_21b7c96c()
 {
 
 }
 
 
-void MENU_WelcomeGetDescrItem()
+void MAIN_HandleZappingKeys()
 {
 
 }
 
 
-void MENU_WelcomeOnFocusChg()
+/* 21b030ec - todo */
+void MAIN_SaveSettingsIfChanged()
 {
 
 }
 
 
-void MENU_WelcomeOnSelect()
+/* 21b8c0fc - todo */
+void EIT_ClearDatabase()
 {
 
 }
 
-
-void FGS_ITEM_TXT_Open()
-{
-
-}
-
-
-void MENU_CommonAddHelpList()
-{
-
-}
-
-
-void MENU_WelcomeGetHelpDescrItem()
-{
-
-}
-
-
-void MENU_CommonAddMenuExitHelpLine()
-{
-
-}
 
 

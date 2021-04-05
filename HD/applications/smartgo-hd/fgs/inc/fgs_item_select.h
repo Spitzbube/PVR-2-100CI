@@ -43,13 +43,13 @@ typedef struct
 
 typedef struct
 {
-    FGS_POS_S             pos;           //!< item area rectangle
-    uint32_t                   bkgrType;      //!< background type
+    FGS_POS_S             pos; /*0*/          //!< item area rectangle
+    uint32_t                   bkgrType; /*12*/     //!< background type
     
-    FGS_POS_S             descrPos;      //!< description position in item area
-    FGS_POS_S             valuePos;      //!< value position in item area
+    FGS_POS_S             descrPos; /*16*/     //!< description position in item area
+    FGS_POS_S             valuePos; /*28*/     //!< value position in item area
     
-    FGS_ITEM_SEL_PARAMS_S params;
+    FGS_ITEM_SEL_PARAMS_S params; //40
     
 } FGS_ITEM_SEL_OPEN_S;
 

@@ -56,6 +56,8 @@ static int32_t  FGS_ITEM_TXT_Draw        (FAPI_SYS_HandleT h);
 //static int32_t  FGS_ITEM_TXT_SetValue    (FAPI_SYS_HandleT h, FGS_VAL_S* pValue);
 static int32_t  FGS_ITEM_TXT_SetFocus    (FAPI_SYS_HandleT h, fbool_t hasFocus);
 
+
+/*  - todo */
 int32_t FGS_ITEM_TXT_Init (FGS_ITEM_TXT_INIT_S* pInitParams)
 {
     if ( pInitParams == NULL )
@@ -63,7 +65,7 @@ int32_t FGS_ITEM_TXT_Init (FGS_ITEM_TXT_INIT_S* pInitParams)
         return SMARTGO_FGS_ERR_BAD_PARAMETER;
     }
 
-    fgsItemTxtGlobal = FGS_Malloc(sizeof(FGS_ITEM_TXT_INIT_S));
+    fgsItemTxtGlobal = /*FGS_Malloc*/SYS_MemoryAllocate(sizeof(FGS_ITEM_TXT_INIT_S));
     if ( fgsItemTxtGlobal == NULL )
     {
         return SMARTGO_FGS_ERR_OUT_OF_MEMORY;
@@ -76,6 +78,8 @@ int32_t FGS_ITEM_TXT_Init (FGS_ITEM_TXT_INIT_S* pInitParams)
     return FAPI_OK;
 }
 
+
+/* 21babe00 - complete */
 int32_t FGS_ITEM_TXT_Open (FGS_ITEM_TXT_OPEN_S* pData, int32_t id,
                         FAPI_SYS_HandleT parent, FAPI_SYS_HandleT* ph)
 {
@@ -90,7 +94,7 @@ int32_t FGS_ITEM_TXT_Open (FGS_ITEM_TXT_OPEN_S* pData, int32_t id,
         return SMARTGO_FGS_ERR_BAD_PARAMETER;
     }
 
-    inst = FGS_Malloc(sizeof(FGS_ITEM_TXT_INST_S));
+    inst = /*FGS_Malloc*/SYS_MemoryAllocate(sizeof(FGS_ITEM_TXT_INST_S));
     if ( inst == NULL )
     {
         return SMARTGO_FGS_ERR_OUT_OF_MEMORY;
@@ -121,24 +125,28 @@ int32_t FGS_ITEM_TXT_Open (FGS_ITEM_TXT_OPEN_S* pData, int32_t id,
 
     if ( retVal != FAPI_OK )
     {
-        FGS_Free(inst);
+        /*FGS_Free*/SYS_MemoryFree(inst);
     }
 
     return retVal;
 }
 
+
+/* 21babd88 - complete */
 static int32_t FGS_ITEM_TXT_Close (FAPI_SYS_HandleT h)
 {
     FGS_ITEM_TXT_INST_S* inst = (FGS_ITEM_TXT_INST_S*)h;
 
     if (inst == NULL) return SMARTGO_FGS_ERR_INVALID_HANDLE;
 
-    FGS_Free(inst);
+    /*FGS_Free*/SYS_MemoryFree(inst);
 
     return FAPI_OK;
 
 }
 
+
+/* 21babc1c - complete */
 static int32_t FGS_ITEM_TXT_Draw (FAPI_SYS_HandleT h)
 {
     FGS_ITEM_TXT_INST_S* inst = (FGS_ITEM_TXT_INST_S*)h;
@@ -189,6 +197,7 @@ static int32_t FGS_ITEM_TXT_Draw (FAPI_SYS_HandleT h)
     return FAPI_OK;
 }
 
+/* 21babd50 - complete */
 static int32_t FGS_ITEM_TXT_SetFocus (FAPI_SYS_HandleT h, fbool_t hasFocus)
 {
     FGS_ITEM_TXT_INST_S* inst = (FGS_ITEM_TXT_INST_S*)h;
