@@ -254,7 +254,7 @@ FSTATIC void MENU_WelcomeGetDescrItem (FAPI_SYS_HandleT h, int32_t id, uint32_t 
             break;
 
         case MENU_WELCOME_ID_ENTRY_ANTENNA:
-            strIdx = STR_ENTRY_SYSTEMSETUP_ANTENNA; //68
+            strIdx = STR_ENTRY_MAIN_INSTALLATION; //68
             break;
 
         default:

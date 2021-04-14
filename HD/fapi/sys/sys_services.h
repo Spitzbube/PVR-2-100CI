@@ -17,9 +17,7 @@ struct FAPI_SYS_Services
    uint32_t (*getPhysAddressFunc)(uint32_t virtAddress);
    uint32_t (*getVirtAddressFunc)(uint32_t physAddress);
    void* (*mallocFunc)(size_t size); //60??
-#if 0
    void* (*mallocUncachedFunc)(size_t size); //64
-#endif
    void* (*mallocCachedFunc)(size_t size); //68
    void* (*mallocSegmentFunc)(FAPI_SYS_HandleT segment, size_t size); //72
    void (*freeFunc)(void* ptr); //76
@@ -146,6 +144,10 @@ extern int FAPI_SYS_IsMasterCpu(void);
         ? FAPI_SYS_Services.mallocFunc(size)       \
         : NULL )
 
+#define FAPI_SYS_MALLOC_UNCACHED(size)                     \
+        ( ( FAPI_SYS_Services.mallocUncachedFunc != NULL ) \
+        ? FAPI_SYS_Services.mallocUncachedFunc(size)       \
+        : NULL )
 
 #define FAPI_SYS_FREE(ptr)                           \
         {                                            \

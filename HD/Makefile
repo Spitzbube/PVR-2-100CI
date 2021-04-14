@@ -35,6 +35,8 @@ include $(TOPDIR)/env/make/Makefile.config
 
   DIRECTORIES += subsystems
 
+  DIRECTORIES += middleware
+
   DIRECTORIES += rtos
 
   DIRECTORIES += applications

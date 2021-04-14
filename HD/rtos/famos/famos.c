@@ -1665,8 +1665,8 @@ void famos_init_services(void)
    famos_services.getPhysAddressFunc = FAPI_MMU_GetPhysAddr;
    famos_services.getVirtAddressFunc = FAPI_MMU_GetVirtAddr;
    famos_services.mallocFunc = famos_malloc_uncached;
+   famos_services.mallocUncachedFunc = famos_malloc_uncached;
 #if 0
-   famos_services.mallocUncached = famos_malloc_uncached;
    famos_services.Data_64 = famos_malloc_uncached;
 #endif
    famos_services.mallocCachedFunc = famos_malloc_cached;

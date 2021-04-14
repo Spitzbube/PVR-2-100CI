@@ -116,7 +116,7 @@ typedef enum
 {
     MENUID_ROOT = 0,
     MENUID_STARTUP, //1
-    MENUID_MAIN,
+    MENUID_MAIN, //2
     MENUID_WELCOME, //3
     MENUID_SYSTEMSETUP,
     MENUID_INFORMATION,
@@ -371,8 +371,10 @@ int32_t MENU_HddInit            (void);
 int32_t MENU_EditStringInit     (MENU_EDITSTRING_INST_S* inst);
 
 /* ------------------------------------------------------------------------- */
+#endif
 
 fbool_t MENU_MainEntry         (FAPI_SYS_HandleT h, fbool_t test);
+#if 0
 fbool_t MENU_WelcomeEntry      (FAPI_SYS_HandleT h, fbool_t test);
 fbool_t MENU_TimerProgEntry    (FAPI_SYS_HandleT h, fbool_t test);
 fbool_t MENU_TimerEditEntry    (FAPI_SYS_HandleT h, fbool_t test);

@@ -230,13 +230,15 @@ typedef uint8_t  SYS_SUSPENDSRC;         //!< Suspending source type.
 #endif
 typedef uint16_t SYS_CHAR;               //!< Character type.
 typedef uint8_t  SYS_CHARSET;            //!< Character set type.
-#if 0
 typedef int16_t  SLIST_SERVIDX;          //!< Service index type.
+#if 0
 typedef uint16_t SLIST_TYPE;             //!< Service list type.
 typedef int16_t  CFGSAT_IDX;             //!< Satellite index type.
 typedef int16_t  TPLIST_IDX;             //!< Carrier index type.
+#endif
 typedef int16_t  PVRLST_IDX;             //!< PVR recording index type.
 typedef int32_t  RECTIMER_IDX;           //!< Record timer index type.
+#if 0
 typedef uint16_t RSRC_OP;                //!< Resource operation type.
 typedef uint8_t  RSRC_TS_IN;             //!< TS input type.
 typedef uint8_t  RSRC_CI_IN;             //!< CI input type.
@@ -2411,7 +2413,11 @@ uint16_t            TIME_YmdToMjd(uint16_t year, uint16_t month, uint16_t day);;
 /* Record timer handling                                                     */
 /*---------------------------------------------------------------------------*/
 
+#endif
+
 #define RECTIMER_INVALID      -1        // invalid record timer ID
+
+#if 0
 
 #ifdef APPL_RECTIMER_ENABLED
 
@@ -4088,10 +4094,15 @@ SYS_STRING_S     STR_IntLineStr         (void);
 /* PVR API                                                                   */
 /*---------------------------------------------------------------------------*/
 
-#ifdef APPL_PVR_ENABLED
+#endif
+
+#if 1//def APPL_PVR_ENABLED
+
+#if 0
 
 #define PVR_LIST_FLAG_SCRAMBLED   0x00000001    //!< Set if some contents are
-                                                //!< potentially scrambled.
+
+#endif
 
 typedef enum
 {
@@ -4112,6 +4123,8 @@ typedef enum
 
 } PVRSYS_PLAY_STATUS_E;
 
+#if 0
+
 typedef enum
 {
     PVR_JUMP_DATA_REL = 0,      //!< Relative jump value is in data chunks.
@@ -4121,6 +4134,8 @@ typedef enum
     PVR_JUMP_IFRAME_AND_LOCK
 
 } PVRSYS_JUMP_MODE_E;
+
+#endif
 
 typedef enum
 {
@@ -4140,36 +4155,42 @@ typedef enum
                             //!< recording.
 } PVRSYS_REC_TYPE_E;
 
+
 typedef struct
 {
-    PVRSYS_REC_STATUS_E status;
-    PVRSYS_REC_TYPE_E   type;
-    RECTIMER_IDX        timerIdx;   //!< Record's timer ID (may be RECTIMER_INVALID)
-    SLIST_SERVIDX       servIdx;    //!< Service currently recorded.
-
+    PVRSYS_REC_STATUS_E status; //0
+    PVRSYS_REC_TYPE_E   type; //4
+    RECTIMER_IDX        timerIdx; /*8*/  //!< Record's timer ID (may be RECTIMER_INVALID)
+    SLIST_SERVIDX       servIdx; /*12*/   //!< Service currently recorded.
+    //16
 } PVRSYS_STATREC_S;
 
+
 typedef struct
 {
-    PVRSYS_PLAY_STATUS_E status;     //!< Playback status/mode.
-    PVRSYS_PLAY_TYPE_E   type;       //!< Playback type: normal, timeshift, ...
-    int16_t              speedIndex; //!< Playback speed index:
+    PVRSYS_PLAY_STATUS_E status; /*0*/     //!< Playback status/mode.
+    PVRSYS_PLAY_TYPE_E   type; /*4*/      //!< Playback type: normal, timeshift, ...
+    int16_t              speedIndex; /*8*/ //!< Playback speed index:
                                      //!< fast/slow modes only.
-    uint16_t             speedFactor;//!< Speed factor.
-    int8_t               recIdx;     //!< Record reference (timeshift type only).
-    PVRLST_IDX           lstIdx;     //!< Record list reference.
-
+    uint16_t             speedFactor; /*10*/ //!< Speed factor.
+    int8_t               recIdx; /*12*/    //!< Record reference (timeshift type only).
+    PVRLST_IDX           lstIdx; /*14*/    //!< Record list reference.
+    //16
 } PVRSYS_STATPLAY_S;
 
+
 typedef struct
 {
-    uint8_t             numActiveRecs;
-    int8_t              bkgrRecIdx; //!< index of background recording
+    uint8_t             numActiveRecs; //0
+    int8_t              bkgrRecIdx; /*1*/ //!< index of background recording
                                     //!< (-1: none)
-    PVRSYS_STATREC_S    rec[RSRC_REC_MAX];
-    PVRSYS_STATPLAY_S   play;
-
+    PVRSYS_STATREC_S    rec[/*RSRC_REC_MAX*/3]; //4
+    int fill_52[8]; //52
+    PVRSYS_STATPLAY_S   play; //84
+    //100
 } PVRSYS_STATUS_S;
+
+#if 0
 
 typedef enum
 {
@@ -4372,7 +4393,11 @@ int32_t     PVR_PlayOpenAndValidateBlockMarker(PVRLST_IDX idx);
 
 #endif /* APPL_EDITMARKER_ENABLED */
 
+#endif
+
 #endif /* APPL_PVR_ENABLED */
+
+#if 0
 
 /*---------------------------------------------------------------------------*/
 /* HDD utility functions                                                     */

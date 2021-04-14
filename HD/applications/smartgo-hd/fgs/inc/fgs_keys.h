@@ -37,20 +37,20 @@ typedef enum
     FGS_KEY_OK = 6, //6
     FGS_KEY_BACK = 7, //7
     FGS_KEY_CHAN_UP = 8, //8
-    FGS_KEY_CHAN_DOWN,
-    FGS_KEY_RED,
-    FGS_KEY_GREEN,
-    FGS_KEY_YELLOW,
-    FGS_KEY_BLUE,
-    FGS_KEY_STANDBY,
+    FGS_KEY_CHAN_DOWN = 9, //9
+    FGS_KEY_RED = 10, //10
+    FGS_KEY_GREEN = 11, //11
+    FGS_KEY_YELLOW = 12, //12
+    FGS_KEY_BLUE = 13, //13
+    FGS_KEY_STANDBY = 14, //14
     FGS_KEY_EXIT = 15, //15
-    FGS_KEY_TEXT,
-    FGS_KEY_APPL,
+    FGS_KEY_TEXT = 16, //16
+    FGS_KEY_APPL = 17, //17
     FGS_KEY_MENU = 18, //18
     FGS_KEY_HIDE,
-    FGS_KEY_NAVI,
-    FGS_KEY_TV,
-    FGS_KEY_INFO,
+    FGS_KEY_NAVI = 20, //20
+    FGS_KEY_TV = 21, //21
+    FGS_KEY_INFO = 22, //22
     FGS_KEY_MUTE = 23, //23
     FGS_KEY_VOL_UP = 24, //24
     FGS_KEY_VOL_DOWN = 25, //25
@@ -59,7 +59,7 @@ typedef enum
     FGS_KEY_STOP,
     FGS_KEY_FF,
     FGS_KEY_REW,
-    FGS_KEY_PAUSE,
+    FGS_KEY_PAUSE = 31, //31
     /* -------------*/
     FGS_KEY_PIP,
     FGS_KEY_PIPCHANNEL,
@@ -72,18 +72,18 @@ typedef enum
     FGS_KEY_HELP,
     FGS_KEY_RECALL,
     FGS_KEY_BLOCK,
-    FGS_KEY_PAGEUP,
+    FGS_KEY_PAGEUP = 43, //43
     FGS_KEY_CUT,
     FGS_KEY_BOOKMARK,
     FGS_KEY_JUMPMARK,
-    FGS_KEY_PAGEDOWN,
+    FGS_KEY_PAGEDOWN = 47, //47
     FGS_KEY_ZOOM,
-    FGS_KEY_FAV,
+    FGS_KEY_FAV = 49, //49
     FGS_KEY_ASPECTRATIO,
     FGS_KEY_F1 = 51, //51
     FGS_KEY_F2,
     FGS_KEY_F3,
-    FGS_KEY_F4,
+    FGS_KEY_F4 = 54, //54
     FGS_KEY_NUMS = 67               //!< number of managed keys
     
 } FGS_KEY_E;

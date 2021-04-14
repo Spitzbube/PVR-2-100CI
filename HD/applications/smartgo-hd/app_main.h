@@ -77,11 +77,17 @@ struct Struct_21f02400
    int Data_15772/*selectLstInst*/; //15772
    int fill_15776[874]; //15776
    int Data_19272; //19272
-   int fill_19276[1283]; //19276
+   int fill_19276[14]; //19276
+   int Data_19332; //19332
+   int fill_19336[644]; //19336
+   int Data_21912; //21912
+   int fill_21916[623]; //21916
    int Data_24408; //24408
    int fill_24412[616]; //24412
    int Data_26876; //26876
-   int fill_26880[6965]; //26880
+   int fill_26880[1248]; //26880
+   int Data_31872; //31872
+   int fill_31876[5716]; //31876
    struct appData* Data_54740; //54740
    int fill_54744[3]; //54744
    int osdLayerStarted; //54756
@@ -99,8 +105,7 @@ struct Struct_21f02400
    int Data_55476; //55476
    int Data_55480; //55480
    int fill_55484; //55484
-   int Data_55488; //55488
-   int fill_55492[99]; //55492
+   PVRSYS_STATUS_S Data_55488; //55488
    char bData_55888; //55888
    char bData_55889; //55889
    char bData_55890; //55890

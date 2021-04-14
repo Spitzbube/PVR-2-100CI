@@ -6598,11 +6598,15 @@ char Data_21ebf1f4[] = {//10 10 00 00 01 00 00 00
 }; //21ebf1f4
 
 
-/* 21b08204 - todo */
-void func_21b08204(void)
+/* 21b08204 - complete */
+FSTATIC void drawTransparent(const FGS_AREA_S * pArea)
 {
-   printf("21b08204\n");
+    OSDINT_DrawFilledRectangle(pArea->x,
+                            pArea->y,
+                            pArea->x + pArea->width - 1,
+                            pArea->y + pArea->height - 1, 15/*OSD_COL_BLANK*/);
 }
+
 
 FSTATIC int32_t OSD_SetFont (SCALER_FONT_E fontId)
 {
@@ -7914,6 +7918,17 @@ void app_osd_draw_window(void* a)
        drawFrame = FTRUE;
 
       break;
+
+   case /*OSD_PNLTYPE_SELECTLST*/23: //23
+       //21b0abd8
+       /* draw inner background */
+       OSDINT_DrawFilledRectangle(x + SCALER_GetCurrVal(OUTER_FRAME_WIDTH),
+                               y + SCALER_GetCurrVal(OUTER_FRAME_WIDTH),
+                               x2 - SCALER_GetCurrVal(OUTER_FRAME_WIDTH),
+                               y2 - SCALER_GetCurrVal(OUTER_FRAME_WIDTH),
+                               OSD_GetSchemeColor(OSD_SCHEMECOL_MAIN_BKGR));
+       drawFrame = FTRUE;
+       break;
       
    default:
 //   case OSD_PNLTYPE_TRANSPARENT:
@@ -7945,10 +7960,21 @@ void app_osd_draw_window(void* a)
 }
 
 
-/* 21b0ba10 - todo */
-void func_21b0ba10(void)
+/* 21b0ba10 - complete */
+FSTATIC void panelRefresh(FAPI_SYS_HandleT h, FGS_POS_S* area)
 {
-   printf("21b0ba10\n");
+    FGS_PANEL_INST_S* inst = (FGS_PANEL_INST_S*)h;
+
+    switch ( inst->data.bkgrType & 0xFFFF/*OSD_PNLTYPEMASK_TYPE*/ )
+    {
+        case 24/*OSD_PNLTYPE_TRANSPARENT*/:
+            /* no background: do nothing */
+            return;
+
+        default:
+            app_osd_draw_window(h);
+            break;
+    }
 }
 
 
@@ -8345,7 +8371,7 @@ int32_t app_osd_init(void)
    sp12.bData_8 = 0;
    sp12.bData_12 = 2;
    sp12.bData_13 = 1;
-   sp12.funcs.Func_16 = func_21b08204;
+   sp12.funcs.Func_16 = drawTransparent;
    sp12.funcs.Func_20 = globPrintStr;
    sp12.funcs.Func_24 = OSD_GetStrWidth;
    sp12.funcs.Func_28 = func_21b07950;
@@ -8353,7 +8379,7 @@ int32_t app_osd_init(void)
    sp12.funcs.fill_36 = 0;
    
    panelParams.draw.draw = app_osd_draw_window;
-   panelParams.draw.refresh = func_21b0ba10;
+   panelParams.draw.refresh = panelRefresh;
 
    listParams.draw.drawBkgr = 0;
    

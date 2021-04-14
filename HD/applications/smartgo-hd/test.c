@@ -684,13 +684,6 @@ int func_21cad4c0(void)
 }
 
 
-/* 21bb4d7c - todo */
-void func_21bb4d7c(void* a)
-{
-   printf("func_21bb4d7c\n");
-}
-
-
 /* 21b8d98c - todo */
 void func_21b8d98c(int a, int b)
 {
@@ -706,17 +699,6 @@ int func_21b9b08c(void* a)
    return 0;
 }
 
-#if 0
-
-/* 21b04018 - todo */
-void app_main_power_down(int a)
-{
-   printf("app_main_power_down");
-
-
-}
-
-#endif
 
 /* 21b8cdb4 - todo */
 void func_21b8cdb4(void* a)
@@ -1016,12 +998,6 @@ void func_21b7c96c()
 }
 
 
-void MAIN_HandleZappingKeys()
-{
-
-}
-
-
 /* 21b030ec - todo */
 void MAIN_SaveSettingsIfChanged()
 {
@@ -1034,6 +1010,163 @@ void EIT_ClearDatabase()
 {
 
 }
+
+
+/* 21b0d740 - todo */
+void MAIN_VolumeBarHide()
+{
+
+}
+
+
+/* 21bc4d10 - todo */
+void SUBTT_ShowOsd()
+{
+
+}
+
+
+/* 21ba386c - todo */
+void TTXSUBTT_Restart()
+{
+
+}
+
+
+/* 21bc4d44 - todo */
+void SUBTT_HideOsd()
+{
+
+}
+
+
+/* 21ba3878 - todo */
+void TTXSUBTT_Hide()
+{
+
+}
+
+
+/* 21bb9358 - todo */
+int PVRDEC_Init()
+{
+    return 0;
+}
+
+
+/* 21be25e8 - todo */
+int PVR_Init()
+{
+    return 0;
+}
+
+
+/* 21be250c - todo */
+int PVR_SetFileExtension()
+{
+    return 0;
+}
+
+
+/* 21be24c8 - todo */
+int PVR_SetFileSplitParams(int a, int b)
+{
+    return 0;
+}
+
+
+/* 21bb6884 - todo */
+int PVRSYS_SetFastModes()
+{
+    return 0;
+}
+
+
+/* 21bbb458 - todo */
+int pvr_list_init()
+{
+    return 0;
+}
+
+
+void PVR_GetPlaybackMode()
+{
+
+}
+
+
+void PVRSYS_PlayGetSlowSpeedFactor()
+{
+
+}
+
+
+void PVRSYS_PlayFastModeIdxToSpeed()
+{
+
+}
+
+
+void PVRSYS_PlayGetFastSpeedFactor()
+{
+
+}
+
+/* 21bc8e88 - todo */
+void func_21bc8e88()
+{
+
+}
+
+
+/* 21b0c8d0 - todo */
+void func_21b0c8d0()
+{
+
+}
+
+
+/* 21ba2148- todo */
+void TIME_IsSync()
+{
+
+}
+
+
+/* 21bbdf60 - todo */
+void func_21bbdf60()
+{
+
+}
+
+
+/* 21bbc5f4 - todo */
+void func_21bbc5f4()
+{
+
+}
+
+
+/* 21b0e834 - todo */
+void func_21b0e834()
+{
+
+}
+
+
+/* 21bc9394 - todo */
+void func_21bc9394()
+{
+
+}
+
+
+/* 21b0c620 - todo */
+void func_21b0c620()
+{
+
+}
+
 
 
 

@@ -32,6 +32,7 @@ SOURCES += app_ref/src/app_menustack.c
 SOURCES += app_ref/src/app_menu_common.c
 SOURCES += app_ref/src/app_menu_welcome.c
 SOURCES += app_ref/src/app_menu_language.c
+SOURCES += app_ref/src/app_menu_main.c
 
 SOURCES += sys/src/av.c
 SOURCES += sys/src/av_int.c
@@ -46,6 +47,7 @@ SOURCES += sys/src/stringop.c
 SOURCES += sys/src/time.c
 SOURCES += sys/src/vfd.c
 SOURCES += sys/src/mcu.c
+SOURCES += sys/src/pvr_sys.c
 SOURCES += osd_window.c
 SOURCES += 21ba8d28.c
 SOURCES += 21b902b8.c

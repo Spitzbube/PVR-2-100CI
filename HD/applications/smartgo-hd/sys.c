@@ -753,9 +753,6 @@ int32_t SYS_Init(struct appData* a)
 }
 
 
-void* func_21bb8718(void);
-
-
 /* 21b90574 - nearly complete */
 void StartupThread(int a)
 {
@@ -878,7 +875,7 @@ void StartupThread(int a)
       }
 #endif
       
-      res = (int) func_21bb8718();
+      res = PVRSYS_Init();
       if (res != 0)
       {
          goto end;
@@ -1339,13 +1336,6 @@ int func_21bb15bc(void)
 int func_21bb2824(int a)
 {
 //   printf("func_21bb2824");
-   return 0;
-}
-
-
-void* func_21bb8718(void)
-{
-//   printf("func_21bb8718");
    return 0;
 }
 

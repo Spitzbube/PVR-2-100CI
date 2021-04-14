@@ -248,7 +248,7 @@ int input_uart(void)
             
          case 'b': //98:
             //21b8df04
-            r14 = 8;
+            r14 = 8; //back
             break;
             
          case 'c': //99:
@@ -355,7 +355,7 @@ int input_uart(void)
             
          case 13:
             //21b8dd94
-            r14 = 13;
+            r14 = 13; //ok
             break;
             
          case 'd': //100:

@@ -14,7 +14,8 @@
 #include "sys.h"
 #include "sys_time.h"
 #include "av_api.h"
-#include "app_main.h"
+#include "app_menu.h"
+//#include "app_main.h"
 
 int Data_21e9b270[24920/4] =  //21e9b270
 {
@@ -1581,6 +1582,9 @@ int Data_21e9b270[24920/4] =  //21e9b270
 
 extern Data_21ea13c8;
 
+
+extern int Data_21f7ba30; //21f7ba30
+
 int Data_21ebc3f0; //21ebc3f0
 
 struct Struct_21f02400* appDat; //21f02400
@@ -1672,17 +1676,40 @@ int main()
 }
 
 
-/* 21b04560 - todo */
-void func_21b04560(void)
+/* 21b04560 - complete */
+void MAIN_LastMenuClosed(void)
 {
-   printf("21b04560\n");
+    FAPI_SYS_PRINT_DEBUG(3,"### MAIN_LastMenuClosed \n");
+
+#if 1//def APPL_SUBTT_ENABLED
+    SUBTT_ShowOsd();    /* re-enable DVB subtitles */
+#endif /* APPL_SUBTT_ENABLED */
+
+#if 1//def APPL_TTXT_ENABLED
+    TTXSUBTT_Restart(); /* re-enable TTX subtitles */
+#endif /* APPL_TTXT_ENABLED */
+
+#ifdef APPL_MHEG_ENABLED
+    MHEG_Enable (FTRUE, SYS_SUSPENDSRC_USER);
+#endif
 }
 
 
-/* 21b04550 - todo */
-void func_21b04550(void)
+/* 21b04550 - complete */
+void MAIN_FirstMenuToOpen(void)
 {
-   printf("21b04550\n");
+    FAPI_SYS_PRINT_DEBUG(3,"[%s l=%i] MAIN_FirstMenuToOpen() \n",__FILE__,__LINE__);
+    /* ----- Disable some modules to avoid CLUT conflicts ------------------ */
+
+    #if 1//def APPL_SUBTT_ENABLED
+    SUBTT_HideOsd(); /* hide DVB subtitles */
+    #endif /* APPL_SUBTT_ENABLED */
+
+    #if 1//def APPL_TTXT_ENABLED
+    TTXSUBTT_Hide(); /* disable TTX subtitles */
+    #endif /* APPL_TTXT_ENABLED */
+
+//    (void) OSD_GetOsdLayer();
 }
 
 
@@ -1697,6 +1724,16 @@ int MENU_Init(void)
     {
         //TODO...
 
+        //21b04c28
+        res = MENU_MainInit();
+        if (res != 0)
+        {
+            break;
+        }
+
+        //TODO....
+
+        //21b04c70
         res = MENU_LanguageInit();
         if (res != 0)
         {
@@ -1706,6 +1743,7 @@ int MENU_Init(void)
         //TODO....
 
 
+        //21b04d18
         res = MENU_WelcomeInit();
         if (res != 0)
         {
@@ -1794,13 +1832,13 @@ int app_main_init(void)
       //21b0752c
       appDat->Data_55992 = SYS_MemoryAllocate(8000);
 
-      func_21bb4d7c(&appDat->Data_55488);
+      PVRSYS_GetStatus(&appDat->Data_55488);
 
       appDat->Data_55896 = -1;
 
       MENUSTACK_INIT_S sp12;
-      sp12.lastMenuClosed = func_21b04560;
-      sp12.firstMenuToOpen = func_21b04550;
+      sp12.lastMenuClosed = MAIN_LastMenuClosed;
+      sp12.firstMenuToOpen = MAIN_FirstMenuToOpen;
 
       res = MENUSTACK_Init(&sp12);
 
@@ -2235,14 +2273,14 @@ void MAIN_HandleEvtKey(void* a)
    {
       case 8:
          //21b06f80
-         keyCode = 7;
+         keyCode = FGS_KEY_BACK; //7;
          //r2 = -1;
          //->21b06cc8
          break;
          
       case 13:
          //21b06f74
-         keyCode = 6;
+         keyCode = FGS_KEY_OK; //6;
          //r2 = -1;
          //->21b06cc8
          break;
@@ -2706,10 +2744,31 @@ FSTATIC fbool_t MENU_StartupLeave (FAPI_SYS_HandleT h, fbool_t force)
 }
 
 
-/* 21b036b8 - todo */
+/* 21b04018 - todo */
+void app_main_power_down()
+{
+    FAPI_SYS_PRINT_MSG("app_main_power_down: TODO\n");
+}
+
+
+/* 21b036b8 - complete */
 int32_t MENU_StartupSetFocus(FAPI_SYS_HandleT h, fbool_t hasFocus)
 {
-    FAPI_SYS_PRINT_MSG("MENU_StartupSetFocus: TODO\n");
+//    FAPI_SYS_PRINT_MSG("MENU_StartupSetFocus: TODO\n");
+
+    if (func_21ba3e64() != 0)
+    {
+        if (hasFocus)
+        {
+            FGS_SetAppKeyHandler(FGS_KEY_STANDBY, app_main_power_down, 0, 1, 0);
+        }
+        else
+        {
+            FGS_ClearAppKeyHandler(FGS_KEY_STANDBY);
+        }
+    }
+
+    return 0;
 }
 
 
@@ -2754,42 +2813,212 @@ int32_t MENU_StartupSetFocus(FAPI_SYS_HandleT h, fbool_t hasFocus)
 }
 
 
+/* 21b02644 - todo */
 void MENU_RootKeyUp()
 {
     FAPI_SYS_PRINT_MSG("MENU_RootKeyUp: TODO\n");
 }
 
 
+/* 21b0264c - todo */
 void MENU_RootKeyDown()
 {
     FAPI_SYS_PRINT_MSG("MENU_RootKeyDown: TODO\n");
 }
 
 
+/* 21b03550 - todo */
 void MENU_RootKeyLeft()
 {
     FAPI_SYS_PRINT_MSG("MENU_RootKeyLeft: TODO\n");
 }
 
 
+/* 21b03548 - todo */
 MENU_RootKeyRight()
 {
     FAPI_SYS_PRINT_MSG("MENU_RootKeyRight: TODO\n");
 }
 
 
-void MENU_RootKeys()
+/* 21b32af0 - todo */
+void func_21b32af0()
 {
-    FAPI_SYS_PRINT_MSG("MENU_RootKeys: TODO\n");
+    FAPI_SYS_PRINT_MSG("func_21b32af0: TODO\n");
+
 }
 
 
+/* 21b11350 - todo */
+void func_21b11350()
+{
+    FAPI_SYS_PRINT_MSG("func_21b11350: TODO\n");
+
+}
+
+
+/* 21b21944 - todo */
+void func_21b21944()
+{
+    FAPI_SYS_PRINT_MSG("func_21b21944: TODO\n");
+
+}
+
+
+/* 21b20408 - todo */
+void func_21b20408()
+{
+    FAPI_SYS_PRINT_MSG("func_21b20408: TODO\n");
+
+}
+
+
+/* 21b2400c - todo */
+void func_21b2400c()
+{
+    FAPI_SYS_PRINT_MSG("func_21b2400c: TODO\n");
+
+}
+
+
+/* 21b03558 - todo */
+FSTATIC fbool_t MENU_RootKeys (FAPI_SYS_HandleT h)
+{
+    MENUSTACK_ENTRY       newEntry = NULL;
+    FAPI_SYS_HandleT      arg      = NULL;
+    fbool_t               keyUsed  = FFALSE;
+//    MENU_INFOBAR_PARAMS_S infoParams;
+//    MENU_EPGEXT_OPEN_S    epgExtParams;
+
+    struct
+    {
+        int Data_0; //0
+        signed char bData_4; //4
+    } sp120;
+
+    struct
+    {
+        int fill_0[5]; //0
+        //20
+    } sp100;  //sp100
+    PVRSYS_STATUS_S sp; //sp
+
+    FAPI_SYS_PRINT_MSG("MENU_RootKeys: TODO\n");
+    FAPI_SYS_PRINT_MSG("key=%d\n", FGS_GetCurrentKeyCode());
+
+    memset(&sp, 0, sizeof(PVRSYS_STATUS_S));
+
+    if (PVRSYS_GetStatus(&sp) != 0)
+    {
+        return 0;
+    }
+
+    switch ( FGS_GetCurrentKeyCode() )
+    {
+        case FGS_KEY_INFO:
+            //21b035e8
+#if 0
+            infoParams.permanent   = FTRUE;
+                               infoParams.numberInput = -1;
+
+                               newEntry = MENU_InfobarEntry;
+                               arg      = (FAPI_SYS_HandleT)(&infoParams);
+#endif
+            sp120.Data_0 = 1;
+            sp120.bData_4 = -1;
+            //return MENUSTACK_Up(func_21b2400c, &sp120);
+            newEntry = func_21b2400c;
+            arg = &sp120;
+            break;
+
+        case FGS_KEY_NAVI:
+            //21b03608
+            memset(&sp100, 0, sizeof(sp100));
+            if (sp.play.type == PLAY_TYPE_NONE) //0)
+            {
+//                return MENUSTACK_Up(func_21b20408, 0);
+                newEntry = func_21b20408;
+            }
+            else
+            {
+#if 0
+                memset(&epgExtParams, 0, sizeof(epgExtParams));
+
+                                   epgExtParams.schedMode = FFALSE;
+                                   epgExtParams.currType  = EIT_TYPE_CURR;
+
+                                   newEntry = MENU_EpgExtEntry;
+                                   arg      = (FAPI_SYS_HandleT)(&epgExtParams);
+#endif
+               //return MENUSTACK_Up(func_21b21944, &sp100);
+               newEntry = func_21b21944;
+               arg = &sp100;
+            }
+            break;
+
+        case FGS_KEY_MENU:
+            //21b03640
+            if (func_21ba3e64() == 1)
+            {
+                //return MENUSTACK_Up(MENU_MainEntry, 0);
+                newEntry = MENU_MainEntry;
+            }
+#if 0
+            else
+            {
+                return 0;
+            }
+#endif
+            break;
+
+        case FGS_KEY_OK:
+            //21b0368c
+            //newEntry = MENU_ServSelectEntry;
+            //return MENUSTACK_Up(func_21b32af0, 0);
+            newEntry = func_21b32af0;
+            break;
+
+        case FGS_KEY_BACK: //21b0366c
+            /* FALLTHROUGHT */
+        case FGS_KEY_EXIT:     keyUsed = (MAIN_VolumeBarHide(&(appDat->Data_21912/*volBar*/))
+                                          == FAPI_OK) ? FTRUE : FFALSE;
+                               break;
+        case FGS_KEY_APPL:
+            //21b0365c
+            //newEntry = MENU_StrSelEntry ;
+            //return MENUSTACK_Up(func_21b11350, 0);
+            newEntry = func_21b11350;
+            break;
+
+        default:
+            break;
+    }
+    if ( newEntry != NULL )
+    {
+#if 0
+        if(MENUSTACK_GetLevel()!= 0)
+        {
+            (void) MENUSTACK_Exit(NULL);
+        }
+#endif
+        return MENUSTACK_Up(newEntry, arg);
+    }
+    else
+    {
+        return keyUsed;
+    }
+}
+
+
+
+/* 21b02ebc - todo */
 void MAIN_NumberKey()
 {
     FAPI_SYS_PRINT_MSG("MAIN_NumberKey: TODO\n");
 }
 
 
+/* 21b02f28 - todo */
 void MAIN_PowerDown()
 {
     FAPI_SYS_PRINT_MSG("MAIN_PowerDown: TODO\n");
@@ -2805,7 +3034,53 @@ void MENU_PvrKeys()
 }
 
 
-/* 21b0379c - todo */
+/* 21b047d8 - todo */
+void func_21b047d8()
+{
+    FAPI_SYS_PRINT_MSG("func_21b047d8: TODO\n");
+
+}
+
+
+/* 21b0f354 - todo */
+void func_21b0f354()
+{
+    FAPI_SYS_PRINT_MSG("func_21b0f354: TODO\n");
+
+}
+
+
+/* 21b0f5e4 - todo */
+void MAIN_SwapTvAndRadio()
+{
+    FAPI_SYS_PRINT_MSG("MAIN_SwapTvAndRadio: TODO\n");
+}
+
+
+/* 21b0f51c - todo */
+void MAIN_ChannelUp()
+{
+    FAPI_SYS_PRINT_MSG("MAIN_ChannelUp: TODO\n");
+
+}
+
+
+/* 21b0f448 - todo */
+void MAIN_ChannelDown()
+{
+    FAPI_SYS_PRINT_MSG("MAIN_ChannelDown: TODO\n");
+
+}
+
+
+/* 21b02f14 - todo */
+void MAIN_GotoText()
+{
+    FAPI_SYS_PRINT_MSG("MAIN_GotoText: TODO\n");
+}
+
+
+/* 21b0379c - complete */
 void MAIN_HandlePvrKeys (fbool_t hasFocus)
 {
     if ( hasFocus )
@@ -2818,8 +3093,24 @@ void MAIN_HandlePvrKeys (fbool_t hasFocus)
         FGS_SetAppKeyHandler (FGS_KEY_FFSLOW,  MENU_PvrKeys, NULL, FTRUE, FFALSE);
         FGS_SetAppKeyHandler (FGS_KEY_REWSLOW, MENU_PvrKeys, NULL, FTRUE, FFALSE);
         FGS_SetAppKeyHandler (FGS_KEY_PAUSE,   MENU_PvrKeys, NULL, FTRUE, FFALSE);
+
+        FGS_SetAppKeyHandler (FGS_KEY_GREEN,   MENU_PvrKeys, NULL, FTRUE, FFALSE);
+        FGS_SetAppKeyHandler (FGS_KEY_YELLOW,   MENU_PvrKeys, NULL, FTRUE, FFALSE);
+        FGS_SetAppKeyHandler (FGS_KEY_RED,   MENU_PvrKeys, NULL, FTRUE, FFALSE);
+
+        FGS_SetAppKeyHandler (57,   MENU_PvrKeys, NULL, FTRUE, FFALSE);
+        FGS_SetAppKeyHandler (FGS_KEY_PAGEUP,   MENU_PvrKeys, NULL, FTRUE, FFALSE);
+        FGS_SetAppKeyHandler (FGS_KEY_PAGEDOWN,   MENU_PvrKeys, NULL, FTRUE, FFALSE);
+        FGS_SetAppKeyHandler (58,   MENU_PvrKeys, NULL, FTRUE, FFALSE);
+        FGS_SetAppKeyHandler (59,   MENU_PvrKeys, NULL, FTRUE, FFALSE);
+
+        FGS_SetAppKeyHandler (FGS_KEY_CHAN_DOWN,      MENU_PvrKeys, NULL, FTRUE, FFALSE);
+        FGS_SetAppKeyHandler (FGS_KEY_CHAN_UP,      MENU_PvrKeys, NULL, FTRUE, FFALSE);
+
+#if 0
         FGS_SetAppKeyHandler (FGS_KEY_F4,      MENU_PvrKeys, NULL, FTRUE, FFALSE);
         FGS_SetAppKeyHandler (FGS_KEY_F3,      MENU_PvrKeys, NULL, FTRUE, FFALSE);
+#endif
     }
     else
     {
@@ -2831,52 +3122,209 @@ void MAIN_HandlePvrKeys (fbool_t hasFocus)
         FGS_ClearAppKeyHandler (FGS_KEY_FFSLOW);
         FGS_ClearAppKeyHandler (FGS_KEY_REWSLOW);
         FGS_ClearAppKeyHandler (FGS_KEY_PAUSE);
+
+        FGS_ClearAppKeyHandler (FGS_KEY_GREEN);
+        FGS_ClearAppKeyHandler (FGS_KEY_YELLOW);
+        FGS_ClearAppKeyHandler (FGS_KEY_RED);
+        FGS_ClearAppKeyHandler (57);
+        FGS_ClearAppKeyHandler (FGS_KEY_PAGEUP);
+        FGS_ClearAppKeyHandler (FGS_KEY_PAGEDOWN);
+        FGS_ClearAppKeyHandler (58);
+        FGS_ClearAppKeyHandler (59);
+
+        FGS_ClearAppKeyHandler (FGS_KEY_CHAN_DOWN);
+        FGS_ClearAppKeyHandler (FGS_KEY_CHAN_UP);
+#if 0
         FGS_ClearAppKeyHandler (FGS_KEY_F4);
         FGS_ClearAppKeyHandler (FGS_KEY_F3);
+#endif
     }
 }
 
 
-/* 21b03b68 - todo */
+/* 21b03a04 - complete */
+void MAIN_HandleZappingKeys(fbool_t hasFocus)
+{
+    #if 1//def APPL_PVR_ENABLED
+    MAIN_HandlePvrKeys (hasFocus);
+    #endif /* APPL_PVR_ENABLED */
+
+    if (Data_21f7ba30 != 0)
+    {
+        if ( hasFocus )
+        {
+            FGS_SetAppKeyHandler (FGS_KEY_CHAN_UP,   MAIN_ChannelUp,          NULL, FFALSE,  FFALSE);
+            FGS_SetAppKeyHandler (FGS_KEY_CHAN_DOWN, MAIN_ChannelDown,        NULL, FFALSE,  FFALSE);
+            FGS_SetAppKeyHandler (FGS_KEY_TV,        MAIN_SwapTvAndRadio,     NULL, FTRUE,   FFALSE);
+
+            #if 1//(defined APPL_MHEG_ENABLED) || (defined APPL_TTXT_ENABLED)
+            FGS_SetAppKeyHandler (FGS_KEY_TEXT,  MAIN_GotoText, NULL, FTRUE, FFALSE);
+
+            #endif /* #if (defined APPL_MHEG_ENABLED) || (defined APPL_TTXT_ENABLED) */
+
+            FGS_SetAppKeyHandler (60,        func_21b0f354,     NULL, FTRUE,   FFALSE);
+        }
+        else
+        {
+            FGS_ClearAppKeyHandler (FGS_KEY_CHAN_UP);
+            FGS_ClearAppKeyHandler (FGS_KEY_CHAN_DOWN);
+            FGS_ClearAppKeyHandler (FGS_KEY_TV);
+
+            #if 1//(defined APPL_MHEG_ENABLED) || (defined APPL_TTXT_ENABLED)
+
+            /* disable TTX keys */
+            FGS_ClearAppKeyHandler (FGS_KEY_TEXT);
+
+            #endif /* #if (defined APPL_MHEG_ENABLED) || (defined APPL_TTXT_ENABLED) */
+
+            FGS_ClearAppKeyHandler (60);
+        }
+    }
+    else
+    {
+        if ( hasFocus )
+        {
+            FGS_SetAppKeyHandler (FGS_KEY_CHAN_UP,   MAIN_ChannelUp,          NULL, FFALSE,  FFALSE);
+            FGS_SetAppKeyHandler (FGS_KEY_CHAN_DOWN, MAIN_ChannelDown,        NULL, FFALSE,  FFALSE);
+            FGS_SetAppKeyHandler (FGS_KEY_TV,        MAIN_SwapTvAndRadio,     NULL, FTRUE,   FFALSE);
+
+            FGS_SetAppKeyHandler (60,        func_21b0f354,     NULL, FTRUE,   FFALSE);
+        }
+        else
+        {
+            FGS_ClearAppKeyHandler (FGS_KEY_CHAN_UP);
+            FGS_ClearAppKeyHandler (FGS_KEY_CHAN_DOWN);
+            FGS_ClearAppKeyHandler (FGS_KEY_TV);
+            FGS_ClearAppKeyHandler (60);
+        }
+    }
+}
+
+
+/* 21b03b68 - complete */
 int32_t MENU_RootSetFocus(FAPI_SYS_HandleT h, fbool_t hasFocus)
 {
     MAIN_HandleZappingKeys (hasFocus);
 
-    if ( hasFocus )
-    {
-        FGS_SetAppKeyHandler   (FGS_KEY_UP,      MENU_RootKeyUp,    NULL, FFALSE, FFALSE);
-        FGS_SetAppKeyHandler   (FGS_KEY_DOWN,    MENU_RootKeyDown,  NULL, FFALSE, FFALSE);
-        FGS_SetAppKeyHandler   (FGS_KEY_LEFT,    MENU_RootKeyLeft,  NULL, FFALSE, FFALSE);
-        FGS_SetAppKeyHandler   (FGS_KEY_RIGHT,   MENU_RootKeyRight, NULL, FFALSE, FFALSE);
-        FGS_SetAppKeyHandler   (FGS_KEY_INFO,    MENU_RootKeys,     NULL, FTRUE,  FFALSE);
-        FGS_SetAppKeyHandler   (FGS_KEY_NAVI,    MENU_RootKeys,     NULL, FTRUE,  FFALSE);
-        FGS_SetAppKeyHandler   (FGS_KEY_MENU,    MENU_RootKeys,     NULL, FTRUE,  FFALSE);
-        FGS_SetAppKeyHandler   (FGS_KEY_OK,      MENU_RootKeys,     NULL, FTRUE,  FFALSE);
-        FGS_SetAppNumKeyHandler(FGS_KEY_NUMBER,  MAIN_NumberKey,    NULL, FTRUE,  FFALSE);
-        #ifdef APPL_PIP_ENABLED
-        FGS_SetAppKeyHandler   (FGS_KEY_BACK,    MAIN_KeyPIP,       NULL, FTRUE,  FFALSE);
-        #endif
-        FGS_SetAppKeyHandler   (FGS_KEY_EXIT,    MENU_RootKeys,     NULL, FTRUE,  FFALSE);
+    FAPI_SYS_PRINT_MSG("MENU_RootSetFocus: hasFocus=%d, Data_21f7ba30=%d\n", hasFocus, Data_21f7ba30);
 
-        FGS_SetAppKeyHandler   (FGS_KEY_STANDBY, MAIN_PowerDown,    NULL, FTRUE,  FFALSE);
-        FGS_SetAppKeyHandler   (FGS_KEY_APPL,    MENU_RootKeys,    NULL, FTRUE,  FFALSE);
+    if (Data_21f7ba30 == 0)
+    {
+        if ( hasFocus )
+        {
+            FGS_SetAppKeyHandler   (FGS_KEY_UP,      MENU_RootKeyUp,    NULL, FFALSE, FFALSE);
+            FGS_SetAppKeyHandler   (FGS_KEY_DOWN,    MENU_RootKeyDown,  NULL, FFALSE, FFALSE);
+            FGS_SetAppKeyHandler   (FGS_KEY_LEFT,    MENU_RootKeyLeft,  NULL, FFALSE, FFALSE);
+            FGS_SetAppKeyHandler   (FGS_KEY_RIGHT,   MENU_RootKeyRight, NULL, FFALSE, FFALSE);
+            FGS_SetAppKeyHandler   (FGS_KEY_INFO,    MENU_RootKeys,     NULL, FTRUE,  FFALSE);
+            FGS_SetAppKeyHandler   (FGS_KEY_NAVI,    MENU_RootKeys,     NULL, FTRUE,  FFALSE);
+    #if 0
+            FGS_SetAppKeyHandler   (FGS_KEY_MENU,    MENU_RootKeys,     NULL, FTRUE,  FFALSE);
+    #endif
+            FGS_SetAppKeyHandler   (FGS_KEY_OK,      MENU_RootKeys,     NULL, FTRUE,  FFALSE);
+            FGS_SetAppNumKeyHandler(FGS_KEY_NUMBER,  MAIN_NumberKey,    NULL, FTRUE,  FFALSE);
+    #if 0
+            #ifdef APPL_PIP_ENABLED
+            FGS_SetAppKeyHandler   (FGS_KEY_BACK,    MAIN_KeyPIP,       NULL, FTRUE,  FFALSE);
+            #endif
+            FGS_SetAppKeyHandler   (FGS_KEY_EXIT,    MENU_RootKeys,     NULL, FTRUE,  FFALSE);
+    #endif
+
+            FGS_SetAppKeyHandler   (FGS_KEY_STANDBY, MAIN_PowerDown,    NULL, FTRUE,  FFALSE);
+#if 0
+            FGS_SetAppKeyHandler   (FGS_KEY_APPL,    MENU_RootKeys,    NULL, FTRUE,  FFALSE);
+#endif
+            FGS_SetAppKeyHandler   (FGS_KEY_FAV,     func_21b047d8,    NULL, FTRUE,  FFALSE);
+        }
+        else
+        {
+            FGS_ClearAppKeyHandler (FGS_KEY_UP);
+            FGS_ClearAppKeyHandler (FGS_KEY_DOWN);
+            FGS_ClearAppKeyHandler (FGS_KEY_LEFT);
+            FGS_ClearAppKeyHandler (FGS_KEY_RIGHT);
+
+            FGS_ClearAppKeyHandler (FGS_KEY_INFO);
+            FGS_ClearAppKeyHandler (FGS_KEY_NAVI);
+    #if 0
+            FGS_ClearAppKeyHandler (FGS_KEY_EXIT);
+            FGS_ClearAppKeyHandler (FGS_KEY_MENU);
+    #endif
+            FGS_ClearAppKeyHandler (FGS_KEY_OK);
+            FGS_ClearAppKeyHandler (FGS_KEY_NUMBER);
+            FGS_ClearAppKeyHandler (FGS_KEY_FAV);
+    #if 0
+            FGS_ClearAppKeyHandler (FGS_KEY_BACK);
+            FGS_ClearAppKeyHandler (FGS_KEY_EXIT);
+            FGS_ClearAppKeyHandler (FGS_KEY_APPL);
+    #endif
+        }
     }
     else
     {
-        FGS_ClearAppKeyHandler (FGS_KEY_UP);
-        FGS_ClearAppKeyHandler (FGS_KEY_DOWN);
-        FGS_ClearAppKeyHandler (FGS_KEY_LEFT);
-        FGS_ClearAppKeyHandler (FGS_KEY_RIGHT);
+        //21b03cdc
+        PVRSYS_STATUS_S sp4;
+        if (PVRSYS_GetStatus(&sp4) != 0)
+        {
+            return FAPI_OK;
+        }
 
-        FGS_ClearAppKeyHandler (FGS_KEY_INFO);
-        FGS_ClearAppKeyHandler (FGS_KEY_NAVI);
-        FGS_ClearAppKeyHandler (FGS_KEY_EXIT);
-        FGS_ClearAppKeyHandler (FGS_KEY_MENU);
-        FGS_ClearAppKeyHandler (FGS_KEY_OK);
-        FGS_ClearAppKeyHandler (FGS_KEY_NUMBER);
-        FGS_ClearAppKeyHandler (FGS_KEY_BACK);
-        FGS_ClearAppKeyHandler (FGS_KEY_EXIT);
-        FGS_ClearAppKeyHandler (FGS_KEY_APPL);
+        if ( hasFocus )
+        {
+            FGS_SetAppKeyHandler   (FGS_KEY_UP,      MENU_RootKeyUp,    NULL, FFALSE, FFALSE);
+            FGS_SetAppKeyHandler   (FGS_KEY_DOWN,    MENU_RootKeyDown,  NULL, FFALSE, FFALSE);
+            FGS_SetAppKeyHandler   (FGS_KEY_LEFT,    MENU_RootKeyLeft,  NULL, FFALSE, FFALSE);
+            FGS_SetAppKeyHandler   (FGS_KEY_RIGHT,   MENU_RootKeyRight, NULL, FFALSE, FFALSE);
+
+            FGS_SetAppKeyHandler   (FGS_KEY_INFO,    MENU_RootKeys,     NULL, FTRUE,  FFALSE);
+            FGS_SetAppKeyHandler   (FGS_KEY_NAVI,    MENU_RootKeys,     NULL, FTRUE,  FFALSE);
+            FGS_SetAppKeyHandler   (FGS_KEY_MENU,    MENU_RootKeys,     NULL, FTRUE,  FFALSE);
+            FGS_SetAppKeyHandler   (FGS_KEY_OK,      MENU_RootKeys,     NULL, FTRUE,  FFALSE);
+
+            FGS_SetAppNumKeyHandler(FGS_KEY_NUMBER,  MAIN_NumberKey,    NULL, FTRUE,  FFALSE);
+
+            FGS_SetAppKeyHandler   (FGS_KEY_EXIT,    MENU_RootKeys,     NULL, FTRUE,  FFALSE);
+
+            FGS_SetAppKeyHandler   (FGS_KEY_STANDBY, MAIN_PowerDown,    NULL, FTRUE,  FFALSE);
+
+            FGS_SetAppKeyHandler   (FGS_KEY_RED,     func_21b047d8,     NULL, FTRUE,  FFALSE);
+            FGS_SetAppKeyHandler   (FGS_KEY_YELLOW,  func_21b047d8,     NULL, FTRUE,  FFALSE);
+            FGS_SetAppKeyHandler   (FGS_KEY_BLUE,    func_21b047d8,     NULL, FTRUE,  FFALSE);
+            FGS_SetAppKeyHandler   (FGS_KEY_FAV,     func_21b047d8,     NULL, FTRUE,  FFALSE);
+            FGS_SetAppKeyHandler   (FGS_KEY_F4,      func_21b047d8,     NULL, FTRUE,  FFALSE);
+            FGS_SetAppKeyHandler   (66,      func_21b047d8,     NULL, FTRUE,  FFALSE);
+            FGS_SetAppKeyHandler   (61,      func_21b047d8,     NULL, FTRUE,  FFALSE);
+            FGS_SetAppKeyHandler   (62,      func_21b047d8,     NULL, FTRUE,  FFALSE);
+            FGS_SetAppKeyHandler   (63,      func_21b047d8,     NULL, FTRUE,  FFALSE);
+            FGS_SetAppKeyHandler   (64,      func_21b047d8,     NULL, FTRUE,  FFALSE);
+            FGS_SetAppKeyHandler   (65,      func_21b047d8,     NULL, FTRUE,  FFALSE);
+        }
+        else
+        {
+            FGS_ClearAppKeyHandler (FGS_KEY_UP);
+            FGS_ClearAppKeyHandler (FGS_KEY_DOWN);
+            FGS_ClearAppKeyHandler (FGS_KEY_LEFT);
+            FGS_ClearAppKeyHandler (FGS_KEY_RIGHT);
+            FGS_ClearAppKeyHandler (FGS_KEY_INFO);
+            FGS_ClearAppKeyHandler (FGS_KEY_NAVI);
+            FGS_ClearAppKeyHandler (FGS_KEY_EXIT);
+            FGS_ClearAppKeyHandler (FGS_KEY_MENU);
+            FGS_ClearAppKeyHandler (FGS_KEY_OK);
+            FGS_ClearAppKeyHandler (FGS_KEY_NUMBER);
+            FGS_ClearAppKeyHandler (FGS_KEY_BACK);
+            FGS_ClearAppKeyHandler (FGS_KEY_EXIT);
+            FGS_ClearAppKeyHandler (FGS_KEY_APPL);
+            FGS_ClearAppKeyHandler (FGS_KEY_RED);
+            FGS_ClearAppKeyHandler (FGS_KEY_YELLOW);
+            FGS_ClearAppKeyHandler (FGS_KEY_BLUE);
+            FGS_ClearAppKeyHandler (FGS_KEY_FAV);
+            FGS_ClearAppKeyHandler (FGS_KEY_F4);
+            FGS_ClearAppKeyHandler (66);
+            FGS_ClearAppKeyHandler (61);
+            FGS_ClearAppKeyHandler (62);
+            FGS_ClearAppKeyHandler (63);
+            FGS_ClearAppKeyHandler (64);
+            FGS_ClearAppKeyHandler (65);
+        }
     }
 
     return FAPI_OK;
@@ -3086,7 +3534,7 @@ int MAIN_PowerUp(void* a)
    
    func_21ba6838();
    
-   func_21b04560(); //MAIN_LastMenuClosed
+   MAIN_LastMenuClosed();
    
    appDat->bData_55888 = 0;
    appDat->bData_55889 = 0;
